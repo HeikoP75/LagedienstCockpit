@@ -1,0 +1,2117 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+
+<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+
+<meta charset="UTF-8">
+<title>FEUER – Einsatzdokumentation</title>
+<style>
+/* ----------------------------------------------
+   HEADER Styling – Titel links / Buttons rechts
+---------------------------------------------- */
+
+header {
+    width: 100%;
+}
+
+.top-header {
+    width: 100%;              /* GANZ wichtig */
+    max-width: 100%;          /* Falls irgendwo Begrenzungen aktiv sind */
+    display: flex;
+    justify-content: space-between;  /* Titel links – Buttons rechts */
+    align-items: center;
+    background: #455a64;
+    padding: 18px 26px;
+    box-sizing: border-box;   /* verhindert Layoutfehler */
+}
+
+/* Titel links */
+.header-title {
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Buttons rechts */
+.header-buttons {
+    display: flex;
+    gap: 16px; /* Abstand zwischen Buttons */
+    align-items: center;
+}
+
+/* Capsule Buttons – ALLE sind gleich */
+.header-btn {
+    background: #607d8b;
+    color: white;
+    padding: 10px 26px;
+    font-size: 15px;
+    font-weight: 500;
+    border: none;
+    border-radius: 999px;  /* Capsule Style */
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hover-Effekt */
+.header-btn:hover {
+    background: #78909c;
+    transform: translateY(-1px);
+}
+
+/* Hauptbutton */
+.header-btn.primary {
+    background: #336699;
+}
+
+.header-btn.primary:hover {
+    background: #3f7ec2;
+}
+
+/* Datei-Input verstecken */
+.header-buttons input[type="file"] {
+    display: none;
+}
+
+/* Label soll genauso aussehen wie ein Button */
+.header-buttons label.header-btn {
+    cursor: pointer;
+}
+
+
+
+
+    body {
+        margin: 0;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: #eceff1;
+        color: #263238;
+    }
+
+    header {
+        background: #455a64;
+        color: #ffffff;
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .header-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    main {
+        padding: 16px;
+        max-width: 1100px;
+        margin: 0 auto 40px;
+    }
+
+    .card, .alarm-card {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 16px 18px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    }
+
+    .alarm-card {
+        border-left: 4px solid #546e7a;
+    }
+
+    h1, h2, h3 {
+        margin-top: 0;
+    }
+
+    h2 {
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+
+    h3 {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    label {
+        display: block;
+        font-size: 13px;
+        margin-bottom: 4px;
+        color: #455a64;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="datetime-local"],
+    select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 6px 8px;
+        border-radius: 6px;
+        border: 1px solid #b0bec5;
+        font-size: 14px;
+    }
+
+    input[type="datetime-local"] {
+        max-width: 210px;
+    }
+
+    .form-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0,1fr));
+        gap: 12px 16px;
+    }
+
+    .form-grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap: 12px 16px;
+    }
+
+    .field {
+        min-width: 0;
+    }
+
+    .block-divider {
+        height: 16px;
+    }
+
+    .primary-btn,
+    .secondary-btn,
+    .warn-btn {
+        border-radius: 999px;
+        border: none;
+        padding: 8px 14px;
+        font-size: 14px;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .primary-btn {
+        background: #546e7a;
+        color: #ffffff;
+    }
+
+    .secondary-btn {
+        background: #cfd8dc;
+        color: #37474f;
+    }
+
+    .warn-btn {
+        background: #ffca28;
+        color: #000000;
+    }
+
+    .primary-btn:hover { background:#455a64; }
+    .secondary-btn:hover { background:#b0bec5; }
+    .warn-btn:hover { background:#ffb300; }
+
+    /* Tabellen */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    th, td {
+        border: 1px solid #cfd8dc;
+        padding: 4px 6px;
+        text-align: left;
+    }
+
+    th {
+        background: #eceff1;
+        font-weight: 600;
+    }
+
+    /* Maßnahmen */
+    #massnahmenContainer h3 {
+        margin-top: 16px;
+        margin-bottom: 6px;
+    }
+
+    .massnahme {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-bottom: 4px;
+        cursor: pointer;
+        color: #ffffff;
+    }
+
+    .mass-left {
+        flex: 1;
+    }
+
+    .mass-icons {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 16px;
+    }
+
+    .mass-icons span {
+        cursor: pointer;
+    }
+
+    .mass-pflicht {
+        background: #c62828;
+    }
+
+    .mass-optional {
+        background: #b0bec5;
+        color: #263238;
+    }
+
+    .mass-intervall {
+        background: #1565c0;
+    }
+
+    .mass-done {
+        background: #2e7d32 !important;
+        color: #ffffff;
+    }
+
+    .infoBox {
+        margin: 6px 0 10px 0;
+        padding: 10px 12px;
+        border-radius: 6px;
+        background: #eceff1;
+        color: #263238;
+    }
+
+    .infoBox h4 {
+        margin: 0 0 6px 0;
+        font-size: 14px;
+    }
+
+    .infoBox p {
+        margin: 0 0 8px 0;
+        font-size: 13px;
+    }
+
+    /* Kommentare */
+    .comment-list {
+        list-style: none;
+        padding-left: 0;
+        margin: 8px 0 0 0;
+        font-size: 13px;
+    }
+
+    .comment-list li {
+        margin-bottom: 4px;
+    }
+
+    /* Modal (Maßnahme bearbeiten) */
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        background: rgba(0,0,0,0.55);
+    }
+
+    .modal-content {
+        background: #ffffff;
+        width: 360px;
+        padding: 22px;
+        margin: 100px auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    }
+
+    .modal-content h3 {
+        margin-top: 0;
+        margin-bottom: 14px;
+    }
+
+    .modal-content input,
+    .modal-content select {
+        width: 100%;
+        margin-bottom: 14px;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #b0bec5;
+        font-size: 14px;
+    }
+
+    .modal-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 6px;
+    }
+	/* Globale Navigationsleiste (Start / Lexikon / Admin) */
+.global-nav {
+    background: #263238;
+    color: #ffffff;
+    padding: 6px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+
+.global-nav-left,
+.global-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.global-nav a.nav-link {
+    text-decoration: none;
+    color: #ffffff;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.25);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.2s;
+    font-size: 13px;
+}
+
+.global-nav a.nav-link:hover {
+    background: rgba(255,255,255,0.14);
+}
+</style>
+</head>
+
+<body>
+
+<header class="global-nav">
+    <div class="global-nav-left">
+        <a href="index.html" class="nav-link" title="Zur Startseite">
+            ⬅️ <span>Start</span>
+        </a>
+    </div>
+    <div class="global-nav-right">
+        <a href="lexikon.html" class="nav-link" title="Lexikon">
+            📚 <span>Lexikon</span>
+        </a>
+        <a href="admin.html" class="nav-link" title="Administration">
+            ⚙️ <span>Admin</span>
+        </a>
+    </div>
+</header>
+
+<header>
+    <div class="top-header">
+        <!-- dein bisheriger FEUER-Header mit Einsatzbearbeitung, PDF-Button usw. -->
+
+        <div class="header-title">
+            Einsatzbearbeitung – FEUER
+        </div>
+
+        <div class="header-buttons">
+            <button class="header-btn primary" onclick="savePDF()">Einsatz als PDF sichern</button>
+
+            <button class="header-btn" onclick="exportStateJSON()">Einsatzstand speichern</button>
+
+            <label class="header-btn">
+                Laden
+                <input type="file" accept="application/json" onchange="importStateJSON(event)">
+            </label>
+        </div>
+
+    </div>
+</header>
+
+
+<main>
+
+    <!-- Einsatzdaten -->
+    <div class="card">
+        <h2>Einsatzdaten</h2>
+        <div class="form-grid-3">
+            <div class="field">
+                <label>Einsatznummer</label>
+                <input type="text" id="einsatznummer" maxlength="15">
+            </div>
+            <div class="field">
+                <label>Standort</label>
+                <select id="standort">
+                    <option value="">— bitte wählen —</option>
+                    <option value="LEV">LEV</option>
+                    <option value="DOR">DOR</option>
+                    <option value="UER">UER</option>
+                    <option value="EXT">EXT</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Einsatzstichwort</label>
+                <input type="text" id="einsatzstichwort" maxlength="30">
+            </div>
+            <div class="field">
+                <label>Einsatzleiter</label>
+                <input type="text" id="einsatzleiter" maxlength="20">
+            </div>
+            <div class="field">
+                <label>Beginn (Datum / Zeit)</label>
+                <input type="datetime-local" id="einsatzbeginn">
+            </div>
+            <div class="field">
+                <label>CP-Partner</label>
+                <input type="text" id="cppartner" maxlength="25">
+            </div>
+            <div class="field">
+                <label>Alarmstufe</label>
+                <select id="asstufe">
+                    <option value="">— bitte wählen —</option>
+                    <option value="AS 3">AS 3</option>
+                    <option value="AS 3 bestätigt">AS 3 bestätigt</option>
+                    <option value="AS 4">AS 4</option>
+                    <option value="AS 5">AS 5</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Windrichtung</label>
+                <select id="windrichtung">
+                    <option value="">— wählen —</option>
+                    <option value="N">N</option>
+                    <option value="NO">NO</option>
+                    <option value="O">O</option>
+                    <option value="SO">SO</option>
+                    <option value="S">S</option>
+                    <option value="SW">SW</option>
+                    <option value="W">W</option>
+                    <option value="NW">NW</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Windgeschwindigkeit (m/s)</label>
+                <input type="number" id="windgeschwindigkeit" maxlength="3">
+            </div>
+        </div>
+    </div>
+
+    <div class="block-divider"></div>
+
+    <!-- Maßnahmen -->
+    <div class="card">
+        <h2>Maßnahmen</h2>
+        <button class="primary-btn" onclick="toggleMassnahmeForm()">+ Maßnahme hinzufügen</button>
+
+        <div id="massnahmeForm" style="display:none; margin-top:16px;">
+            <div class="form-grid-2">
+                <div class="field">
+                    <label>Titel</label>
+                    <input type="text" id="neu_massnahme_titel">
+                </div>
+                <div class="field">
+                    <label>Bereich</label>
+                    <select id="neu_massnahme_bereich">
+                        <option value="">— bitte wählen —</option>
+                        <option value="eintreffen">Beim Eintreffen</option>
+                        <option value="5min">Nach 5 Minuten</option>
+                        <option value="10_20_30">Nach 10 / 20 / 30 Minuten</option>
+                        <option value="30_45_60">Nach 30 / 45 / 60 Minuten</option>
+                        <option value="ende">Nach Einsatzende</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Typ</label>
+                    <label><input type="radio" name="neu_massnahme_typ" value="pflicht"> Pflicht</label>
+                    <label><input type="radio" name="neu_massnahme_typ" value="optional"> Optional</label>
+                    <label><input type="radio" name="neu_massnahme_typ" value="intervall"> Intervall</label>
+                </div>
+                <div class="field">
+                    <label>Intervall (Minuten)</label>
+                    <input type="number" id="neu_massnahme_intervall">
+                </div>
+            </div>
+            <button class="secondary-btn" onclick="addMassnahmeNeu()">✔ Maßnahme speichern</button>
+        </div>
+
+        <div id="massnahmenContainer" style="margin-top:20px;"></div>
+    </div>
+
+    <!-- Modal zum Bearbeiten einer Maßnahme -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3>Maßnahme bearbeiten</h3>
+
+            <label for="edit_title">Titel:</label>
+            <input type="text" id="edit_title">
+
+            <label for="edit_type">Typ:</label>
+            <select id="edit_type">
+                <option value="pflicht">Pflicht</option>
+                <option value="optional">Optional</option>
+                <option value="intervall">Intervall</option>
+            </select>
+
+            <label for="edit_intervall">Intervall (Minuten):</label>
+            <input type="number" id="edit_intervall" placeholder="nur bei Intervall relevant">
+
+            <div class="modal-buttons">
+                <button class="primary-btn" id="edit_save">Speichern</button>
+                <button class="warn-btn" id="edit_reset">Maßnahme erneut aktivieren</button>
+                <button class="secondary-btn" id="edit_cancel">Abbrechen</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="block-divider"></div>
+
+    <!-- Kommentare -->
+    <div class="card">
+        <h2>Kommentare</h2>
+        <div class="form-grid-2">
+            <div class="field">
+                <label>Bezieht sich auf Maßnahme</label>
+                <select id="kommentar_massnahme"></select>
+            </div>
+            <div class="field">
+                <label>Kommentar</label>
+                <input type="text" id="kommentar_text">
+            </div>
+        </div>
+        <button class="secondary-btn" onclick="addKommentar()">+ Kommentar hinzufügen</button>
+        <ul id="kommentarListe" class="comment-list"></ul>
+    </div>
+
+    <div class="block-divider"></div>
+
+    <!-- Behördenmeldungen -->
+    <div class="card">
+        <h2>Behördenmeldungen</h2>
+        <div class="form-grid-2">
+            <div class="field">
+                <label>Art der Meldung</label>
+                <select id="meldung_art">
+                    <option value="keine">keine</option>
+                    <optgroup label="D-Meldung">
+                        <option value="D1">D1</option>
+                        <option value="D2">D2</option>
+                        <option value="D3">D3</option>
+                        <option value="D4">D4</option>
+                    </optgroup>
+                    <optgroup label="Sofortmeldung">
+                        <option value="Erstmeldung">Erstmeldung</option>
+                        <option value="Folgemeldung">Folgemeldung</option>
+                        <option value="Schlussmeldung">Schlussmeldung</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="field">
+                <label>Zeitpunkt</label>
+                <input type="datetime-local" id="meldung_zeit">
+            </div>
+            <div class="field" id="field_bemerkung_normal">
+                <label>Bemerkung</label>
+                <input type="text" id="meldung_bemerkung">
+            </div>
+            <div class="field" id="field_bemerkung_keine" style="display:none;">
+                <label>Grund</label>
+                <select id="meldung_begruendung">
+                    <option value="">— bitte wählen —</option>
+                    <option value="nicht erforderlich">nicht erforderlich</option>
+                    <option value="nach Rücksprache mit EL">nach Rücksprache mit EL</option>
+                    <option value="lt. Anhang Meldeerlass">lt. Anhang Meldeerlass</option>
+                    <option value="Fehlalarm">Fehlalarm</option>
+                    <option value="Sonstiges">Sonstiges</option>
+                </select>
+            </div>
+            <div class="field" id="meldung_begruendung_text" style="display:none;">
+                <label>Grund (Freitext)</label>
+                <input type="text" id="meldung_begruendung_text_input">
+            </div>
+        </div>
+        <button class="secondary-btn" onclick="addMeldung()">+ Meldung hinzufügen</button>
+        <table id="meldungenListe" style="margin-top:10px;">
+            <thead>
+                <tr>
+                    <th>Art</th>
+                    <th>Zeitpunkt</th>
+                    <th>Bemerkung</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="block-divider"></div>
+
+    <!-- Strategische Alarmierung -->
+    <div class="alarm-card">
+        <h3>Strategische Alarmierung</h3>
+        <div class="form-grid-2">
+            <div class="field">
+                <label>REL einberufen?</label>
+                <label><input type="radio" name="rel_choice" value="Nein" checked onclick="toggleRel('Nein')"> Nein</label>
+                <label style="margin-left:10px;"><input type="radio" name="rel_choice" value="Ja" onclick="toggleRel('Ja')"> Ja</label>
+            </div>
+            <div class="field">
+                <label>Zeitpunkt REL</label>
+                <input type="datetime-local" id="rel_zeit" disabled>
+            </div>
+            <div class="field">
+                <label>Krisenstab einberufen?</label>
+                <label><input type="radio" name="kst_choice" value="Nein" checked onclick="toggleKst('Nein')"> Nein</label>
+                <label style="margin-left:10px;"><input type="radio" name="kst_choice" value="Ja" onclick="toggleKst('Ja')"> Ja</label>
+            </div>
+            <div class="field">
+                <label>Zeitpunkt Krisenstab</label>
+                <input type="datetime-local" id="kst_zeit" disabled>
+            </div>
+        </div>
+    </div>
+
+    <div class="block-divider"></div>
+
+    <!-- Hausalarm -->
+    <div class="alarm-card">
+        <h3>Hausalarm</h3>
+        <div class="form-grid-2">
+            <div class="field">
+                <label>Gruppe</label>
+                <input type="text" id="hausalarm_gruppe">
+            </div>
+            <div class="field">
+                <label>Zeitpunkt</label>
+                <input type="datetime-local" id="hausalarm_zeit">
+            </div>
+            <div class="field">
+                <label>Bemerkung</label>
+                <input type="text" id="hausalarm_bemerkung">
+            </div>
+        </div>
+        <button class="secondary-btn" onclick="addHausalarm()">+ Hausalarm hinzufügen</button>
+        <table id="hausalarmListe" style="margin-top:10px;">
+            <thead>
+                <tr>
+                    <th>Gruppe</th>
+                    <th>Zeitpunkt</th>
+                    <th>Bemerkung</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="block-divider"></div>
+
+    <!-- Externe Kräfte -->
+    <div class="alarm-card">
+        <h3>Externe Kräfte</h3>
+        <div class="form-grid-2">
+            <div class="field">
+                <label>Organisation</label>
+                <input type="text" id="ext_org">
+            </div>
+            <div class="field">
+                <label>Zeitpunkt</label>
+                <input type="datetime-local" id="ext_zeit">
+            </div>
+            <div class="field">
+                <label>Bemerkung</label>
+                <input type="text" id="ext_bemerkung">
+            </div>
+        </div>
+        <button class="secondary-btn" onclick="addExtern()">+ Externe Kraft hinzufügen</button>
+        <table id="extListe" style="margin-top:10px;">
+            <thead>
+                <tr>
+                    <th>Organisation</th>
+                    <th>Zeitpunkt</th>
+                    <th>Bemerkung</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+</main>
+
+<script>
+/* ----------------------------------------------------
+   Hilfsfunktionen
+---------------------------------------------------- */
+function isFuture(dtString) {
+    if (!dtString) return false;
+    return new Date(dtString).getTime() > Date.now();
+}
+
+function formatDate(dtString) {
+    if (!dtString) return "";
+    const d = new Date(dtString);
+    const t = n => String(n).padStart(2,"0");
+    return `${t(d.getDate())}.${t(d.getMonth()+1)}.${d.getFullYear()} ${t(d.getHours())}:${t(d.getMinutes())} Uhr`;
+}
+
+function buildPdfFilename() {
+    const nr = document.getElementById("einsatznummer").value.trim() || "Unbekannt";
+    const d  = new Date();
+    const t  = n => String(n).padStart(2,"0");
+    return `${d.getFullYear()}-${t(d.getMonth()+1)}-${t(d.getDate())}_${nr}.pdf`;
+}
+
+/* ----------------------------------------------------
+   Bereiche für Maßnahmen
+---------------------------------------------------- */
+const BEREICHE = [
+    { id: "eintreffen",   label: "Beim Eintreffen" },
+    { id: "5min",         label: "Nach 5 Minuten" },
+    { id: "10_20_30",     label: "Nach 10 / 20 / 30 Minuten" },
+    { id: "30_45_60",     label: "Nach 30 / 45 / 60 Minuten" },
+    { id: "ende",         label: "Nach Einsatzende" }
+];
+
+function getBereichLabel(id) {
+    const b = BEREICHE.find(x => x.id === id);
+    return b ? b.label : "";
+}
+
+/* ----------------------------------------------------
+   Maßnahmen-Daten
+---------------------------------------------------- */
+let massnahmeCounter = 38; // nächster freier Index nach m37
+
+let massnahmen = [
+    // ----------------------------------------------------
+    // BEREICH: Beim Eintreffen
+    // ----------------------------------------------------
+    // Pflicht
+    {
+        id: "m1",
+        titel: "AP_10 einschalten",
+        bereich: "eintreffen",
+        type: "pflicht",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m2",
+        titel: "Lagetool öffnen",
+        bereich: "eintreffen",
+        type: "pflicht",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m3",
+        titel: "Einsatz an Lagetool übergeben",
+        bereich: "eintreffen",
+        type: "pflicht",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+
+    // Optional
+    {
+        id: "m4",
+        titel: "Lagebild mit DGL abgleichen",
+        bereich: "eintreffen",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m5",
+        titel: "Einsatzart und Alarmstufe prüfen",
+        bereich: "eintreffen",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m6",
+        titel: "Kräfte gemäß AAO überprüfen",
+        bereich: "eintreffen",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m7",
+        titel: "Windrichtung und Umgebungsverhältnisse prüfen",
+        bereich: "eintreffen",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m8",
+        titel: "Warnaktivitäten einschätzen",
+        bereich: "eintreffen",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m9",
+        titel: "Erfordernis einer ZWA-Durchsage prüfen",
+        bereich: "eintreffen",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m10",
+        titel: "Einsatz an externer Leitstelle melden (außerhalb Werk/Rhein)",
+        bereich: "eintreffen",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m11",
+        titel: "Information an BF Leverkusen veranlassen (Bereich Bürrig)",
+        bereich: "eintreffen",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m12",
+        titel: "DGL- und Videokonferenz bei bestätigter AS3 starten",
+        bereich: "eintreffen",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m13",
+        titel: "Alarmierung externer Kräfte überprüfen",
+        bereich: "eintreffen",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+
+    // ----------------------------------------------------
+    // BEREICH: Nach 5 Minuten
+    // ----------------------------------------------------
+    // Pflicht
+    {
+        id: "m14",
+        titel: "Einsatzort überprüfen",
+        bereich: "5min",
+        type: "pflicht",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m15",
+        titel: "Alarmstufenbestätigung einholen",
+        bereich: "5min",
+        type: "pflicht",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m16",
+        titel: "Erste Rückmeldung einholen",
+        bereich: "5min",
+        type: "pflicht",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+
+    // Optional
+    {
+        id: "m17",
+        titel: "Erfordernis einer D-Meldung prüfen",
+        bereich: "5min",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m18",
+        titel: "Erfordernis einer Sofortmeldung prüfen",
+        bereich: "5min",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m19",
+        titel: "Informationsbedarf bei umliegenden BF/FF prüfen",
+        bereich: "5min",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m20",
+        titel: "Information an KMvD veranlassen",
+        bereich: "5min",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m21",
+        titel: "Presseinformation über KMvD abstimmen",
+        bereich: "5min",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+
+    // ----------------------------------------------------
+    // BEREICH: Nach 10 / 20 / 30 Minuten (Intervall)
+    // ----------------------------------------------------
+    {
+        id: "m22",
+        titel: "Lagebild mit DGL abgleichen",
+        bereich: "10_20_30",
+        type: "intervall",
+        intervallMinutes: null, // Intervall-Logik nur bei selbst definierten Intervallen mit Minutenangabe
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m23",
+        titel: "Lagebild mit Einsatzleiter abgleichen",
+        bereich: "10_20_30",
+        type: "intervall",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m24",
+        titel: "Warnaktivitäten einschätzen",
+        bereich: "10_20_30",
+        type: "intervall",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m25",
+        titel: "Angemessenheit der Alarmstufe prüfen",
+        bereich: "10_20_30",
+        type: "intervall",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m26",
+        titel: "Informationsbedarf bei umliegenden BF/FF prüfen",
+        bereich: "10_20_30",
+        type: "intervall",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m27",
+        titel: "Information an KMvD veranlassen",
+        bereich: "10_20_30",
+        type: "intervall",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m28",
+        titel: "Presseinformation über KMvD abstimmen",
+        bereich: "10_20_30",
+        type: "intervall",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m29",
+        titel: "DGL-Konferenz durchführen und Aufgaben delegieren",
+        bereich: "10_20_30",
+        type: "intervall",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m30",
+        titel: "Betroffene Betriebe feststellen",
+        bereich: "10_20_30",
+        type: "intervall",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m31",
+        titel: "Auswirkungen auf Versorgung anderer CPP feststellen",
+        bereich: "10_20_30",
+        type: "intervall",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m32",
+        titel: "Betroffenheit von Kanal- und Rückhaltesystemen prüfen",
+        bereich: "10_20_30",
+        type: "intervall",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+
+    // ----------------------------------------------------
+    // BEREICH: Nach 30 / 45 / 60 Minuten
+    // ----------------------------------------------------
+    {
+        id: "m33",
+        titel: "Erfordernis eines Hausalarms für SiZe oder Werkfeuerwehr prüfen",
+        bereich: "30_45_60",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m34",
+        titel: "Erfordernis einer Verpflegung an der Einsatzstelle prüfen",
+        bereich: "30_45_60",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+
+    // ----------------------------------------------------
+    // BEREICH: Nach Einsatzende
+    // ----------------------------------------------------
+    {
+        id: "m35",
+        titel: "Einrücken aller Kräfte überprüfen",
+        bereich: "ende",
+        type: "pflicht",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m36",
+        titel: "Räumlichkeiten ordnungsgemäß verlassen",
+        bereich: "ende",
+        type: "pflicht",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    },
+    {
+        id: "m37",
+        titel: "Nachbereitung durchführen",
+        bereich: "ende",
+        type: "optional",
+        intervallMinutes: null,
+        status: "offen",
+        nextDue: null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    }
+];
+;
+
+/* ----------------------------------------------------
+   CSS-Klassen für Maßnahmen
+---------------------------------------------------- */
+function getMassClass(m) {
+    let cls = "massnahme ";
+    if (m.type === "pflicht") cls += "mass-pflicht ";
+    else if (m.type === "optional") cls += "mass-optional ";
+    else if (m.type === "intervall") {
+        cls += "mass-intervall ";
+        if (m.dueState === "due") cls += "mass-pflicht ";
+    }
+    if (m.status === "erledigt") cls += "mass-done ";
+    return cls.trim();
+}
+
+/* ----------------------------------------------------
+   Maßnahmenlogik
+---------------------------------------------------- */
+function handleMassnahmeClick(m) {
+    if (m.status === "erledigt") return;
+
+    const nowIso = new Date().toISOString();
+
+    if (m.type === "intervall" && m.intervallMinutes) {
+        m.status   = "erledigt";
+        m.dueState = "neutral";
+        m.nextDue  = Date.now() + m.intervallMinutes * 60000;
+    } else {
+        m.status = "erledigt";
+    }
+
+    m.erledigtAm = nowIso;
+    renderMassnahmen();
+}
+
+function reaktivierenMassnahme(m, ev) {
+    ev.stopPropagation();
+    m.status = "offen";
+    m.erledigtAm = null;
+    m.dueState = "neutral";
+
+    if (m.type === "intervall" && m.intervallMinutes) {
+        m.nextDue = Date.now() + m.intervallMinutes * 60000;
+    } else {
+        m.nextDue = null;
+    }
+    renderMassnahmen();
+}
+
+/* --- Bearbeiten-Dialog (Modal) --- */
+let editCurrent = null;
+
+function openEditModal(m, ev) {
+    ev.stopPropagation();
+    editCurrent = m;
+    document.getElementById("edit_title").value = m.titel;
+    document.getElementById("edit_type").value  = m.type;
+    document.getElementById("edit_intervall").value = m.intervallMinutes || "";
+    document.getElementById("editModal").style.display = "block";
+}
+
+/* ----------------------------------------------------
+   Info-Box Umschalten
+---------------------------------------------------- */
+function toggleInfo(m, ev) {
+    ev.stopPropagation();
+    m.infoOpen = !m.infoOpen;
+    renderMassnahmen();
+}
+
+/* ----------------------------------------------------
+   Rendering der Maßnahmen
+---------------------------------------------------- */
+function renderMassnahmen() {
+    const container = document.getElementById("massnahmenContainer");
+    container.innerHTML = "";
+
+    BEREICHE.forEach(b => {
+        const blockDiv = document.createElement("div");
+        const blockTitle = document.createElement("h3");
+        blockTitle.textContent = getBereichLabel(b.id);
+        blockDiv.appendChild(blockTitle);
+
+        const items = massnahmen.filter(m => m.bereich === b.id);
+        if (items.length === 0) {
+            const empty = document.createElement("div");
+            empty.textContent = "Keine Maßnahmen.";
+            empty.style.fontSize = "13px";
+            empty.style.opacity = "0.7";
+            blockDiv.appendChild(empty);
+        } else {
+            items.forEach(m => {
+                const outer = document.createElement("div");
+
+                const row = document.createElement("div");
+                row.className = getMassClass(m);
+                row.onclick = () => handleMassnahmeClick(m);
+
+                const left = document.createElement("div");
+                left.className = "mass-left";
+                left.textContent = m.titel;
+
+                const right = document.createElement("div");
+                right.className = "mass-icons";
+
+                const editIcon = document.createElement("span");
+                editIcon.textContent = "✏️";
+                editIcon.title = "Bearbeiten";
+                editIcon.onclick = (ev) => openEditModal(m, ev);
+
+                const reactIcon = document.createElement("span");
+                reactIcon.textContent = "↻";
+                reactIcon.title = "Reaktivieren";
+                reactIcon.onclick = (ev) => reaktivierenMassnahme(m, ev);
+
+                const infoIcon = document.createElement("span");
+                infoIcon.textContent = "ℹ️";
+                infoIcon.title = "Info anzeigen";
+                infoIcon.onclick = (ev) => toggleInfo(m, ev);
+
+                right.appendChild(editIcon);
+                right.appendChild(reactIcon);
+                right.appendChild(infoIcon);
+
+                row.appendChild(left);
+                row.appendChild(right);
+                outer.appendChild(row);
+
+                // InfoBox – bereits so, wie du sie mochtest
+                if (m.infoOpen) {
+                    const info = document.createElement("div");
+                    info.className = "infoBox";
+
+                    const h = document.createElement("h4");
+                    h.textContent = "Anleitung: " + m.titel;
+                    info.appendChild(h);
+
+                    const p = document.createElement("p");
+                    p.textContent =
+                        m.infoText && m.infoText.trim() !== ""
+                            ? m.infoText
+                            : "Platzhalter: Hier kannst du später Text, Bilder oder PDFs zur Durchführung der Maßnahme hinterlegen.";
+                    info.appendChild(p);
+
+                    if (m.infoLinks) {
+                        const links = m.infoLinks.split(/[,;]+/).map(x => x.trim()).filter(Boolean);
+                        links.forEach(l => {
+                            const div = document.createElement("div");
+                            const a   = document.createElement("a");
+                            a.href = l;
+                            a.target = "_blank";
+                            a.textContent = l;
+                            div.textContent = "📎 ";
+                            div.appendChild(a);
+                            info.appendChild(div);
+                        });
+                    }
+
+                    const btnDone = document.createElement("button");
+                    btnDone.className = "primary-btn";
+                    btnDone.textContent = "Maßnahme erledigen";
+                    btnDone.onclick = (ev) => {
+                        ev.stopPropagation();
+                        handleMassnahmeClick(m);
+                        m.infoOpen = false;
+                        renderMassnahmen();
+                    };
+                    info.appendChild(btnDone);
+
+                    const btnClose = document.createElement("button");
+                    btnClose.className = "secondary-btn";
+                    btnClose.style.marginLeft = "8px";
+                    btnClose.textContent = "Info schließen";
+                    btnClose.onclick = (ev) => {
+                        ev.stopPropagation();
+                        m.infoOpen = false;
+                        renderMassnahmen();
+                    };
+                    info.appendChild(btnClose);
+
+                    outer.appendChild(info);
+                }
+
+                blockDiv.appendChild(outer);
+            });
+        }
+
+        container.appendChild(blockDiv);
+        const divLine = document.createElement("div");
+        divLine.className = "block-divider";
+        container.appendChild(divLine);
+    });
+
+    renderKommentarAuswahl();
+}
+
+/* ----------------------------------------------------
+   Maßnahmen hinzufügen
+---------------------------------------------------- */
+function toggleMassnahmeForm() {
+    const f = document.getElementById("massnahmeForm");
+    f.style.display = (f.style.display === "none" || !f.style.display) ? "block" : "none";
+}
+
+function addMassnahmeNeu() {
+    const titel   = document.getElementById("neu_massnahme_titel").value.trim();
+    const bereich = document.getElementById("neu_massnahme_bereich").value;
+    const typEl   = document.querySelector("input[name='neu_massnahme_typ']:checked");
+    const interv  = document.getElementById("neu_massnahme_intervall").value.trim();
+
+    if (!titel)   return alert("Bitte einen Titel eingeben.");
+    if (!bereich) return alert("Bitte einen Bereich wählen.");
+    if (!typEl)   return alert("Bitte einen Typ auswählen.");
+
+    const typ = typEl.value;
+    let intervallMinutes = null;
+
+    if (typ === "intervall") {
+        if (!interv) return alert("Bitte Intervall in Minuten angeben.");
+        const v = parseInt(interv, 10);
+        if (isNaN(v) || v <= 0) return alert("Ungültiges Intervall.");
+        intervallMinutes = v;
+    }
+
+    const m = {
+        id: "m" + (massnahmeCounter++),
+        titel,
+        bereich,
+        type: typ,
+        intervallMinutes,
+        status: "offen",
+        nextDue: (typ === "intervall" && intervallMinutes) ? Date.now() + intervallMinutes * 60000 : null,
+        dueState: "neutral",
+        infoText: "",
+        infoLinks: "",
+        infoOpen: false
+    };
+
+    massnahmen.push(m);
+
+    document.getElementById("neu_massnahme_titel").value = "";
+    document.getElementById("neu_massnahme_bereich").value = "";
+    document.getElementById("neu_massnahme_intervall").value = "";
+    document.querySelectorAll("input[name='neu_massnahme_typ']").forEach(r => r.checked = false);
+
+    renderMassnahmen();
+}
+
+/* ----------------------------------------------------
+   Intervall-Timer
+---------------------------------------------------- */
+function tickIntervalMassnahmen() {
+    const now = Date.now();
+    let changed = false;
+
+    massnahmen.forEach(m => {
+        if (m.type === "intervall" && m.intervallMinutes) {
+            if (m.status === "offen" && m.nextDue && now >= m.nextDue) {
+                m.dueState = "due";
+                m.nextDue  = null;
+                changed = true;
+            }
+            if (m.status === "erledigt" && m.nextDue && now >= m.nextDue) {
+                m.status   = "offen";
+                m.dueState = "due";
+                m.nextDue  = null;
+                changed = true;
+            }
+        }
+    });
+
+    if (changed) renderMassnahmen();
+}
+
+/* ----------------------------------------------------
+   Kommentare
+---------------------------------------------------- */
+let kommentare = [];
+
+function getMassnahmeTitel(id) {
+    const m = massnahmen.find(x => x.id === id);
+    return m ? m.titel : "(gelöscht)";
+}
+
+function renderKommentarAuswahl() {
+    const sel = document.getElementById("kommentar_massnahme");
+    if (!sel) return;
+
+    const old = sel.value;
+    sel.innerHTML = "";
+
+    const opt0 = document.createElement("option");
+    opt0.value = "";
+    opt0.textContent = "Bitte Maßnahme wählen …";
+    sel.appendChild(opt0);
+
+    BEREICHE.forEach(b => {
+        massnahmen.filter(m => m.bereich === b.id).forEach(m => {
+            const o = document.createElement("option");
+            o.value = m.id;
+            o.textContent = `${getBereichLabel(m.bereich)} – ${m.titel}`;
+            sel.appendChild(o);
+        });
+    });
+
+    sel.value = old;
+}
+
+function renderKommentare() {
+    const ul = document.getElementById("kommentarListe");
+    ul.innerHTML = "";
+    if (kommentare.length === 0) {
+        const li = document.createElement("li");
+        li.textContent = "Noch keine Kommentare.";
+        ul.appendChild(li);
+        return;
+    }
+    kommentare.forEach(k => {
+        const li = document.createElement("li");
+        li.textContent = `${getMassnahmeTitel(k.massnahmeId)}: ${k.text}`;
+        ul.appendChild(li);
+    });
+}
+
+function addKommentar() {
+    const mid  = document.getElementById("kommentar_massnahme").value;
+    const text = document.getElementById("kommentar_text").value.trim();
+
+    if (!mid)  return alert("Bitte eine Maßnahme auswählen.");
+    if (!text) return alert("Bitte Kommentar eingeben.");
+
+    kommentare.push({ massnahmeId: mid, text });
+    document.getElementById("kommentar_text").value = "";
+    renderKommentare();
+}
+
+/* ----------------------------------------------------
+   Behördenmeldungen
+---------------------------------------------------- */
+let meldungen = [];
+
+function toggleMeldungFields() {
+    const art  = document.getElementById("meldung_art").value;
+    const zeit = document.getElementById("meldung_zeit");
+    const feldNormal = document.getElementById("field_bemerkung_normal");
+    const feldKeine  = document.getElementById("field_bemerkung_keine");
+
+    if (art === "keine") {
+        zeit.disabled = true;
+        zeit.value = "";
+        feldNormal.style.display = "none";
+        feldKeine.style.display  = "block";
+    } else {
+        zeit.disabled = false;
+        feldNormal.style.display = "block";
+        feldKeine.style.display  = "none";
+    }
+}
+
+function addMeldung() {
+    const art      = document.getElementById("meldung_art").value;
+    const zeit     = document.getElementById("meldung_zeit").value;
+    const bemText  = document.getElementById("meldung_bemerkung").value.trim();
+    const grundSel = document.getElementById("meldung_begruendung").value;
+    const grundTxt = document.getElementById("meldung_begruendung_text_input").value.trim();
+
+    if (art === "keine") {
+        if (!grundSel) return alert("Bitte einen Grund auswählen.");
+        let bem;
+        if (grundSel === "Sonstiges") {
+            if (!grundTxt) return alert("Bitte Grund ausführen.");
+            bem = "Sonstiges: " + grundTxt;
+        } else {
+            bem = grundSel;
+        }
+        meldungen.push({ art, zeit:"", bemerkung:bem });
+        renderMeldungen();
+        return;
+    }
+
+    if (!zeit) return alert("Bitte einen Zeitpunkt eintragen.");
+    if (isFuture(zeit)) return alert("Zeit darf nicht in der Zukunft liegen.");
+
+    meldungen.push({ art, zeit, bemerkung: bemText });
+    renderMeldungen();
+}
+
+function renderMeldungen() {
+    const tbody = document.querySelector("#meldungenListe tbody");
+    tbody.innerHTML = "";
+    meldungen.forEach((m, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${m.art}</td>
+            <td>${m.zeit ? formatDate(m.zeit) : "—"}</td>
+            <td>${m.bemerkung}</td>
+            <td><button class="secondary-btn" onclick="deleteMeldung(${idx})">X</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function deleteMeldung(i) {
+    meldungen.splice(i,1);
+    renderMeldungen();
+}
+
+/* ----------------------------------------------------
+   Alarmierung REL / Krisenstab
+---------------------------------------------------- */
+function toggleRel(v) {
+    const f = document.getElementById("rel_zeit");
+    f.disabled = (v === "Nein");
+    if (v === "Nein") f.value = "";
+}
+
+function toggleKst(v) {
+    const f = document.getElementById("kst_zeit");
+    f.disabled = (v === "Nein");
+    if (v === "Nein") f.value = "";
+}
+
+/* ----------------------------------------------------
+   Hausalarm
+---------------------------------------------------- */
+let hausalarme = [];
+
+function addHausalarm() {
+    const gruppe = document.getElementById("hausalarm_gruppe").value.trim();
+    const zeit   = document.getElementById("hausalarm_zeit").value;
+    const bem    = document.getElementById("hausalarm_bemerkung").value.trim();
+
+    if (!gruppe) return alert("Bitte eine Gruppe angeben.");
+    if (!zeit)   return alert("Bitte einen Zeitpunkt angeben.");
+    if (isFuture(zeit)) return alert("Zeit darf nicht in der Zukunft liegen.");
+
+    hausalarme.push({ gruppe, zeit, bemerkung: bem });
+    renderHausalarme();
+}
+
+function renderHausalarme() {
+    const tbody = document.querySelector("#hausalarmListe tbody");
+    tbody.innerHTML = "";
+    hausalarme.forEach((h, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${h.gruppe}</td>
+            <td>${formatDate(h.zeit)}</td>
+            <td>${h.bemerkung}</td>
+            <td><button class="secondary-btn" onclick="deleteHausalarm(${idx})">X</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function deleteHausalarm(i) {
+    hausalarme.splice(i,1);
+    renderHausalarme();
+}
+
+/* ----------------------------------------------------
+   Externe Kräfte
+---------------------------------------------------- */
+let externeKraefte = [];
+
+function addExtern() {
+    const org  = document.getElementById("ext_org").value.trim();
+    const zeit = document.getElementById("ext_zeit").value;
+    const bem  = document.getElementById("ext_bemerkung").value.trim();
+
+    if (!org)  return alert("Bitte eine Organisation angeben.");
+    if (!zeit) return alert("Bitte einen Zeitpunkt angeben.");
+    if (isFuture(zeit)) return alert("Zeit darf nicht in der Zukunft liegen.");
+
+    externeKraefte.push({ org, zeit, bemerkung: bem });
+    renderExterne();
+}
+
+function renderExterne() {
+    const tbody = document.querySelector("#extListe tbody");
+    tbody.innerHTML = "";
+    externeKraefte.forEach((e, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${e.org}</td>
+            <td>${formatDate(e.zeit)}</td>
+            <td>${e.bemerkung}</td>
+            <td><button class="secondary-btn" onclick="deleteExtern(${idx})">X</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function deleteExtern(i) {
+    externeKraefte.splice(i,1);
+    renderExterne();
+}
+
+/* ----------------------------------------------------
+   PDF-Erzeugung (HTML)
+---------------------------------------------------- */
+function buildPrintHtml() {
+    const val = id => (document.getElementById(id)?.value || "").trim();
+    const selText = id => {
+        const el = document.getElementById(id);
+        if (!el) return "";
+        const opt = el.options[el.selectedIndex];
+        return opt ? opt.text : "";
+    };
+
+    const rel = document.querySelector("input[name='rel_choice']:checked")?.value || "Nein";
+    const kst = document.querySelector("input[name='kst_choice']:checked")?.value || "Nein";
+
+    let html = "";
+
+    html += `<h1>Einsatzdokumentation – FEUER</h1>
+    <h2>Einsatzdaten</h2>
+    <table><tbody>`;
+    [
+        ["Einsatznummer", val("einsatznummer")],
+        ["Standort",      selText("standort")],
+        ["Einsatzstichwort", val("einsatzstichwort")],
+        ["Einsatzleiter", val("einsatzleiter")],
+        ["Beginn",        formatDate(val("einsatzbeginn"))],
+        ["CP-Partner",    val("cppartner")],
+        ["Alarmstufe",    selText("asstufe")],
+        ["Windrichtung",  selText("windrichtung")],
+        ["Windgeschwindigkeit", val("windgeschwindigkeit") + " m/s"]
+    ].forEach(r => {
+        html += `<tr><th>${r[0]}</th><td style="text-align:right;">${r[1]}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+
+    html += `<h2>Erledigte Maßnahmen</h2>
+    <table><thead><tr><th>Bereich</th><th>Maßnahme</th><th>Abschluss</th></tr></thead><tbody>`;
+    massnahmen
+        .filter(m => m.status === "erledigt" && m.erledigtAm)
+        .forEach(m => {
+            html += `<tr>
+                <td>${getBereichLabel(m.bereich)}</td>
+                <td>${m.titel}</td>
+                <td style="text-align:right;">${formatDate(m.erledigtAm)}</td>
+            </tr>`;
+        });
+    html += `</tbody></table>`;
+
+    if (kommentare.length > 0) {
+        html += `<h2>Kommentare</h2><table><tbody>`;
+        kommentare.forEach(k => {
+            html += `<tr>
+                <th>${getMassnahmeTitel(k.massnahmeId)}</th>
+                <td>${k.text}</td>
+            </tr>`;
+        });
+        html += `</tbody></table>`;
+    }
+
+    html += `<h2>Behördenmeldungen</h2>
+    <table><thead><tr><th>Art</th><th>Zeitpunkt</th><th>Bemerkung</th></tr></thead><tbody>`;
+    meldungen.forEach(m => {
+        html += `<tr>
+            <td>${m.art}</td>
+            <td>${m.zeit ? formatDate(m.zeit) : "—"}</td>
+            <td>${m.bemerkung}</td>
+        </tr>`;
+    });
+    html += `</tbody></table>`;
+
+    html += `<h2>Alarmierung weiterer Kräfte</h2>
+    <table><tbody>
+        <tr><th>REL einberufen?</th><td style="text-align:right;">${rel}</td></tr>
+        <tr><th>REL Zeitpunkt</th><td style="text-align:right;">${formatDate(val("rel_zeit"))}</td></tr>
+        <tr><th>Krisenstab einberufen?</th><td style="text-align:right;">${kst}</td></tr>
+        <tr><th>Krisenstab Zeitpunkt</th><td style="text-align:right;">${formatDate(val("kst_zeit"))}</td></tr>
+    </tbody></table>`;
+
+    html += `<h3>Hausalarm</h3>
+    <table><thead><tr><th>Gruppe</th><th>Zeitpunkt</th><th>Bemerkung</th></tr></thead><tbody>`;
+    hausalarme.forEach(h => {
+        html += `<tr>
+            <td>${h.gruppe}</td>
+            <td>${formatDate(h.zeit)}</td>
+            <td>${h.bemerkung}</td>
+        </tr>`;
+    });
+    html += `</tbody></table>`;
+
+    html += `<h3>Externe Kräfte</h3>
+    <table><thead><tr><th>Organisation</th><th>Zeitpunkt</th><th>Bemerkung</th></tr></thead><tbody>`;
+    externeKraefte.forEach(e => {
+        html += `<tr>
+            <td>${e.org}</td>
+            <td>${formatDate(e.zeit)}</td>
+            <td>${e.bemerkung}</td>
+        </tr>`;
+    });
+    html += `</tbody></table>`;
+
+    return html;
+}
+
+function savePDF() {
+    const filename = buildPdfFilename();
+
+    // HTML-Block erstellen
+    const htmlContent = `
+        <div id="pdf-content" style="font-family: 'Segoe UI', sans-serif; padding: 20px;">
+            <div style="border: 2px solid #455a64; padding: 20px;">
+                ${buildPrintHtml()}
+            </div>
+        </div>
+    `;
+
+    // Temporären Container erzeugen
+    const temp = document.createElement("div");
+    temp.innerHTML = htmlContent;
+    document.body.appendChild(temp);
+
+    const element = temp.querySelector("#pdf-content");
+
+    const opt = {
+        margin:       10,
+        filename:     filename,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        document.body.removeChild(temp);
+    });
+}
+
+
+/* ----------------------------------------------------
+   JSON – Einsatzstand speichern / laden
+---------------------------------------------------- */
+function buildStateObject() {
+    const val = id => (document.getElementById(id)?.value || "").trim();
+    const rel = document.querySelector("input[name='rel_choice']:checked")?.value || "Nein";
+    const kst = document.querySelector("input[name='kst_choice']:checked")?.value || "Nein";
+
+    return {
+        version: 32,
+        einsatzdaten: {
+            einsatznummer:       val("einsatznummer"),
+            standort:            val("standort"),
+            einsatzstichwort:    val("einsatzstichwort"),
+            einsatzleiter:       val("einsatzleiter"),
+            einsatzbeginn:       val("einsatzbeginn"),
+            cppartner:           val("cppartner"),
+            asstufe:             val("asstufe"),
+            windrichtung:        val("windrichtung"),
+            windgeschwindigkeit: val("windgeschwindigkeit")
+        },
+        behoerdenmeldungen: meldungen,
+        alarmierung: {
+            rel_choice: rel,
+            rel_zeit:   val("rel_zeit"),
+            kst_choice: kst,
+            kst_zeit:   val("kst_zeit"),
+            hausalarm:  hausalarme,
+            externe:    externeKraefte
+        },
+        massnahmen,
+        kommentare,
+        massnahmeCounter
+    };
+}
+
+function exportStateJSON() {
+    const state = buildStateObject();
+    const nr    = document.getElementById("einsatznummer").value.trim() || "Unbekannt";
+    const d     = new Date();
+    const t     = n => String(n).padStart(2,"0");
+    const date  = `${d.getFullYear()}-${t(d.getMonth()+1)}-${t(d.getDate())}`;
+    const name  = `${date}_${nr}_state.json`;
+
+    const blob = new Blob([JSON.stringify(state,null,2)], { type:"application/json" });
+    const url  = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
+
+function importStateJSON(ev) {
+    const file = ev.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+        try {
+            const state = JSON.parse(e.target.result);
+
+            const valSet = (id,v) => {
+                const el = document.getElementById(id);
+                if (el) el.value = v || "";
+            };
+
+            const ed = state.einsatzdaten || {};
+            valSet("einsatznummer", ed.einsatznummer);
+            valSet("standort",      ed.standort);
+            valSet("einsatzstichwort", ed.einsatzstichwort);
+            valSet("einsatzleiter", ed.einsatzleiter);
+            valSet("einsatzbeginn", ed.einsatzbeginn);
+            valSet("cppartner",     ed.cppartner);
+            valSet("asstufe",       ed.asstufe);
+            valSet("windrichtung",  ed.windrichtung);
+            valSet("windgeschwindigkeit", ed.windgeschwindigkeit);
+
+            meldungen = state.behoerdenmeldungen || [];
+
+            const al = state.alarmierung || {};
+            document.querySelectorAll("input[name='rel_choice']").forEach(r => r.checked = (r.value === al.rel_choice));
+            toggleRel(al.rel_choice || "Nein");
+            valSet("rel_zeit", al.rel_zeit);
+
+            document.querySelectorAll("input[name='kst_choice']").forEach(r => r.checked = (r.value === al.kst_choice));
+            toggleKst(al.kst_choice || "Nein");
+            valSet("kst_zeit", al.kst_zeit);
+
+            hausalarme      = al.hausalarm || [];
+            externeKraefte  = al.externe   || [];
+            massnahmen      = state.massnahmen || [];
+            kommentare      = state.kommentare || [];
+            massnahmeCounter = state.massnahmeCounter || 5;
+
+            massnahmen.forEach(m => {
+                if (!m.status) m.status = "offen";
+                if (typeof m.dueState === "undefined") m.dueState = "neutral";
+                if (typeof m.infoText === "undefined") m.infoText = "";
+                if (typeof m.infoLinks === "undefined") m.infoLinks = "";
+                if (typeof m.infoOpen === "undefined") m.infoOpen = false;
+            });
+
+            renderMassnahmen();
+            renderKommentare();
+            renderMeldungen();
+            renderHausalarme();
+            renderExterne();
+            renderKommentarAuswahl();
+
+            alert("Einsatzstand wurde geladen.");
+        } catch (err) {
+            alert("Fehler beim Einlesen der Datei.");
+        }
+        ev.target.value = "";
+    };
+    reader.readAsText(file,"utf-8");
+}
+
+/* ----------------------------------------------------
+   Initialisierung
+---------------------------------------------------- */
+window.onload = () => {
+    renderMassnahmen();
+    renderKommentare();
+    renderMeldungen();
+    renderHausalarme();
+    renderExterne();
+    renderKommentarAuswahl();
+    toggleMeldungFields();
+
+    document.getElementById("meldung_art").addEventListener("change", toggleMeldungFields);
+    document.getElementById("meldung_begruendung").addEventListener("change", () => {
+        const sel = document.getElementById("meldung_begruendung").value;
+        document.getElementById("meldung_begruendung_text").style.display =
+            (sel === "Sonstiges") ? "block" : "none";
+    });
+
+    // Modal-Buttons
+    document.getElementById("edit_save").addEventListener("click", () => {
+        if (!editCurrent) return;
+        editCurrent.titel = document.getElementById("edit_title").value.trim();
+        editCurrent.type  = document.getElementById("edit_type").value;
+
+        const iv = document.getElementById("edit_intervall").value.trim();
+        if (editCurrent.type === "intervall") {
+            const v = parseInt(iv || "0", 10);
+            editCurrent.intervallMinutes = (!isNaN(v) && v > 0) ? v : null;
+            if (editCurrent.intervallMinutes) {
+                editCurrent.nextDue = Date.now() + editCurrent.intervallMinutes * 60000;
+            }
+        } else {
+            editCurrent.intervallMinutes = null;
+            editCurrent.nextDue = null;
+        }
+
+        document.getElementById("editModal").style.display = "none";
+        renderMassnahmen();
+    });
+
+    document.getElementById("edit_reset").addEventListener("click", () => {
+        if (!editCurrent) return;
+        editCurrent.status = "offen";
+        editCurrent.erledigtAm = null;
+        editCurrent.dueState = "neutral";
+
+        if (editCurrent.type === "intervall" && editCurrent.intervallMinutes) {
+            editCurrent.nextDue = Date.now() + editCurrent.intervallMinutes * 60000;
+        } else {
+            editCurrent.nextDue = null;
+        }
+
+        document.getElementById("editModal").style.display = "none";
+        renderMassnahmen();
+    });
+
+    document.getElementById("edit_cancel").addEventListener("click", () => {
+        document.getElementById("editModal").style.display = "none";
+    });
+
+    setInterval(tickIntervalMassnahmen, 10000);
+};
+</script>
+
+</body>
+</html>

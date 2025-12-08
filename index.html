@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Einsatzbearbeitung – Start</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#222222">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Lagedienst">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+
+
+<!-- Grunddesign -->
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", sans-serif;
+        background: #eceff1;
+        color: #263238;
+    }
+
+    header {
+        background: #37474f;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        font-size: 26px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    }
+
+    /* Container für alle Kacheln */
+    .tile-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 25px;
+        max-width: 960px;
+        margin: 40px auto;
+    }
+
+    /* Kachel-Design */
+    .tile {
+        width: 240px;
+        height: 160px;
+        background: white;
+        border-radius: 22px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+        color: #263238;
+        font-size: 20px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .tile:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+    }
+
+    .tile .icon {
+        font-size: 46px;
+        margin-bottom: 8px;
+    }
+
+    footer {
+        margin-top: 60px;
+        padding: 20px;
+        background: #37474f;
+        color: #cfd8dc;
+        text-align: center;
+        font-size: 14px;
+    }
+</style>
+</head>
+
+<body>
+
+<header>Einsatzbearbeitung – Startseite</header>
+
+<!-- Kacheln -->
+<div class="tile-container">
+
+    <a href="feuer.html" class="tile">
+        <div class="icon">🔥</div>
+        FEUER
+    </a>
+
+    <a href="gefahrgut.html" class="tile">
+        <div class="icon">⚗️</div>
+        GEFAHRGUT
+    </a>
+
+    <a href="hilfeleistung.html" class="tile">
+        <div class="icon">🛠️</div>
+        HILFELEISTUNG
+    </a>
+
+    <a href="rettung.html" class="tile">
+        <div class="icon">🚑</div>
+        RETTUNG
+    </a>
+
+    <a href="tuis.html" class="tile">
+        <div class="icon">🚛</div>
+        TUIS
+    </a>
+
+    <a href="stoerung.html" class="tile">
+        <div class="icon">⚡</div>
+        STÖRUNG
+    </a>
+
+    <a href="sonstiges.html" class="tile">
+        <div class="icon">📦</div>
+        SONSTIGES
+    </a>
+
+    <a href="lexikon.html" class="tile">
+        <div class="icon">📚</div>
+        LEXIKON
+    </a>
+
+</div>
+
+<footer>
+    Entwickelt von Heiko Pitta · Version 1.0 · © 2025
+</footer>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker
+        .register("./service-worker.js")
+        .catch(function (err) {
+          console.error("Service Worker Registrierung fehlgeschlagen:", err);
+        });
+    });
+  }
+</script>
+
+</body>
+</html>

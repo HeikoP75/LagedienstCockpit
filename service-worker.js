@@ -2,30 +2,27 @@
 
 const CACHE_NAME = "lagedienst-cockpit-v1";
 
-// Hier alle Dateien eintragen, die offline verfügbar sein sollen
+// Nur Dateien cachen, die WIRKLICH existieren!
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
   "./feuer.html",
-  "./gefahrgut.html",
-  "./hilfeleistung.html",
-  "./rettung.html",
-  "./tools.html",
-  "./wissen.html",
-  "./uebergabe.html",
-  "./assets/styles.css",
-  "./assets/engine.js",
   "./manifest.json"
 ];
 
+// Installation
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+      return cache.addAll(ASSETS_TO_CACHE).catch((err) => {
+        console.error("SW Cache Fehler:", err);
+      });
     })
   );
+  self.skipWaiting();
 });
 
+// Aktivierung
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -36,35 +33,26 @@ self.addEventListener("activate", (event) => {
       )
     )
   );
+  self.clients.claim();
 });
 
+// Fetch-Handler
 self.addEventListener("fetch", (event) => {
   const request = event.request;
 
-  // Nur GET-Anfragen cachen
-  if (request.method !== "GET") {
-    return;
-  }
+  if (request.method !== "GET") return;
 
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
+    caches.match(request).then((cached) => {
+      if (cached) return cached;
 
       return fetch(request)
-        .then((networkResponse) => {
-          // Erfolgreiche Antworten in den Cache legen (rudimentär)
-          const clone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, clone);
-          });
-          return networkResponse;
+        .then((response) => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          return response;
         })
-        .catch(() => {
-          // Optional: Fallback-Seite liefern
-          return caches.match("./index.html");
-        });
+        .catch(() => caches.match("./index.html"));
     })
   );
 });

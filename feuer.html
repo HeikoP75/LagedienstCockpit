@@ -1334,6 +1334,20 @@ function handleMassnahmeClick(m) {
         m.nextDue  = Date.now() + m.intervallMinutes * 60000;
     } else {
         m.status = "erledigt";
+		// Abhängigkeit: Wenn KMvD informiert, m38 aktivieren
+if (m.id === "m20") {
+    const lage = massnahmen.find(x => x.id === "m38");
+    if (lage) {
+        lage.hidden = false;      // sichtbar machen
+        lage.type = "pflicht";    // Pflichtmaßnahme
+        lage.status = "offen";    // muss verstanden werden
+        lage.nextDue = null;      // keine Intervalle
+        lage.dueState = "neutral";
+
+        alert("Erweitertes Lagebild ist jetzt erforderlich. Bitte ausfüllen und versenden.");
+    }
+}
+
     }
 
     m.erledigtAm = nowIso;

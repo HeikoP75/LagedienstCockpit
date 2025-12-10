@@ -231,55 +231,146 @@ header {
         font-weight: 600;
     }
 
-    /* Maßnahmen */
-    #massnahmenContainer h3 {
-        margin-top: 16px;
-        margin-bottom: 6px;
-    }
+    /* ----------------------------------------------------------
+   Professionelles Maßnahmen-Design für Lagedienst Cockpit 
+   (clean, ruhig, klar, modern)
+-----------------------------------------------------------*/
 
-    .massnahme {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px 12px;
-        border-radius: 6px;
-        margin-bottom: 4px;
-        cursor: pointer;
-        color: #ffffff;
-    }
+.massnahme {
+    position: relative;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 14px 16px 14px 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border-left: 5px solid #b0bec5;
+    transition: all 0.15s ease;
+}
 
-    .mass-left {
-        flex: 1;
-    }
+.massnahme:hover {
+    box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+    transform: translateY(-2px);
+}
 
-    .mass-icons {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        font-size: 16px;
-    }
+/* STATUS-FARBEN */
 
-    .mass-icons span {
-        cursor: pointer;
-    }
+.massnahme.pflicht {
+    border-left-color: #d32f2f;   /* Rot */
+}
 
-    .mass-pflicht {
-        background: #c62828;
-    }
+.massnahme.optional {
+    border-left-color: #90a4ae;   /* Grau */
+}
 
-    .mass-optional {
-        background: #b0bec5;
-        color: #263238;
-    }
+.massnahme.intervall {
+    border-left-color: #1565c0;   /* Blau */
+}
 
-    .mass-intervall {
-        background: #1565c0;
-    }
+.massnahme.erledigt {
+    border-left-color: #43a047;   /* Grün */
+    background: #eef7f0;
+    opacity: 0.85;
+}
 
-    .mass-done {
-        background: #2e7d32 !important;
-        color: #ffffff;
-    }
+/* DEZENTE STATUS-PUNKTE LINKS */
+
+.massnahme::before {
+    content: "";
+    position: absolute;
+    left: 16px;
+    top: 18px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #90a4ae;
+}
+
+.massnahme.pflicht::before {
+    background: #e53935;
+}
+
+.massnahme.intervall::before {
+    background: #1e88e5;
+}
+
+.massnahme.erledigt::before {
+    background: #43a047;
+}
+
+/* TITEL */
+
+.massnahme-titel {
+    font-size: 16px;
+    font-weight: 600;
+    color: #263238;
+}
+
+/* META – kleine Zusatzinfos */
+
+.massnahme-meta {
+    font-size: 12px;
+    color: #607d8b;
+    opacity: 0.8;
+}
+
+/* LABELS (Pflicht / Optional / Intervall) */
+
+.massnahme-labels {
+    display: flex;
+    gap: 8px;
+    font-size: 11px;
+    color: #455a64;
+}
+
+.massnahme-labels span {
+    background: #eceff1;
+    padding: 2px 6px;
+    border-radius: 5px;
+}
+
+/* INFO & EDIT BUTTONS */
+
+.massnahme-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.icon-btn:hover {
+    opacity: 1;
+}
+
+/* INFOBOX */
+
+.massnahme-info {
+    background: #f1f4f6;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 13px;
+    color: #37474f;
+    border-left: 3px solid #90a4ae;
+}
+
+/* FÄLLIGKEIT / DUE STATES */
+
+.massnahme.due-warn {
+    box-shadow: 0 0 0 2px #ffb300 inset;
+}
+
+.massnahme.due-over {
+    box-shadow: 0 0 0 2px #d32f2f inset;
+}
+
 
     .infoBox {
         margin: 6px 0 10px 0;

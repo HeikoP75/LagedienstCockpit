@@ -1388,7 +1388,7 @@ function renderMassnahmen() {
         blockTitle.textContent = getBereichLabel(b.id);
         blockDiv.appendChild(blockTitle);
 
-        const items = massnahmen.filter(m => m.bereich === b.id);
+        const items = massnahmen.filter(m => m.bereich === b.id && !m.hidden);
         if (items.length === 0) {
             const empty = document.createElement("div");
             empty.textContent = "Keine Maßnahmen.";

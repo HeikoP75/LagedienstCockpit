@@ -2152,12 +2152,6 @@ window.onload = () => {
 
         document.getElementById("editModal").style.display = "none";
         renderMassnahmen();
-		
-		// Modal schließen (Popup für erweitertes Lagebild)
-document.getElementById("lagebildModalClose").addEventListener("click", () => {
-    document.getElementById("lagebildModal").style.display = "none";
-});
-
     });
 
     document.getElementById("edit_cancel").addEventListener("click", () => {
@@ -2165,6 +2159,12 @@ document.getElementById("lagebildModalClose").addEventListener("click", () => {
     });
 
     setInterval(tickIntervalMassnahmen, 10000);
+	
+	// Modal schließen (Popup für erweitertes Lagebild)
+document.getElementById("lagebildModalClose").addEventListener("click", () => {
+    document.getElementById("lagebildModal").style.display = "none";
+});
+
 };
 </script>
 <!-- MODAL: Hinweis für erweitertes Lagebild -->

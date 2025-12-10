@@ -1322,7 +1322,7 @@ let massnahmen = [
         infoOpen: false
     },
 	    {
-        id: "m38",
+        id: "m27_1",
         titel: "Erweitertes Lagebild ausfüllen & versenden",
         bereich: "10_20_30",
         type: "pflicht",
@@ -1368,9 +1368,9 @@ function handleMassnahmeClick(m) {
         m.status = "erledigt";
     }
 
-// KMvD-Abhängigkeit: m27 -> m38 aktivieren
+// KMvD-Abhängigkeit: m27 -> m27_1 aktivieren
 if (m.id === "m27") {
-    const lage = massnahmen.find(x => x.id === "m38");
+    const lage = massnahmen.find(x => x.id === "m27_1");
     if (lage) {
         lage.hidden = false;      // sichtbar machen
         lage.type = "pflicht";    // Pflichtmaßnahme

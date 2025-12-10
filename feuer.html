@@ -385,6 +385,27 @@ header {
 .global-nav a.nav-link:hover {
     background: rgba(255,255,255,0.14);
 }
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(2px);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+}
+
 </style>
 </head>
 
@@ -1292,7 +1313,7 @@ let massnahmen = [
 	    {
         id: "m38",
         titel: "Erweitertes Lagebild ausfüllen & versenden",
-        bereich: "eintreffen",
+        bereich: "10_20_30",
         type: "pflicht",
         hidden: true,
         status: "offen",
@@ -1334,23 +1355,24 @@ function handleMassnahmeClick(m) {
         m.nextDue  = Date.now() + m.intervallMinutes * 60000;
     } else {
         m.status = "erledigt";
-		// Abhängigkeit: Wenn KMvD informiert, m38 aktivieren
-if (m.id === "m20") {
+    }
+
+// KMvD-Abhängigkeit: m27 -> m38 aktivieren
+if (m.id === "m27") {
     const lage = massnahmen.find(x => x.id === "m38");
     if (lage) {
         lage.hidden = false;      // sichtbar machen
         lage.type = "pflicht";    // Pflichtmaßnahme
-        lage.status = "offen";    // muss verstanden werden
-        lage.nextDue = null;      // keine Intervalle
+        lage.status = "offen";    // muss erledigt werden
+        lage.nextDue = null;
         lage.dueState = "neutral";
 
-        alert("Erweitertes Lagebild ist jetzt erforderlich. Bitte ausfüllen und versenden.");
+        // Popup anzeigen
+        document.getElementById("lagebildModal").style.display = "flex";
     }
 }
-
-    }
-
     m.erledigtAm = nowIso;
+	
     renderMassnahmen();
 }
 
@@ -2130,6 +2152,12 @@ window.onload = () => {
 
         document.getElementById("editModal").style.display = "none";
         renderMassnahmen();
+		
+		// Modal schließen (Popup für erweitertes Lagebild)
+document.getElementById("lagebildModalClose").addEventListener("click", () => {
+    document.getElementById("lagebildModal").style.display = "none";
+});
+
     });
 
     document.getElementById("edit_cancel").addEventListener("click", () => {
@@ -2139,6 +2167,14 @@ window.onload = () => {
     setInterval(tickIntervalMassnahmen, 10000);
 };
 </script>
+<!-- MODAL: Hinweis für erweitertes Lagebild -->
+<div id="lagebildModal" class="modal">
+  <div class="modal-content" style="max-width:400px; text-align:center;">
+    <h3>Erweitertes Lagebild erforderlich</h3>
+    <p>Bitte jetzt das erweiterte Lagebild ausfüllen und versenden.</p>
+    <button id="lagebildModalClose" class="button">OK</button>
+  </div>
+</div>
 
 </body>
 </html>

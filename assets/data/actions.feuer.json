@@ -1,1 +1,43 @@
-
+[
+  {
+    "id": "m01",
+    "title": "AP10 einschalten",
+    "status": "required",
+    "statusLock": true
+  },
+  {
+    "id": "m02",
+    "title": "Lagedatentool starten",
+    "status": "required",
+    "statusLock": true
+  },
+  {
+    "id": "m03",
+    "title": "KMvD informieren",
+    "status": "optional",
+    "onComplete": [
+      {
+        "target": "m04",
+        "setStatus": "required",
+        "reveal": true,
+        "action": "promptLagebild"
+      }
+    ]
+  },
+  {
+    "id": "m04",
+    "title": "Erweitertes Lagebild ausfüllen und versenden",
+    "status": "optional",
+    "hidden": true
+  },
+  {
+    "id": "m05",
+    "title": "Absperrmaßnahmen prüfen",
+    "status": "optional"
+  },
+  {
+    "id": "m06",
+    "title": "Lageerkundung durchführen",
+    "status": "optional"
+  }
+]

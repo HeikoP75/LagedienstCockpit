@@ -76,9 +76,10 @@
     }
 
     .tile .icon {
-        font-size: 46px;
-        margin-bottom: 8px;
-    }
+  font-size: 34px;
+  color: #455a64;
+}
+
 
     footer {
         margin-top: 60px;
@@ -191,8 +192,12 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
-.dash-tile-primary {
+/*.dash-tile-primary {
   grid-row: span 2;
+}*/
+
+.dash-tile {
+  min-height: 160px;
 }
 
 .dash-tile-small {
@@ -245,6 +250,104 @@
   max-height: 48px;
   opacity: 0.85;
 }
+/* ================================================= */
+/* EINHEITLICHES LAYOUT – STARTSEITE                 */
+/* ================================================= */
+
+section {
+  margin: 32px auto;
+  max-width: 1200px;
+  padding: 0 20px;
+}
+
+h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #263238;
+}
+
+/* Einsatzbereich Header */
+.einsatz-header {
+  border-top: 1px solid #dbe2ea;
+  padding-top: 24px;
+  margin-top: 40px;
+}
+
+/* Kacheln vereinheitlichen */
+.tile-container {
+  gap: 20px;
+}
+
+.tile {
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.16);
+}
+
+.tile .icon {
+  font-size: 40px;
+}
+/* ================================================= */
+/* ICONS – Tagesgeschäft                             */
+/* ================================================= */
+
+.dash h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dash h2::before {
+  font-size: 18px;
+  color: #37474f;
+}
+
+/* einzelne Icons */
+.icon-uebergabe::before {
+  content: "↔";
+}
+
+.icon-lagebild::before {
+  content: "≡";
+}
+
+.icon-kalender::before {
+  content: "▦";
+}
+
+.icon-bibliothek::before {
+  content: "⌘";
+}
+
+.icon-admin::before {
+  content: "⚙";
+}
+
+/* ================================================= */
+/* TYPOGRAFIE – FEINSCHLIFF                          */
+/* ================================================= */
+
+body {
+  line-height: 1.45;
+}
+
+.dash p,
+.dash .dash-status {
+  font-size: 14px;
+  color: #455a64;
+}
+
+.dash h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
 
 </style>
 
@@ -266,7 +369,7 @@
 
     <!-- Übergabe -->
     <div class="dash-tile dash-tile-primary">
-      <h2>ÜBERGABE</h2>
+      <h2 class="icon-uebergabe">Übergabe</h2>
       <div class="dash-subtitle">Lagedienst</div>
       <div class="dash-status">
         Übergabe in Bearbeitung<br>
@@ -277,7 +380,7 @@
 
     <!-- Tägliches Lagebild -->
     <div class="dash-tile">
-      <h2>TÄGLICHES LAGEBILD</h2>
+      <h2 class="icon-lagebild">Tägliches Lagebild</h2>
       <div class="dash-subtitle">Lagedienst</div>
       <div class="dash-status">
         Heute noch nicht erstellt
@@ -287,7 +390,7 @@
 
     <!-- Kalender -->
     <div class="dash-tile dash-tile-small">
-      <h2>KALENDER</h2>
+      <h2 class="icon-kalender">Kalender & Hinweise</h2>
       <div class="dash-subtitle">Wartungen & Hinweise</div>
       <div class="dash-status">
         Heute: Wartung BMA Halle 4<br>
@@ -298,7 +401,7 @@
 
     <!-- Bibliothek -->
     <div class="dash-tile dash-tile-small">
-      <h2>BIBLIOTHEK</h2>
+      <h2 class="icon-bibliothek">Bibliothek</h2>
       <div class="dash-subtitle">Wissen & Lessons Learned</div>
       <div class="dash-status">
         Zentraler Zugriff auf Standards,<br>
@@ -318,6 +421,9 @@
   <img src="assets/logo-chempark.png" alt="Lagedienst / Chempark">
 </div>
 
+<section class="einsatz-header">
+  <h2>Checklisten Einsatzbearbeitung</h2>
+</section>
 
 <!-- Kacheln -->
 <div class="tile-container">
@@ -357,10 +463,6 @@
         SONSTIGES
     </a>
 
-    <a href="lexikon.html" class="tile">
-        <div class="icon">📚</div>
-        LEXIKON
-    </a>
 
 </div>
 

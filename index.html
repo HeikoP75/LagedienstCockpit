@@ -387,6 +387,47 @@ body {
   background: rgba(255,255,255,0.15);
   color: #ffffff;
 }
+/* ================================================= */
+/* STATUS-BADGES                                    */
+/* ================================================= */
+
+.status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.status-open {
+  background: #fff8e1;
+  color: #8a6d1d;
+}
+
+.status-done {
+  background: #e6f4ea;
+  color: #1e7e34;
+}
+
+.status-info {
+  background: #e7f1ff;
+  color: #1c5db6;
+}
+
+/* ================================================= */
+/* DASH CONTENT                                     */
+/* ================================================= */
+
+.dash-content {
+  font-size: 14px;
+  color: #37474f;
+  margin-bottom: 8px;
+}
+
+.dash-content div {
+  margin-bottom: 4px;
+}
 
 </style>
 
@@ -417,9 +458,10 @@ body {
       <h2 class="icon-uebergabe">Übergabe</h2>
       <div class="dash-subtitle">Lagedienst</div>
       <div class="dash-status">
-        Übergabe in Bearbeitung<br>
-        <span>Entwurf – nicht finalisiert</span>
-      </div>
+  <span class="status status-open">Übergabe offen</span>
+
+</div>
+
       <a href="uebergabe.html" class="dash-btn">Übergabe bearbeiten</a>
     </div>
 
@@ -428,21 +470,32 @@ body {
       <h2 class="icon-lagebild">Tägliches Lagebild</h2>
       <div class="dash-subtitle">Lagedienst</div>
       <div class="dash-status">
-        Heute noch nicht erstellt
-      </div>
+  <span class="status status-open">Heute nicht erstellt</span>
+
+</div>
+
       <a href="lagebild.html" class="dash-btn">Lagebild erstellen</a>
     </div>
 
     <!-- Kalender -->
-    <div class="dash-tile dash-tile-small">
-      <h2 class="icon-kalender">Kalender & Hinweise</h2>
-      <div class="dash-subtitle">Wartungen & Hinweise</div>
-      <div class="dash-status">
-        Heute: Wartung BMA Halle 4<br>
-        🎂 Geburtstag Müller
-      </div>
-      <a href="kalender.html" class="dash-btn secondary">Kalender öffnen</a>
-    </div>
+<div class="dash-tile dash-tile-small">
+  <h2 class="icon-kalender">Kalender & Hinweise</h2>
+  <div class="dash-subtitle">Wartungen & Hinweise</div>
+
+  <!-- Inhaltliche Hinweise -->
+  <div class="dash-content">
+    <div>🛠 Wartung BMA Halle 4</div>
+    <div>🎂 Geburtstag Müller</div>
+  </div>
+
+  <!-- Status -->
+  <div class="dash-status">
+    <span class="status status-info">2 Hinweise heute</span>
+  </div>
+
+  <a href="kalender.html" class="dash-btn secondary">Kalender öffnen</a>
+</div>
+
 
     <!-- Bibliothek -->
     <div class="dash-tile dash-tile-small">

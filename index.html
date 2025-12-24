@@ -88,12 +88,236 @@
         text-align: center;
         font-size: 14px;
     }
+/* ===== Dashboard Ergänzung ===== */
+
+.dashboard {
+  background: #f8fafc;
+  padding: 24px;
+  border-bottom: 1px solid #dbe2ea;
+}
+
+.dashboard h1 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr;
+  gap: 16px;
+}
+
+.tile-primary {
+  grid-row: span 2;
+}
+
+.tile-small {
+  font-size: 0.95em;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 13px;
+  margin: 6px 0 10px 0;
+}
+
+.status {
+  margin: 12px 0;
+  font-weight: 500;
+}
+
+.status span {
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 14px;
+  background: #2563eb;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.btn.secondary {
+  background: #4b5563;
+}
+
+/* ===== Logo-Trenner ===== */
+
+.logo-divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 18px 0;
+  background: #eef1f4;
+  border-bottom: 2px solid #cfd8e3;
+}
+
+.logo-divider img {
+  max-height: 48px;
+  opacity: 0.85;
+}
+/* ================================================= */
+/* DASHBOARD (kollisionsfrei)                        */
+/* ================================================= */
+
+.dash {
+  background: #f8fafc;
+  padding: 24px;
+  border-bottom: 1px solid #dbe2ea;
+}
+
+.dash h1 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr;
+  gap: 16px;
+}
+
+.dash-tile {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.dash-tile-primary {
+  grid-row: span 2;
+}
+
+.dash-tile-small {
+  font-size: 0.95em;
+}
+
+.dash-subtitle {
+  color: #6b7280;
+  font-size: 13px;
+  margin: 6px 0 10px 0;
+}
+
+.dash-status {
+  margin: 12px 0;
+  font-weight: 500;
+}
+
+.dash-status span {
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.dash-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 14px;
+  background: #2563eb;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.dash-btn.secondary {
+  background: #4b5563;
+}
+
+/* ===== Logo-Trenner ===== */
+
+.logo-divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 18px 0;
+  background: #eef1f4;
+  border-bottom: 2px solid #cfd8e3;
+}
+
+.logo-divider img {
+  max-height: 48px;
+  opacity: 0.85;
+}
+
 </style>
+
 </head>
 
 <body>
 
 <header>Lagedienst Cockpit</header>
+
+<!-- ================================================= -->
+<!-- OBERER BEREICH: DASHBOARD                        -->
+<!-- ================================================= -->
+
+<section class="dash">
+
+  <h1>Information & Steuerung</h1>
+
+  <div class="dash-grid">
+
+    <!-- Übergabe -->
+    <div class="dash-tile dash-tile-primary">
+      <h2>ÜBERGABE</h2>
+      <div class="dash-subtitle">Lagedienst</div>
+      <div class="dash-status">
+        Übergabe in Bearbeitung<br>
+        <span>Entwurf – nicht finalisiert</span>
+      </div>
+      <a href="uebergabe.html" class="dash-btn">Übergabe bearbeiten</a>
+    </div>
+
+    <!-- Tägliches Lagebild -->
+    <div class="dash-tile">
+      <h2>TÄGLICHES LAGEBILD</h2>
+      <div class="dash-subtitle">Lagedienst</div>
+      <div class="dash-status">
+        Heute noch nicht erstellt
+      </div>
+      <a href="lagebild.html" class="dash-btn">Lagebild erstellen</a>
+    </div>
+
+    <!-- Kalender -->
+    <div class="dash-tile dash-tile-small">
+      <h2>KALENDER</h2>
+      <div class="dash-subtitle">Wartungen & Hinweise</div>
+      <div class="dash-status">
+        Heute: Wartung BMA Halle 4<br>
+        🎂 Geburtstag Müller
+      </div>
+      <a href="kalender.html" class="dash-btn secondary">Kalender öffnen</a>
+    </div>
+
+    <!-- Bibliothek -->
+    <div class="dash-tile dash-tile-small">
+      <h2>BIBLIOTHEK</h2>
+      <div class="dash-subtitle">Wissen & Lessons Learned</div>
+      <div class="dash-status">
+        Zentraler Zugriff auf Standards,<br>
+        Erfahrungen und Hintergrundwissen
+      </div>
+      <a href="bibliothek.html" class="dash-btn secondary">Zur Bibliothek</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================================= -->
+<!-- LOGO-TRENNER                                     -->
+<!-- ================================================= -->
+
+<div class="logo-divider">
+  <img src="assets/logo-chempark.png" alt="Lagedienst / Chempark">
+</div>
+
 
 <!-- Kacheln -->
 <div class="tile-container">

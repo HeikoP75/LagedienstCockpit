@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bibliothek</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --primary: #004080;
+      --primary-light: #e6edf7;
+      --bg: #f4f5f7;
+      --text: #222;
+      --muted: #666;
+      --border: #d0d4dc;
+      --danger: #c62828;
+      --radius: 8px;
+      --shadow-soft: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    header {
+      margin-bottom: 16px;
+    }
+
+    header h1 {
+      margin: 0 0 4px 0;
+      font-size: 1.6rem;
+      color: var(--primary);
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .search-container {
+      margin: 16px 0 12px 0;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 36px 10px 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      font-size: 0.95rem;
+      box-shadow: var(--shadow-soft);
+      outline: none;
+      transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      background: #fff;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(0, 64, 128, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .search-hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0 16px 0;
+    }
+
+    .category-chip {
+      border-radius: 999px;
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-soft);
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+      user-select: none;
+    }
+
+    .category-chip span.dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .category-chip.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .category-chip.active span.dot {
+      background: #fff;
+    }
+
+    .category-chip:active {
+      transform: scale(0.97);
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .results-header h2 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .results-count {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .results {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .entry-card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .entry-title {
+      margin: 0;
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .entry-description {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    .entry-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+      align-items: center;
+      font-size: 0.78rem;
+    }
+
+    .entry-category-pill {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 0.78rem;
+    }
+
+    .entry-version {
+      color: var(--muted);
+    }
+
+    .entry-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 2px;
+    }
+
+    .tag-pill {
+      font-size: 0.72rem;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #f0f1f4;
+      color: var(--muted);
+    }
+
+    .entry-actions {
+      margin-top: 6px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .entry-link-btn {
+      font-size: 0.8rem;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-soft);
+      transition: background 0.15s ease, transform 0.05s ease;
+    }
+
+    .entry-link-btn:hover {
+      background: #003060;
+    }
+
+    .entry-link-btn:active {
+      transform: scale(0.97);
+    }
+
+    .empty-state {
+      padding: 12px;
+      border-radius: var(--radius);
+      border: 1px dashed var(--border);
+      background: #fff;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .empty-state strong {
+      color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+      .page {
+        padding: 12px;
+      }
+
+      header h1 {
+        font-size: 1.4rem;
+      }
+
+      .entry-card {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Bibliothek</h1>
+      <p>Zentrale Wissens- und Dokumentbasis für Einsatzbearbeitung, Störungsbearbeitung und allgemeine Informationen.</p>
+    </header>
+
+    <main>
+      <section class="search-section">
+        <div class="search-container">
+          <input
+            id="searchInput"
+            class="search-input"
+            type="search"
+            placeholder="Bibliothek durchsuchen (Titel, Stichwort, Beschreibung)…"
+            autocomplete="off"
+          />
+          <span class="search-icon">🔍</span>
+        </div>
+        <div class="search-hint">
+          Tipp: Du kannst nach Einsatzart, KMvD, Störung, Organigramm etc. suchen – oder eine Kategorie auswählen.
+        </div>
+
+        <div class="categories" id="categoryContainer">
+          <!-- Kategorie-Chips werden per JavaScript eingefügt -->
+        </div>
+      </section>
+
+      <section class="results-section">
+        <div class="results-header">
+          <h2>Ergebnisse</h2>
+          <div class="results-count" id="resultsCount"></div>
+        </div>
+        <div class="results" id="resultsContainer">
+          <!-- Einträge werden per JavaScript gerendert -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // -----------------------------
+    // Datenbasis der Bibliothek
+    // -----------------------------
+    const bibliothekData = {
+      categories: [
+        {
+          id: "einsatzbearbeitung",
+          title: "Einsatzbearbeitung",
+          icon: "icon-fire",
+          color: "#004080"
+        },
+        {
+          id: "stoerungsbearbeitung",
+          title: "Störungsbearbeitung",
+          icon: "icon-warning",
+          color: "#004080"
+        },
+        {
+          id: "allgemein",
+          title: "Allgemeine Informationen",
+          icon: "icon-info",
+          color: "#004080"
+        }
+      ],
+      entries: [
+        {
+          id: "lagebild_erweitert",
+          title: "Erweitertes Lagebild – Ausfüllhilfe",
+          description: "Leitfaden zur Erstellung, Ausfüllung und Versendung des erweiterten Lagebildes in der Einsatzbearbeitung. Mit Pflichtfeldern und Versandweg KMvD.",
+          categories: ["einsatzbearbeitung"],
+          tags: ["lagebild", "kmvd", "einsatzleitung", "uebergabe"],
+          link: "docs/lagebild_erweitert.html",
+          version: "1.0"
+        },
+        {
+          id: "kmvd_informieren_checkliste",
+          title: "KMvD informieren – Checkliste",
+          description: "Pflichtschritte zur Information des KMvD bei definierten Einsatzereignissen. Strukturierte Orientierung für LDF.",
+          categories: ["einsatzbearbeitung"],
+          tags: ["kmvd", "einsatz", "checkliste", "pflichtmassnahme"],
+          link: "docs/kmvd_checkliste.html",
+          version: "1.1"
+        },
+        {
+          id: "massnahmenkatalog_einsatz",
+          title: "Maßnahmenkatalog Einsatzbearbeitung",
+          description: "Übersicht der Maßnahmen je Einsatzart inkl. Pflichtmaßnahmen und Zeitüberwachung. Bindend für LDF im Einsatzfall.",
+          categories: ["einsatzbearbeitung"],
+          tags: ["massnahmen", "einsatz", "katalog", "pflichtmassnahmen"],
+          link: "docs/massnahmen_einsatz.html",
+          version: "2.0"
+        },
+        {
+          id: "stoerung_telefonie_it",
+          title: "Störungsprozess – Telefonie/IT",
+          description: "Ablaufbeschreibung zur Meldung und Bearbeitung von Störungen im Bereich IT, Kommunikation und Telefonie. Mit Eskalationswegen.",
+          categories: ["stoerungsbearbeitung"],
+          tags: ["stoerung", "it", "telefonie", "kommunikation", "prozess"],
+          link: "docs/stoerung_it.html",
+          version: "1.2"
+        },
+        {
+          id: "stoerungsmatrix_leitnetz",
+          title: "Störungsmatrix Leitnetz",
+          description: "Matrix zur Bewertung und Meldung von Leitnetz-Störungen mit Ansprechpartnern und Eskalationsstufen.",
+          categories: ["stoerungsbearbeitung"],
+          tags: ["stoerung", "leitnetz", "matrix", "kommunikation"],
+          link: "docs/stoerungsmatrix_leitnetz.pdf",
+          version: "1.0"
+        },
+        {
+          id: "organigramm_sicherheitszentrale",
+          title: "Organigramm Sicherheitszentrale",
+          description: "Organisatorische Struktur der Sicherheitszentrale mit Rollen, Verantwortlichkeiten und Kommunikationswegen.",
+          categories: ["allgemein"],
+          tags: ["organisation", "struktur", "sicherheitszentrale", "rollen"],
+          link: "docs/organigramm_szz.pdf",
+          version: "1.0"
+        },
+        {
+          id: "kommunikationswege_intern",
+          title: "Kommunikationswege intern",
+          description: "Übersicht der offiziellen Kommunikationskanäle, Erreichbarkeiten und Abläufe für interne Informationsketten.",
+          categories: ["allgemein"],
+          tags: ["kommunikation", "intern", "erreichbarkeit", "wege"],
+          link: "docs/kommunikationswege.html",
+          version: "1.0"
+        },
+        {
+          id: "glossar_fachbegriffe",
+          title: "Glossar – zentrale Fachbegriffe",
+          description: "Erklärung relevanter Begriffe aus Einsatzbearbeitung, Störungsbearbeitung, IT und Organisation (fortlaufend erweiterbar).",
+          categories: ["allgemein"],
+          tags: ["glossar", "begriffe", "erklaerung", "definition"],
+          link: "docs/glossar.html",
+          version: "0.9"
+        }
+      ]
+    };
+
+    // -----------------------------
+    // Zustand & Initialisierung
+    // -----------------------------
+    let activeCategoryId = "alle";
+    let currentSearchTerm = "";
+
+    const categoryContainer = document.getElementById("categoryContainer");
+    const searchInput = document.getElementById("searchInput");
+    const resultsContainer = document.getElementById("resultsContainer");
+    const resultsCount = document.getElementById("resultsCount");
+
+    function normalise(str) {
+      return (str || "").toString().toLowerCase();
+    }
+
+    function buildCategories() {
+      // "Alle" Chip
+      const allChip = document.createElement("button");
+      allChip.type = "button";
+      allChip.className = "category-chip active";
+      allChip.dataset.categoryId = "alle";
+      allChip.innerHTML = '<span class="dot"></span><span>Alle</span>';
+      categoryContainer.appendChild(allChip);
+
+      // Restliche Kategorien aus Daten
+      bibliothekData.categories.forEach(cat => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "category-chip";
+        chip.dataset.categoryId = cat.id;
+        chip.innerHTML = '<span class="dot"></span><span>' + cat.title + "</span>";
+        categoryContainer.appendChild(chip);
+      });
+
+      categoryContainer.addEventListener("click", (event) => {
+        const target = event.target.closest(".category-chip");
+        if (!target) return;
+
+        const categoryId = target.dataset.categoryId;
+        if (!categoryId) return;
+
+        activeCategoryId = categoryId;
+
+        // aktive Klasse setzen
+        document.querySelectorAll(".category-chip").forEach(chip => {
+          chip.classList.toggle("active", chip.dataset.categoryId === activeCategoryId);
+        });
+
+        renderResults();
+      });
+    }
+
+    function filterEntries() {
+      const term = normalise(currentSearchTerm);
+      return bibliothekData.entries.filter(entry => {
+        // Kategorie-Filter
+        if (activeCategoryId !== "alle" && !entry.categories.includes(activeCategoryId)) {
+          return false;
+        }
+
+        if (!term) {
+          return true;
+        }
+
+        const haystack = [
+          entry.title,
+          entry.description,
+          ...(entry.tags || []),
+          ...(entry.categories || [])
+        ]
+          .map(normalise)
+          .join(" ");
+
+        return haystack.includes(term);
+      });
+    }
+
+    function renderResults() {
+      const entries = filterEntries();
+      resultsContainer.innerHTML = "";
+
+      if (!entries.length) {
+        const div = document.createElement("div");
+        div.className = "empty-state";
+        const noTerm = currentSearchTerm.trim() === "";
+        div.innerHTML = noTerm
+          ? "<strong>Hinweis:</strong> Bitte gib einen Suchbegriff ein oder wähle eine Kategorie."
+          : "<strong>Keine Treffer.</strong> Passe den Suchbegriff oder die Kategorie an.";
+        resultsContainer.appendChild(div);
+        resultsCount.textContent = "0 Einträge";
+        return;
+      }
+
+      entries.forEach(entry => {
+        const card = document.createElement("article");
+        card.className = "entry-card";
+
+        const titleEl = document.createElement("h3");
+        titleEl.className = "entry-title";
+        titleEl.textContent = entry.title;
+
+        const descEl = document.createElement("p");
+        descEl.className = "entry-description";
+        descEl.textContent = entry.description || "";
+
+        const metaEl = document.createElement("div");
+        metaEl.className = "entry-meta";
+
+        // Kategorien anzeigen
+        (entry.categories || []).forEach(catId => {
+          const cat = bibliothekData.categories.find(c => c.id === catId);
+          const pill = document.createElement("span");
+          pill.className = "entry-category-pill";
+          pill.textContent = cat ? cat.title : catId;
+          metaEl.appendChild(pill);
+        });
+
+        if (entry.version) {
+          const versionSpan = document.createElement("span");
+          versionSpan.className = "entry-version";
+          versionSpan.textContent = "Version " + entry.version;
+          metaEl.appendChild(versionSpan);
+        }
+
+        const tagsWrapper = document.createElement("div");
+        tagsWrapper.className = "entry-tags";
+        (entry.tags || []).forEach(tag => {
+          const tagSpan = document.createElement("span");
+          tagSpan.className = "tag-pill";
+          tagSpan.textContent = "#" + tag;
+          tagsWrapper.appendChild(tagSpan);
+        });
+
+        const actions = document.createElement("div");
+        actions.className = "entry-actions";
+
+        if (entry.link) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "entry-link-btn";
+          btn.innerHTML = '<span>Öffnen</span><span>↗</span>';
+          btn.addEventListener("click", () => {
+            // Standard: Link in neuem Tab/Fenster öffnen
+            window.open(entry.link, "_blank");
+          });
+          actions.appendChild(btn);
+        }
+
+        card.appendChild(titleEl);
+        card.appendChild(descEl);
+        card.appendChild(metaEl);
+        if (tagsWrapper.childNodes.length > 0) {
+          card.appendChild(tagsWrapper);
+        }
+        if (actions.childNodes.length > 0) {
+          card.appendChild(actions);
+        }
+
+        resultsContainer.appendChild(card);
+      });
+
+      const countText = entries.length === 1 ? "1 Eintrag" : entries.length + " Einträge";
+      resultsCount.textContent = countText;
+    }
+
+    function initSearch() {
+      searchInput.addEventListener("input", (event) => {
+        currentSearchTerm = event.target.value || "";
+        renderResults();
+      });
+    }
+
+    function initBibliothek() {
+      buildCategories();
+      initSearch();
+      renderResults(); // initialer Zustand (leer / Hinweis)
+    }
+
+    window.addEventListener("DOMContentLoaded", initBibliothek);
+  </script>
+</body>
+</html>

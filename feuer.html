@@ -406,6 +406,45 @@ header {
     box-shadow: 0 4px 15px rgba(0,0,0,0.25);
 }
 
+.einsatz-status-card {
+  background: #f7f9fa;
+}
+
+.einsatz-status-section {
+  margin-bottom: 12px;
+}
+
+.einsatz-status-section p {
+  margin: 6px 0 8px 0;
+  color: #37474f;
+  font-size: 14px;
+}
+
+.einsatz-links {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0 14px 0;
+  font-size: 15px;
+  color: #37474f;
+}
+
+.einsatz-link a {
+  color: #37474f;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.einsatz-link a:hover {
+  opacity: 0.75;
+}
+
+.einsatz-aktiv{
+  color:#0b7a28;
+  font-weight:700;
+}
+
+
+
 </style>
 </head>
 
@@ -527,6 +566,24 @@ header {
             </div>
         </div>
     </div>
+
+<!-- Einsatzrelevante Verknüpfungen -->
+<div class="einsatz-links">
+
+  <span class="einsatz-link">
+    🔁 <a id="flagUebergabe" href="uebergabe.html">Übergabe</a>
+  </span>
+
+  <span class="einsatz-link">
+    🧠 <a id="flagLL" href="bibliothek.html">Lessons Learned</a>
+  </span>
+
+</div>
+
+
+
+
+</div>
 
     <div class="block-divider"></div>
 
@@ -771,6 +828,9 @@ header {
 </main>
 
 <script>
+
+const EINSATZ_ID = "feuer_aktueller_einsatz";
+
 /* ----------------------------------------------------
    Hilfsfunktionen
 ---------------------------------------------------- */
@@ -1322,7 +1382,7 @@ let massnahmen = [
         infoOpen: false
     },
 	    {
-        id: "m27_1",
+        id: "m38",
         titel: "Erweitertes Lagebild ausfüllen & versenden",
         bereich: "10_20_30",
         type: "pflicht",
@@ -1368,9 +1428,9 @@ function handleMassnahmeClick(m) {
         m.status = "erledigt";
     }
 
-// KMvD-Abhängigkeit: m27 -> m27_1 aktivieren
+// KMvD-Abhängigkeit: m27 -> m38 aktivieren
 if (m.id === "m27") {
-    const lage = massnahmen.find(x => x.id === "m27_1");
+    const lage = massnahmen.find(x => x.id === "m38");
     if (lage) {
         lage.hidden = false;      // sichtbar machen
         lage.type = "pflicht";    // Pflichtmaßnahme
@@ -2183,6 +2243,38 @@ window.onload = () => {
 	
 
 };
+document.addEventListener("DOMContentLoaded", () => {
+
+  const uebergabeLink = document.getElementById("flagUebergabe");
+  const llLink = document.getElementById("flagLL");
+
+  const keyU = "uebergabe_" + EINSATZ_ID;
+  const keyL = "ll_" + EINSATZ_ID;
+
+  // --- Klick-Logik ---
+  if (uebergabeLink) {
+    uebergabeLink.addEventListener("click", () => {
+      localStorage.setItem(keyU, "true");
+    });
+  }
+
+  if (llLink) {
+    llLink.addEventListener("click", () => {
+      localStorage.setItem(keyL, "true");
+    });
+  }
+
+  // --- Anzeige-Logik ---
+  if (uebergabeLink && localStorage.getItem(keyU)) {
+    uebergabeLink.classList.add("einsatz-aktiv");
+  }
+
+  if (llLink && localStorage.getItem(keyL)) {
+    llLink.classList.add("einsatz-aktiv");
+  }
+});
+
+
 </script>
 
 

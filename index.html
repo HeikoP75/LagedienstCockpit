@@ -449,26 +449,33 @@ body {
 
 <section class="dash">
 
-  <h1>Information & Steuerung</h1>
+  <h1>Tagesgeschäft & Führung</h1>
 
   <div class="dash-grid">
 
-    <!-- Übergabe -->
-    <div class="dash-tile dash-tile-primary">
-      <h2 class="icon-uebergabe">Übergabe</h2>
-      <div class="dash-subtitle">Lagedienst</div>
-      <div class="dash-status">
-  <span class="status status-open">Übergabe offen</span>
+<!-- Übergabe -->
+<div class="dash-tile">
+  <h2 class="icon-uebergabe">Übergabe</h2>
+  <div class="dash-subtitle">tägliche Übergabe</div>
 
+  <!-- Status (wird per JS gesetzt) -->
+  <div class="dash-status" id="status-uebergabe"></div>
+
+  <!-- Status wechseln (nur UI, lokal) -->
+  <button type="button"
+          class="dash-btn secondary"
+          id="btn-uebergabe-toggle">
+    Status wechseln
+  </button>
+
+  <a href="uebergabe.html" class="dash-btn">Übergabe bearbeiten</a>
 </div>
 
-      <a href="uebergabe.html" class="dash-btn">Übergabe bearbeiten</a>
-    </div>
 
     <!-- Tägliches Lagebild -->
     <div class="dash-tile">
       <h2 class="icon-lagebild">Tägliches Lagebild</h2>
-      <div class="dash-subtitle">Lagedienst</div>
+	  <div class="dash-subtitle">Führungsbezogene Lageeinschätzung des Tages</div>
       <div class="dash-status">
   <span class="status status-open">Heute nicht erstellt</span>
 
@@ -497,18 +504,27 @@ body {
 </div>
 
 
-    <!-- Bibliothek -->
-    <div class="dash-tile dash-tile-small">
-      <h2 class="icon-bibliothek">Bibliothek</h2>
-      <div class="dash-subtitle">Wissen & Lessons Learned</div>
-      <div class="dash-status">
-        Zentraler Zugriff auf Standards,<br>
-        Erfahrungen und Hintergrundwissen
-      </div>
-      <a href="bibliothek.html" class="dash-btn secondary">Zur Bibliothek</a>
-    </div>
-	
+<!-- Bibliothek -->
+<div class="dash-tile dash-tile-small">
+  <h2 class="icon-bibliothek">Bibliothek</h2>
+
+  <div class="dash-subtitle">
+    Zentrale Wissensbasis für Standards, Lessons Learned und Hintergrundinformationen
   </div>
+
+  <!-- Status: neue Inhalte -->
+  <div class="dash-status" id="status-bibliothek"></div>
+
+  <!-- Abzeichnen (nur sichtbar, wenn neu) -->
+  <button type="button"
+          class="dash-btn secondary"
+          id="btn-bibliothek-ack">
+    Neuigkeiten abzeichnen
+  </button>
+
+  <a href="bibliothek.html" class="dash-btn secondary">Zur Bibliothek</a>
+</div>
+
 </section>
 
 <!-- ================================================= -->
@@ -585,6 +601,82 @@ body {
   const options = { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' };
   const today = new Date().toLocaleDateString('de-DE', options);
   dateEl.textContent = today;
+</script>
+
+<script>
+/* ================================
+   STEP 7 – Lokale Status-Logik
+================================== */
+(function () {
+
+  function setHTML(id, html) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = html;
+  }
+
+  /* -------- Übergabe -------- */
+  const KEY_UEB = "ldc_uebergabe_status"; // open | done
+
+  function renderUebergabe() {
+    const s = localStorage.getItem(KEY_UEB) || "open";
+    if (s === "done") {
+      setHTML("status-uebergabe",
+        '<span class="status status-done">Übergabe abgeschlossen</span>');
+    } else {
+      setHTML("status-uebergabe",
+        '<span class="status status-open">Übergabe offen</span>');
+    }
+  }
+
+  const btnU = document.getElementById("btn-uebergabe-toggle");
+  if (btnU) {
+    btnU.addEventListener("click", () => {
+      const cur = localStorage.getItem(KEY_UEB) || "open";
+      localStorage.setItem(KEY_UEB, cur === "done" ? "open" : "done");
+      renderUebergabe();
+    });
+  }
+
+  /* -------- Bibliothek -------- */
+  const KEY_BIB_NEWS = "ldc_bibliothek_news";
+  const KEY_BIB_ACK  = "ldc_bibliothek_ack";
+
+  if (localStorage.getItem(KEY_BIB_NEWS) === null)
+    localStorage.setItem(KEY_BIB_NEWS, "0");
+
+  if (localStorage.getItem(KEY_BIB_ACK) === null)
+    localStorage.setItem(KEY_BIB_ACK, "yes");
+
+  function renderBibliothek() {
+    const n = parseInt(localStorage.getItem(KEY_BIB_NEWS), 10);
+    const ack = localStorage.getItem(KEY_BIB_ACK);
+
+    const btn = document.getElementById("btn-bibliothek-ack");
+
+    if (n > 0 && ack !== "yes") {
+      setHTML("status-bibliothek",
+        `<span class="status status-open">Neu: ${n} Eintrag(e)</span>`);
+      if (btn) btn.style.display = "inline-block";
+    } else {
+      setHTML("status-bibliothek",
+        `<span class="status status-info">Keine neuen Einträge</span>`);
+      if (btn) btn.style.display = "none";
+    }
+  }
+
+  const btnB = document.getElementById("btn-bibliothek-ack");
+  if (btnB) {
+    btnB.addEventListener("click", () => {
+      localStorage.setItem(KEY_BIB_ACK, "yes");
+      renderBibliothek();
+    });
+  }
+
+  /* -------- Initial -------- */
+  renderUebergabe();
+  renderBibliothek();
+
+})();
 </script>
 
 </body>

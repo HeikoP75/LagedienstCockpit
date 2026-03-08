@@ -5,490 +5,149 @@
   <title>Administration – Lagedienst Cockpit</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    :root {
-      --bg: #f4f5f7;
-      --surface: #ffffff;
-      --primary: #004080;
-      --primary-light: #e6edf7;
-      --border: #d0d4dc;
-      --text: #222;
-      --muted: #667085;
-      --success: #2e7d32;
-      --danger: #c62828;
-      --radius: 10px;
-      --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .admin-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      background: #20323b;
-      color: #fff;
-      padding: 14px 20px;
-    }
-
-    .admin-header h1 { margin: 0; font-size: 1.2rem; }
-    .admin-subtitle { font-size: 0.84rem; opacity: 0.85; }
-
-    .admin-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: none;
-      border-radius: 8px;
-      padding: 8px 12px;
-      background: #455a64;
-      color: #fff;
-      cursor: pointer;
-      text-decoration: none;
-      font-size: 0.86rem;
-    }
-
-    .admin-btn.primary { background: var(--primary); }
-    .admin-btn.danger { background: var(--danger); }
-
-    .admin-page {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-
-    .admin-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-soft);
-      padding: 14px;
-      margin-bottom: 14px;
-    }
-
-    .admin-card h2, .admin-card h3 {
-      margin: 0 0 10px 0;
-      color: var(--primary);
-    }
-
-    .admin-hint {
-      margin: 0 0 12px 0;
-      color: var(--muted);
-      font-size: 0.88rem;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(220px, 1fr));
-      gap: 10px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 10px;
-    }
-
-    .form-group label {
-      font-size: 0.82rem;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    input[type="text"], textarea, input[type="url"], input[type="file"] {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 9px 10px;
-      font-size: 0.9rem;
-      outline: none;
-      background: #fff;
-    }
-
-    input:focus, textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px rgba(0, 64, 128, 0.14);
-    }
-
-    textarea { min-height: 88px; resize: vertical; }
-
-    .categories-picker {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    .category-option {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 5px 10px;
-      background: #fff;
-      font-size: 0.82rem;
-      cursor: pointer;
-    }
-
-    .category-option input { margin: 0; }
-
-    .upload-list {
-      display: grid;
-      gap: 6px;
-      margin-top: 8px;
-    }
-
-    .upload-item {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px 10px;
-      background: #fafafa;
-      font-size: 0.82rem;
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .entry-list { display: grid; gap: 10px; }
-
-    .entry-item {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .entry-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .entry-meta {
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .entry-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-
-    .tag {
-      font-size: 0.72rem;
-      border-radius: 999px;
-      padding: 2px 7px;
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-
-    .status {
-      font-size: 0.82rem;
-      margin-top: 8px;
-      color: var(--success);
-      min-height: 1em;
-    }
-
-    @media (max-width: 780px) {
-      .form-grid { grid-template-columns: 1fr; }
-      .admin-header { flex-direction: column; align-items: flex-start; }
-    }
+    :root { --bg:#f4f5f7; --surface:#fff; --primary:#004080; --primary-light:#e6edf7; --border:#d0d4dc; --text:#222; --muted:#667085; --success:#2e7d32; --danger:#c62828; --radius:10px; --shadow-soft:0 2px 8px rgba(0,0,0,.08);}*{box-sizing:border-box}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text)}
+    .admin-header{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#20323b;color:#fff;padding:14px 20px}
+    .admin-header h1{margin:0;font-size:1.2rem}.admin-subtitle{font-size:.84rem;opacity:.85}
+    .admin-btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:8px;padding:8px 12px;background:#455a64;color:#fff;cursor:pointer;text-decoration:none;font-size:.86rem}
+    .admin-btn.primary{background:var(--primary)}.admin-btn.danger{background:var(--danger)}
+    .admin-page{max-width:1200px;margin:0 auto;padding:16px}.admin-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-soft);padding:14px;margin-bottom:14px}
+    .admin-card h2,.admin-card h3{margin:0 0 10px;color:var(--primary)}.admin-hint{margin:0 0 12px;color:var(--muted);font-size:.88rem}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(220px,1fr));gap:10px}.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+    .form-group label{font-size:.82rem;color:var(--muted);font-weight:600}
+    input[type="text"],textarea,input[type="url"],input[type="file"],select{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 10px;font-size:.9rem;outline:none;background:#fff}
+    input:focus,textarea:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(0,64,128,.14)} textarea{min-height:88px;resize:vertical}
+    .categories-picker,.einsatzarten-picker{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}.category-option{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:999px;padding:5px 10px;background:#fff;font-size:.82rem;cursor:pointer}
+    .upload-list,.entry-list{display:grid;gap:6px;margin-top:8px}.upload-item,.entry-item{border:1px solid var(--border);border-radius:8px;padding:8px 10px;background:#fafafa}
+    .entry-item{display:flex;flex-direction:column;gap:6px;background:#fff}.entry-title-row{display:flex;justify-content:space-between;align-items:center;gap:8px}.entry-meta{font-size:.8rem;color:var(--muted)}
+    .entry-tags{display:flex;flex-wrap:wrap;gap:4px}.tag{font-size:.72rem;border-radius:999px;padding:2px 7px;background:var(--primary-light);color:var(--primary)}
+    .status{font-size:.82rem;margin-top:8px;color:var(--success);min-height:1em}
+    @media (max-width:780px){.form-grid{grid-template-columns:1fr}.admin-header{flex-direction:column;align-items:flex-start}}
   </style>
 </head>
 <body>
-  <header class="admin-header">
-    <div>
-      <h1>Administration – Lagedienst Cockpit</h1>
-      <div class="admin-subtitle">Bibliothekseinträge erstellen und verwalten</div>
-    </div>
-    <a href="index.html" class="admin-btn">← Zurück zum Cockpit</a>
-  </header>
-
+  <header class="admin-header"><div><h1>Administration – Lagedienst Cockpit</h1><div class="admin-subtitle">Bibliothek & Maßnahmen verwalten</div></div><a href="index.html" class="admin-btn">← Zurück</a></header>
   <main class="admin-page">
     <section class="admin-card">
-      <h2>Neuen Bibliothekseintrag anlegen</h2>
-      <p class="admin-hint">Hier erstellte Einträge erscheinen auf der Seite <strong>Bibliothek</strong>. Dateien/Bilder werden lokal im Browser gespeichert.</p>
-
+      <h2>Bibliothekseintrag anlegen / ändern</h2>
+      <p class="admin-hint">Einträge erscheinen direkt in der Bibliothek. Bearbeiten und Löschen ist hier ebenfalls möglich.</p>
       <form id="libraryEntryForm">
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="title">Titel *</label>
-            <input id="title" name="title" type="text" required placeholder="z. B. Alarmplan Werksteil Nord">
-          </div>
-          <div class="form-group">
-            <label for="version">Version / Stand</label>
-            <input id="version" name="version" type="text" placeholder="z. B. 1.0 oder 03/2026">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="description">Beschreibung</label>
-          <textarea id="description" name="description" placeholder="Kurzbeschreibung des Inhalts und Einsatzkontextes"></textarea>
-        </div>
-
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="tags">Tags (kommagetrennt)</label>
-            <input id="tags" name="tags" type="text" placeholder="einsatz, alarmplan, werksteil">
-          </div>
-          <div class="form-group">
-            <label for="externalLink">Optionaler externer Link</label>
-            <input id="externalLink" name="externalLink" type="url" placeholder="https://...">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Kategorien *</label>
-          <div class="categories-picker">
-            <label class="category-option"><input type="checkbox" name="categories" value="einsatzbearbeitung"> Einsatzbearbeitung</label>
-            <label class="category-option"><input type="checkbox" name="categories" value="stoerungsbearbeitung"> Störungsbearbeitung</label>
-            <label class="category-option"><input type="checkbox" name="categories" value="allgemein"> Allgemeine Informationen</label>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="attachments">Unterlagen / Bilder hochladen</label>
-          <input id="attachments" name="attachments" type="file" multiple>
-          <div class="admin-hint">Unterstützt gängige Dateiformate (Bilder, PDF, Office). Die Dateien werden im Browser gespeichert.</div>
-          <div id="uploadList" class="upload-list"></div>
-        </div>
-
-        <button class="admin-btn primary" type="submit">+ Bibliothekseintrag speichern</button>
+        <input type="hidden" id="libraryEditId" name="libraryEditId">
+        <div class="form-grid"><div class="form-group"><label for="title">Titel *</label><input id="title" name="title" type="text" required></div><div class="form-group"><label for="version">Version / Stand</label><input id="version" name="version" type="text"></div></div>
+        <div class="form-group"><label for="description">Beschreibung</label><textarea id="description" name="description"></textarea></div>
+        <div class="form-grid"><div class="form-group"><label for="tags">Tags (kommagetrennt)</label><input id="tags" name="tags" type="text"></div><div class="form-group"><label for="externalLink">Link (Web/SharePoint)</label><input id="externalLink" name="externalLink" type="url"></div></div>
+        <div class="form-group"><label>Kategorien *</label><div class="categories-picker">
+          <label class="category-option"><input type="checkbox" name="categories" value="einsatzbearbeitung"> Einsatzbearbeitung</label>
+          <label class="category-option"><input type="checkbox" name="categories" value="stoerungsbearbeitung"> Störungsbearbeitung</label>
+          <label class="category-option"><input type="checkbox" name="categories" value="allgemein"> Allgemeine Informationen</label>
+          <label class="category-option"><input type="checkbox" name="categories" value="lessonlearned"> Lesson Learned</label>
+        </div></div>
+        <div class="form-group"><label for="attachments">Unterlagen / Bilder</label><input id="attachments" name="attachments" type="file" multiple><div id="uploadList" class="upload-list"></div></div>
+        <button class="admin-btn primary" type="submit">Speichern</button> <button class="admin-btn" type="button" id="libraryReset">Zurücksetzen</button>
         <div id="statusMessage" class="status" aria-live="polite"></div>
       </form>
     </section>
+    <section class="admin-card"><h3>Bibliothekseinträge</h3><div id="entryList" class="entry-list"></div></section>
 
     <section class="admin-card">
-      <h3>Bereits angelegte Bibliothekseinträge</h3>
-      <div id="entryList" class="entry-list"></div>
+      <h2>Maßnahmen anlegen / ändern</h2>
+      <p class="admin-hint">Maßnahmen können Einsatzarten zugewiesen werden. Informationen, Dateien und Links sind möglich.</p>
+      <form id="measureForm">
+        <input type="hidden" id="measureEditId" name="measureEditId">
+        <div class="form-grid"><div class="form-group"><label for="measureTitle">Titel *</label><input id="measureTitle" name="measureTitle" type="text" required></div><div class="form-group"><label for="measureBereich">Bereich *</label><select id="measureBereich" name="measureBereich"><option value="eintreffen">Beim Eintreffen</option><option value="5min">Nach 5 Minuten</option><option value="10_20_30">Nach 10 / 20 / 30 Minuten</option><option value="30_45_60">Nach 30 / 45 / 60 Minuten</option><option value="ende">Nach Einsatzende</option></select></div></div>
+        <div class="form-grid"><div class="form-group"><label for="measureType">Typ *</label><select id="measureType" name="measureType"><option value="pflicht">Pflicht</option><option value="optional">Optional</option><option value="intervall">Intervall</option></select></div><div class="form-group"><label for="measureIntervall">Intervall (Minuten)</label><input id="measureIntervall" name="measureIntervall" type="text"></div></div>
+        <div class="form-group"><label for="measureInfo">Informationen</label><textarea id="measureInfo" name="measureInfo"></textarea></div>
+        <div class="form-group"><label for="measureLinks">Links (Web/SharePoint, kommagetrennt)</label><input id="measureLinks" name="measureLinks" type="text"></div>
+        <div class="form-group"><label>Einsatzarten *</label><div class="einsatzarten-picker">
+          <label class="category-option"><input type="checkbox" name="einsatzarten" value="feuer"> Feuer</label>
+          <label class="category-option"><input type="checkbox" name="einsatzarten" value="hilfeleistung"> Hilfeleistung</label>
+          <label class="category-option"><input type="checkbox" name="einsatzarten" value="gefahrgut"> Gefahrgut</label>
+        </div></div>
+        <div class="form-group"><label for="measureAttachments">Dateien</label><input id="measureAttachments" name="measureAttachments" type="file" multiple><div id="measureUploadList" class="upload-list"></div></div>
+        <button class="admin-btn primary" type="submit">Maßnahme speichern</button> <button class="admin-btn" type="button" id="measureReset">Zurücksetzen</button>
+        <div id="measureStatus" class="status" aria-live="polite"></div>
+      </form>
     </section>
+    <section class="admin-card"><h3>Maßnahmen</h3><div id="measureList" class="entry-list"></div></section>
   </main>
 
   <script>
     const CUSTOM_STORAGE_KEY = "bibliothek_custom_entries_v1";
-
+    const MEASURES_STORAGE_KEY = "admin_massnahmen_v1";
     const form = document.getElementById("libraryEntryForm");
     const attachmentsInput = document.getElementById("attachments");
     const uploadList = document.getElementById("uploadList");
     const entryList = document.getElementById("entryList");
     const statusMessage = document.getElementById("statusMessage");
+    const libraryEditId = document.getElementById("libraryEditId");
+    const libraryResetBtn = document.getElementById("libraryReset");
+    const measureForm = document.getElementById("measureForm");
+    const measureAttachmentsInput = document.getElementById("measureAttachments");
+    const measureUploadList = document.getElementById("measureUploadList");
+    const measureList = document.getElementById("measureList");
+    const measureStatus = document.getElementById("measureStatus");
+    const measureEditId = document.getElementById("measureEditId");
 
-    let pendingAttachments = [];
+    let pendingAttachments = []; let pendingMeasureAttachments = [];
+    const slugify = v => (v||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"").slice(0,80);
+    const formatBytes = n => !n ? "0 B" : (n > 1048576 ? (n/1048576).toFixed(1)+" MB" : n>1024 ? (n/1024).toFixed(1)+" KB" : n+" B");
+    const readFileAsDataUrl = file => new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error(`Datei konnte nicht gelesen werden: ${file.name}`));r.readAsDataURL(file);});
+    const loadJson = key => { try { const raw = localStorage.getItem(key); const parsed = raw ? JSON.parse(raw) : []; return Array.isArray(parsed) ? parsed : []; } catch { return []; } };
+    const saveJson = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+    const clearLibraryForm = () => { form.reset(); libraryEditId.value = ""; pendingAttachments = []; renderPendingAttachments(); };
+    const clearMeasureForm = () => { measureForm.reset(); measureEditId.value = ""; pendingMeasureAttachments=[]; renderMeasurePendingAttachments(); };
 
-    function formatBytes(value) {
-      if (!value) return "0 B";
-      const units = ["B", "KB", "MB", "GB"];
-      let size = value;
-      let idx = 0;
-      while (size >= 1024 && idx < units.length - 1) {
-        size /= 1024;
-        idx += 1;
-      }
-      return `${size.toFixed(size < 10 && idx > 0 ? 1 : 0)} ${units[idx]}`;
-    }
+    function renderPendingAttachments(){uploadList.innerHTML="";pendingAttachments.forEach((f,i)=>{const row=document.createElement("div");row.className="upload-item";row.innerHTML=`<span>${f.name} · ${formatBytes(f.size)}</span><button type="button" class="admin-btn danger" data-remove-upload="${i}">Entfernen</button>`;uploadList.appendChild(row);});}
+    function renderMeasurePendingAttachments(){measureUploadList.innerHTML="";pendingMeasureAttachments.forEach((f,i)=>{const row=document.createElement("div");row.className="upload-item";row.innerHTML=`<span>${f.name} · ${formatBytes(f.size)}</span><button type="button" class="admin-btn danger" data-remove-measure-upload="${i}">Entfernen</button>`;measureUploadList.appendChild(row);});}
 
-    function slugify(value) {
-      return (value || "")
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]+/g, "_")
-        .replace(/^_+|_+$/g, "")
-        .slice(0, 80);
-    }
+    function renderEntries(){const entries=loadJson(CUSTOM_STORAGE_KEY);entryList.innerHTML="";if(!entries.length){entryList.innerHTML='<div class="admin-hint">Noch keine Bibliothekseinträge vorhanden.</div>';return;}
+      entries.forEach((entry,idx)=>{const card=document.createElement("article");card.className="entry-item";const tags=(entry.tags||[]).map(t=>`<span class="tag">#${t}</span>`).join("");const cats=(entry.categories||[]).join(", ");const ad=(entry.attachments||[]).length;
+        card.innerHTML=`<div class="entry-title-row"><strong>${entry.title}</strong><div><button type="button" class="admin-btn" data-edit-index="${idx}">Bearbeiten</button> <button type="button" class="admin-btn danger" data-delete-index="${idx}">Löschen</button></div></div><div>${entry.description||""}</div><div class="entry-meta">Kategorien: ${cats||"-"} · Version: ${entry.version||"-"} · Anhänge: ${ad}</div><div class="entry-tags">${tags}</div>`;entryList.appendChild(card);
+      });}
 
-    function readFileAsDataUrl(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(new Error(`Datei konnte nicht gelesen werden: ${file.name}`));
-        reader.readAsDataURL(file);
-      });
-    }
+    function renderMeasures(){const measures=loadJson(MEASURES_STORAGE_KEY);measureList.innerHTML="";if(!measures.length){measureList.innerHTML='<div class="admin-hint">Noch keine Maßnahmen vorhanden.</div>';return;}
+      measures.forEach((m,idx)=>{const card=document.createElement("article");card.className="entry-item";const links=(m.infoLinks||[]).join(", ");const at=(m.attachments||[]).length;
+        card.innerHTML=`<div class="entry-title-row"><strong>${m.titel}</strong><div><button type="button" class="admin-btn" data-measure-edit-index="${idx}">Bearbeiten</button> <button type="button" class="admin-btn danger" data-measure-delete-index="${idx}">Löschen</button></div></div><div>${m.infoText||""}</div><div class="entry-meta">Einsatzarten: ${(m.einsatzarten||[]).join(", ")} · Bereich: ${m.bereich} · Typ: ${m.type} · Anhänge: ${at}</div><div class="entry-meta">Links: ${links||"-"}</div>`;measureList.appendChild(card);
+      });}
 
-    function loadEntries() {
-      try {
-        const raw = localStorage.getItem(CUSTOM_STORAGE_KEY);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [];
-      } catch (error) {
-        console.warn("Bibliothekseinträge konnten nicht geladen werden", error);
-        return [];
-      }
-    }
+    attachmentsInput.addEventListener("change", e=>{pendingAttachments = pendingAttachments.concat(Array.from(e.target.files||[])); attachmentsInput.value=""; renderPendingAttachments();});
+    measureAttachmentsInput.addEventListener("change", e=>{pendingMeasureAttachments = pendingMeasureAttachments.concat(Array.from(e.target.files||[])); measureAttachmentsInput.value=""; renderMeasurePendingAttachments();});
+    uploadList.addEventListener("click",e=>{const b=e.target.closest("button[data-remove-upload]");if(!b)return;pendingAttachments.splice(Number(b.dataset.removeUpload),1);renderPendingAttachments();});
+    measureUploadList.addEventListener("click",e=>{const b=e.target.closest("button[data-remove-measure-upload]");if(!b)return;pendingMeasureAttachments.splice(Number(b.dataset.removeMeasureUpload),1);renderMeasurePendingAttachments();});
 
-    function saveEntries(entries) {
-      localStorage.setItem(CUSTOM_STORAGE_KEY, JSON.stringify(entries));
-    }
-
-    function renderPendingAttachments() {
-      uploadList.innerHTML = "";
-      if (!pendingAttachments.length) return;
-
-      pendingAttachments.forEach((file, idx) => {
-        const row = document.createElement("div");
-        row.className = "upload-item";
-        row.innerHTML = `
-          <span>${file.name} · ${formatBytes(file.size)}</span>
-          <button type="button" class="admin-btn danger" data-remove-upload="${idx}">Entfernen</button>
-        `;
-        uploadList.appendChild(row);
-      });
-    }
-
-    function renderEntries() {
-      const entries = loadEntries();
-      entryList.innerHTML = "";
-
-      if (!entries.length) {
-        const empty = document.createElement("div");
-        empty.className = "admin-hint";
-        empty.textContent = "Noch keine Bibliothekseinträge vorhanden.";
-        entryList.appendChild(empty);
-        return;
-      }
-
-      entries.forEach((entry, idx) => {
-        const card = document.createElement("article");
-        card.className = "entry-item";
-
-        const tags = (entry.tags || []).map(tag => `<span class="tag">#${tag}</span>`).join("");
-        const categories = (entry.categories || []).join(", ");
-        const attachmentCount = Array.isArray(entry.attachments) ? entry.attachments.length : 0;
-
-        card.innerHTML = `
-          <div class="entry-title-row">
-            <strong>${entry.title}</strong>
-            <button type="button" class="admin-btn danger" data-delete-index="${idx}">Löschen</button>
-          </div>
-          <div>${entry.description || ""}</div>
-          <div class="entry-meta">Kategorien: ${categories || "-"} · Version: ${entry.version || "-"} · Anhänge: ${attachmentCount}</div>
-          <div class="entry-tags">${tags}</div>
-        `;
-        entryList.appendChild(card);
-      });
-    }
-
-    async function handleFilesSelected(event) {
-      const fileList = Array.from(event.target.files || []);
-      if (!fileList.length) return;
-      pendingAttachments = pendingAttachments.concat(fileList);
-      attachmentsInput.value = "";
-      renderPendingAttachments();
-    }
-
-    async function handleSubmit(event) {
-      event.preventDefault();
-      statusMessage.textContent = "";
-
-      const formData = new FormData(form);
-      const title = (formData.get("title") || "").toString().trim();
-      const description = (formData.get("description") || "").toString().trim();
-      const version = (formData.get("version") || "").toString().trim();
-      const externalLink = (formData.get("externalLink") || "").toString().trim();
-      const categories = formData.getAll("categories").map(item => item.toString());
-      const tags = (formData.get("tags") || "")
-        .toString()
-        .split(",")
-        .map(tag => tag.trim().toLowerCase())
-        .filter(Boolean);
-
-      if (!title) {
-        statusMessage.textContent = "Bitte einen Titel eintragen.";
-        return;
-      }
-
-      if (!categories.length) {
-        statusMessage.textContent = "Bitte mindestens eine Kategorie auswählen.";
-        return;
-      }
-
-      let attachments = [];
-      try {
-        attachments = await Promise.all(
-          pendingAttachments.map(async file => ({
-            id: `${Date.now()}_${Math.random().toString(16).slice(2)}`,
-            name: file.name,
-            type: file.type || "application/octet-stream",
-            size: file.size,
-            dataUrl: await readFileAsDataUrl(file)
-          }))
-        );
-      } catch (error) {
-        statusMessage.textContent = error.message || "Datei-Upload fehlgeschlagen.";
-        return;
-      }
-
-      const entries = loadEntries();
-      const idBase = slugify(title) || `eintrag_${Date.now()}`;
-
-      entries.unshift({
-        id: `${idBase}_${Date.now()}`,
-        title,
-        description,
-        version,
-        categories,
-        tags,
-        link: externalLink,
-        attachments,
-        createdAt: new Date().toISOString(),
-        source: "admin"
-      });
-
-      try {
-        saveEntries(entries);
-        form.reset();
-        pendingAttachments = [];
-        renderPendingAttachments();
-        renderEntries();
-        statusMessage.textContent = "Eintrag erfolgreich gespeichert. Er ist jetzt in der Bibliothek sichtbar.";
-      } catch (error) {
-        statusMessage.textContent = "Speichern fehlgeschlagen (eventuell Speicherlimit des Browsers erreicht).";
-      }
-    }
-
-    uploadList.addEventListener("click", (event) => {
-      const button = event.target.closest("button[data-remove-upload]");
-      if (!button) return;
-      const index = Number(button.dataset.removeUpload);
-      if (Number.isNaN(index)) return;
-      pendingAttachments.splice(index, 1);
-      renderPendingAttachments();
+    form.addEventListener("submit", async e => {
+      e.preventDefault(); statusMessage.textContent="";
+      const fd = new FormData(form); const entries=loadJson(CUSTOM_STORAGE_KEY);
+      const title=(fd.get("title")||"").toString().trim(); const categories=fd.getAll("categories").map(String); if(!title || !categories.length){statusMessage.textContent="Titel und mindestens eine Kategorie sind Pflicht.";return;}
+      let attachments=[]; try{attachments=await Promise.all(pendingAttachments.map(async file=>({id:`${Date.now()}_${Math.random().toString(16).slice(2)}`,name:file.name,type:file.type||"application/octet-stream",size:file.size,dataUrl:await readFileAsDataUrl(file)})));}catch(err){statusMessage.textContent=err.message;return;}
+      const payload={id: libraryEditId.value || `${slugify(title)||"eintrag"}_${Date.now()}`, title, description:(fd.get("description")||"").toString().trim(), version:(fd.get("version")||"").toString().trim(), categories, tags:(fd.get("tags")||"").toString().split(",").map(t=>t.trim().toLowerCase()).filter(Boolean), link:(fd.get("externalLink")||"").toString().trim(), attachments, createdAt:new Date().toISOString(), source:"admin"};
+      const idx = entries.findIndex(x=>x.id===payload.id); if(idx>=0) entries[idx]=payload; else entries.unshift(payload); saveJson(CUSTOM_STORAGE_KEY, entries); clearLibraryForm(); renderEntries(); statusMessage.textContent="Bibliothekseintrag gespeichert.";
     });
 
-    entryList.addEventListener("click", (event) => {
-      const button = event.target.closest("button[data-delete-index]");
-      if (!button) return;
-      const index = Number(button.dataset.deleteIndex);
-      if (Number.isNaN(index)) return;
-
-      const entries = loadEntries();
-      entries.splice(index, 1);
-      saveEntries(entries);
-      renderEntries();
-      statusMessage.textContent = "Eintrag gelöscht.";
+    measureForm.addEventListener("submit", async e => {
+      e.preventDefault(); measureStatus.textContent="";
+      const fd=new FormData(measureForm); const measures=loadJson(MEASURES_STORAGE_KEY);
+      const titel=(fd.get("measureTitle")||"").toString().trim(); const einsatzarten=fd.getAll("einsatzarten").map(String); if(!titel || !einsatzarten.length){measureStatus.textContent="Titel und mindestens eine Einsatzart sind Pflicht.";return;}
+      const type=(fd.get("measureType")||"optional").toString(); const intervalRaw=(fd.get("measureIntervall")||"").toString().trim(); const intervallMinutes = type==="intervall" ? Number(intervalRaw||0) : null;
+      if(type==="intervall" && (!Number.isFinite(intervallMinutes) || intervallMinutes<=0)){measureStatus.textContent="Für Intervall bitte Minuten > 0 eingeben.";return;}
+      let attachments=[]; try{attachments=await Promise.all(pendingMeasureAttachments.map(async file=>({id:`${Date.now()}_${Math.random().toString(16).slice(2)}`,name:file.name,type:file.type||"application/octet-stream",size:file.size,dataUrl:await readFileAsDataUrl(file)})));}catch(err){measureStatus.textContent=err.message;return;}
+      const payload={id: measureEditId.value || `admin_massnahme_${Date.now()}_${Math.random().toString(16).slice(2,8)}`, titel, bereich:(fd.get("measureBereich")||"eintreffen").toString(), type, intervallMinutes, infoText:(fd.get("measureInfo")||"").toString().trim(), infoLinks:(fd.get("measureLinks")||"").toString().split(",").map(x=>x.trim()).filter(Boolean), einsatzarten, attachments, source:"admin", createdAt:new Date().toISOString()};
+      const idx=measures.findIndex(x=>x.id===payload.id); if(idx>=0) measures[idx]=payload; else measures.unshift(payload); saveJson(MEASURES_STORAGE_KEY, measures); clearMeasureForm(); renderMeasures(); measureStatus.textContent="Maßnahme gespeichert.";
     });
 
-    attachmentsInput.addEventListener("change", handleFilesSelected);
-    form.addEventListener("submit", handleSubmit);
+    entryList.addEventListener("click",e=>{const edit=e.target.closest("button[data-edit-index]");const del=e.target.closest("button[data-delete-index]");const entries=loadJson(CUSTOM_STORAGE_KEY);
+      if(edit){const item=entries[Number(edit.dataset.editIndex)];if(!item)return;libraryEditId.value=item.id;form.title.value=item.title||"";form.version.value=item.version||"";form.description.value=item.description||"";form.tags.value=(item.tags||[]).join(", ");form.externalLink.value=item.link||"";form.querySelectorAll("input[name='categories']").forEach(cb=>cb.checked=(item.categories||[]).includes(cb.value));pendingAttachments=[];renderPendingAttachments();statusMessage.textContent="Bearbeitungsmodus aktiv.";return;}
+      if(del){entries.splice(Number(del.dataset.deleteIndex),1);saveJson(CUSTOM_STORAGE_KEY,entries);renderEntries();statusMessage.textContent="Eintrag gelöscht.";}
+    });
 
-    renderEntries();
+    measureList.addEventListener("click",e=>{const edit=e.target.closest("button[data-measure-edit-index]");const del=e.target.closest("button[data-measure-delete-index]");const measures=loadJson(MEASURES_STORAGE_KEY);
+      if(edit){const m=measures[Number(edit.dataset.measureEditIndex)];if(!m)return;measureEditId.value=m.id;measureForm.measureTitle.value=m.titel||"";measureForm.measureBereich.value=m.bereich||"eintreffen";measureForm.measureType.value=m.type||"optional";measureForm.measureIntervall.value=m.intervallMinutes||"";measureForm.measureInfo.value=m.infoText||"";measureForm.measureLinks.value=(m.infoLinks||[]).join(", ");measureForm.querySelectorAll("input[name='einsatzarten']").forEach(cb=>cb.checked=(m.einsatzarten||[]).includes(cb.value));pendingMeasureAttachments=[];renderMeasurePendingAttachments();measureStatus.textContent="Bearbeitungsmodus aktiv.";return;}
+      if(del){measures.splice(Number(del.dataset.measureDeleteIndex),1);saveJson(MEASURES_STORAGE_KEY,measures);renderMeasures();measureStatus.textContent="Maßnahme gelöscht.";}
+    });
+
+    libraryResetBtn.addEventListener("click", clearLibraryForm);
+    document.getElementById("measureReset").addEventListener("click", clearMeasureForm);
+    renderEntries(); renderMeasures();
   </script>
 </body>
 </html>

@@ -172,6 +172,20 @@
       font-size: 0.98rem;
       font-weight: 600;
       color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lesson-learned-badge {
+      font-size: 0.68rem;
+      background: #f3e8ff;
+      color: #6d28d9;
+      border: 1px solid #c4b5fd;
+      border-radius: 999px;
+      padding: 2px 7px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
     }
 
     .entry-description {
@@ -199,6 +213,11 @@
 
     .entry-version {
       color: var(--muted);
+    }
+
+    .entry-date {
+      color: #4b5563;
+      font-weight: 500;
     }
 
     .entry-tags {
@@ -349,6 +368,12 @@
           title: "Allgemeine Informationen",
           icon: "icon-info",
           color: "#004080"
+        },
+        {
+          id: "lessonlearned",
+          title: "Lesson Learned",
+          icon: "icon-bookmark",
+          color: "#7c3aed"
         }
       ],
       entries: [
@@ -430,7 +455,7 @@
         const LESSONS_STORAGE_KEY = "bibliothek_lessons_learned";
     const CUSTOM_STORAGE_KEY = "bibliothek_custom_entries_v1";
 
-      function loadLessonLearnedEntries() {␊
+      function loadLessonLearnedEntries() {
       try {
         const raw = localStorage.getItem(LESSONS_STORAGE_KEY);
         if (!raw) return [];
@@ -441,9 +466,11 @@
           id: item.id || `lesson_learned_${index}`,
           title: item.title || "Lesson Learned",
           description: item.description || "",
-          categories: ["einsatzbearbeitung"],
+          categories: ["lessonlearned"],
           tags: ["lessonlearned", ...(Array.isArray(item.tags) ? item.tags : [])],
-          version: item.source ? `aus ${item.source}` : "lokaler Eintrag"
+          version: item.source ? `aus ${item.source}` : "lokaler Eintrag",
+          createdAt: item.createdAt || null,
+          isLessonLearned: true
         }));
       } catch (error) {
         console.warn("Lessons Learned konnten nicht geladen werden:", error);
@@ -466,7 +493,9 @@
           tags: Array.isArray(item.tags) ? item.tags : [],
           link: item.link || "",
           version: item.version || "lokaler Eintrag",
-          attachments: Array.isArray(item.attachments) ? item.attachments : []
+          attachments: Array.isArray(item.attachments) ? item.attachments : [],
+          createdAt: item.createdAt || null,
+          isLessonLearned: Array.isArray(item.categories) && item.categories.includes("lessonlearned")
         }));
       } catch (error) {
         console.warn("Benutzerdefinierte Bibliothekseinträge konnten nicht geladen werden:", error);
@@ -489,6 +518,13 @@
 
     function normalise(str) {
       return (str || "").toString().toLowerCase();
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "";
+      return new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeStyle: "short" }).format(date);
     }
 
     function buildCategories() {
@@ -577,6 +613,12 @@
         const titleEl = document.createElement("h3");
         titleEl.className = "entry-title";
         titleEl.textContent = entry.title;
+        if (entry.isLessonLearned) {
+          const badge = document.createElement("span");
+          badge.className = "lesson-learned-badge";
+          badge.textContent = "Lesson Learned";
+          titleEl.appendChild(badge);
+        }
 
         const descEl = document.createElement("p");
         descEl.className = "entry-description";
@@ -594,12 +636,20 @@
           metaEl.appendChild(pill);
         });
 
-        if (entry.version) {␊
+        if (entry.version) {
           const versionSpan = document.createElement("span");
           versionSpan.className = "entry-version";
           versionSpan.textContent = "Version " + entry.version;
           metaEl.appendChild(versionSpan);
-        } 
+        }
+
+        const formattedDate = formatDate(entry.createdAt);
+        if (formattedDate) {
+          const dateSpan = document.createElement("span");
+          dateSpan.className = "entry-date";
+          dateSpan.textContent = `Eintragsdatum ${formattedDate}`;
+          metaEl.appendChild(dateSpan);
+        }
 
         if (Array.isArray(entry.attachments) && entry.attachments.length > 0) {
           const attachmentBadge = document.createElement("span");
@@ -620,7 +670,7 @@
         const actions = document.createElement("div");
         actions.className = "entry-actions";
 
-        if (entry.link) {␊
+        if (entry.link) {
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "entry-link-btn";
@@ -703,4 +753,3 @@
   </script>
 </body>
 </html>
-

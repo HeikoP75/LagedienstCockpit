@@ -473,6 +473,26 @@ header {
     </div>
 </div>
 
+<!-- MODAL: Lesson Learned speichern -->
+<div id="lessonLearnedModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width:520px;">
+        <h3>Lesson Learned speichern</h3>
+        <label for="ll_title">Titel</label>
+        <input type="text" id="ll_title" maxlength="80" placeholder="Kurzer Titel">
+
+        <label for="ll_description">Beschreibung</label>
+        <textarea id="ll_description" rows="4" style="width:100%; box-sizing:border-box; border-radius:6px; border:1px solid #b0bec5; padding:8px;" placeholder="Was soll für künftige Einsätze festgehalten werden?"></textarea>
+
+        <label for="ll_tags">Stichworte (kommagetrennt)</label>
+        <input type="text" id="ll_tags" maxlength="120" placeholder="z. B. lagebild, kommunikation, alarmierung">
+
+        <div class="modal-buttons" style="margin-top:14px;">
+            <button class="primary-btn" id="ll_save">Speichern</button>
+            <button class="secondary-btn" id="ll_cancel">Abbrechen</button>
+        </div>
+    </div>
+</div>
+
 <header class="global-nav">
     <div class="global-nav-left">
         <a href="index.html" class="nav-link" title="Zur Startseite">
@@ -587,7 +607,11 @@ header {
   </span>
 
   <span class="einsatz-link">
-    🧠 <a id="flagLL" href="bibliothek.html">Lessons Learned</a>
+    🧠 <a id="flagLL" href="bibliothek.html?category=einsatzbearbeitung&q=lesson+learned">Lessons Learned</a>
+  </span>
+
+  <span class="einsatz-link">
+    💾 <button type="button" class="secondary-btn" id="openLessonLearned">Lesson Learned speichern</button>
   </span>
 
 </div>
@@ -842,6 +866,8 @@ header {
 <script>
 
 const EINSATZ_ID = "feuer_aktueller_einsatz";
+const EINSATZART_LABEL = "Feuer";
+const LESSONS_STORAGE_KEY = "bibliothek_lessons_learned";
 
 /* ----------------------------------------------------
    Hilfsfunktionen
@@ -863,6 +889,70 @@ function buildPdfFilename() {
     const d  = new Date();
     const t  = n => String(n).padStart(2,"0");
     return `${d.getFullYear()}-${t(d.getMonth()+1)}-${t(d.getDate())}_${nr}.pdf`;
+}
+
+
+function openLessonLearnedModal() {
+    document.getElementById("lessonLearnedModal").style.display = "block";
+}
+
+function closeLessonLearnedModal() {
+    document.getElementById("lessonLearnedModal").style.display = "none";
+}
+
+function saveLessonLearned() {
+    const title = document.getElementById("ll_title").value.trim();
+    const description = document.getElementById("ll_description").value.trim();
+    const tags = document.getElementById("ll_tags").value.split(",").map(x => x.trim()).filter(Boolean);
+
+    if (!title || !description) {
+        alert("Bitte Titel und Beschreibung für das Lesson Learned eintragen.");
+        return;
+    }
+
+    let lessons = [];
+    try {
+        const raw = localStorage.getItem(LESSONS_STORAGE_KEY);
+        lessons = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(lessons)) lessons = [];
+    } catch (_) {
+        lessons = [];
+    }
+
+    const einsatznummer = document.getElementById("einsatznummer").value.trim() || "ohne Einsatznummer";
+    const einsatzstichwort = document.getElementById("einsatzstichwort").value.trim();
+
+    lessons.unshift({
+        id: `ll_${Date.now()}`,
+        title,
+        description,
+        tags,
+        source: `${EINSATZART_LABEL}${einsatzstichwort ? ` – ${einsatzstichwort}` : ""} (${einsatznummer})`,
+        createdAt: new Date().toISOString()
+    });
+
+    localStorage.setItem(LESSONS_STORAGE_KEY, JSON.stringify(lessons));
+    localStorage.setItem("ll_" + EINSATZ_ID, "true");
+
+    document.getElementById("ll_title").value = "";
+    document.getElementById("ll_description").value = "";
+    document.getElementById("ll_tags").value = "";
+
+    const llLink = document.getElementById("flagLL");
+    if (llLink) llLink.classList.add("einsatz-aktiv");
+
+    closeLessonLearnedModal();
+    alert("Lesson Learned wurde in der Bibliothek gespeichert.");
+}
+
+function initLessonLearnedActions() {
+    const openBtn = document.getElementById("openLessonLearned");
+    const saveBtn = document.getElementById("ll_save");
+    const cancelBtn = document.getElementById("ll_cancel");
+
+    if (openBtn) openBtn.addEventListener("click", openLessonLearnedModal);
+    if (saveBtn) saveBtn.addEventListener("click", saveLessonLearned);
+    if (cancelBtn) cancelBtn.addEventListener("click", closeLessonLearnedModal);
 }
 
 /* ----------------------------------------------------
@@ -2251,6 +2341,7 @@ window.onload = () => {
     });
 
     setInterval(tickIntervalMassnahmen, 10000);
+    initLessonLearnedActions();
 	
 	
 

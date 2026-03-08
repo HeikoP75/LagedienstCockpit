@@ -414,11 +414,35 @@
       ]
     };
 
+    const LESSONS_STORAGE_KEY = "bibliothek_lessons_learned";
+
+    function loadLessonLearnedEntries() {
+      try {
+        const raw = localStorage.getItem(LESSONS_STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+
+        return parsed.map((item, index) => ({
+          id: item.id || `lesson_learned_${index}`,
+          title: item.title || "Lesson Learned",
+          description: item.description || "",
+          categories: ["einsatzbearbeitung"],
+          tags: ["lessonlearned", ...(Array.isArray(item.tags) ? item.tags : [])],
+          version: item.source ? `aus ${item.source}` : "lokaler Eintrag"
+        }));
+      } catch (error) {
+        console.warn("Lessons Learned konnten nicht geladen werden:", error);
+        return [];
+      }
+    }
+
     // -----------------------------
     // Zustand & Initialisierung
     // -----------------------------
     let activeCategoryId = "alle";
     let currentSearchTerm = "";
+    let lessonLearnedEntries = [];
 
     const categoryContainer = document.getElementById("categoryContainer");
     const searchInput = document.getElementById("searchInput");
@@ -468,7 +492,8 @@
 
     function filterEntries() {
       const term = normalise(currentSearchTerm);
-      return bibliothekData.entries.filter(entry => {
+      const allEntries = [...bibliothekData.entries, ...lessonLearnedEntries];
+      return allEntries.filter(entry => {
         // Kategorie-Filter
         if (activeCategoryId !== "alle" && !entry.categories.includes(activeCategoryId)) {
           return false;
@@ -586,10 +611,31 @@
       });
     }
 
+    function applyUrlPreset() {
+      const params = new URLSearchParams(window.location.search);
+      const presetCategory = params.get("category");
+      const presetSearch = params.get("q");
+
+      if (presetSearch) {
+        currentSearchTerm = presetSearch;
+        searchInput.value = presetSearch;
+      }
+
+      if (presetCategory) {
+        activeCategoryId = presetCategory;
+      }
+
+      document.querySelectorAll(".category-chip").forEach(chip => {
+        chip.classList.toggle("active", chip.dataset.categoryId === activeCategoryId);
+      });
+    }
+
     function initBibliothek() {
+      lessonLearnedEntries = loadLessonLearnedEntries();
       buildCategories();
       initSearch();
-      renderResults(); // initialer Zustand (leer / Hinweis)
+      applyUrlPreset();
+      renderResults();
     }
 
     window.addEventListener("DOMContentLoaded", initBibliothek);

@@ -674,6 +674,7 @@ header {
                     <input type="number" id="neu_massnahme_intervall">
                 </div>
             </div>
+			<label style="display:block; margin:8px 0; font-size:13px; color:#455a64;"><input type="checkbox" id="neu_massnahme_in_db"> Als Maßnahme in den Adminbereich übernehmen</label>
             <button class="secondary-btn" onclick="addMassnahmeNeu()">✔ Maßnahme speichern</button>
         </div>
 
@@ -886,6 +887,7 @@ header {
 const EINSATZ_ID = "gefahrgut_aktueller_einsatz";
 const EINSATZART_LABEL = "Gefahrgut";
 const LESSONS_STORAGE_KEY = "bibliothek_lessons_learned";
+	const ADMIN_MASSNAHMEN_STORAGE_KEY = "admin_massnahmen_v1";
 
 /* ----------------------------------------------------
    Hilfsfunktionen
@@ -1517,6 +1519,73 @@ let massnahmen = [
 
 ];
 
+	function getAktiveEinsatzart() {
+    return (EINSATZ_ID || "").split("_")[0];
+}
+
+function loadAdminMassnahmen() {
+    try {
+        const raw = localStorage.getItem(ADMIN_MASSNAHMEN_STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(parsed)) return [];
+
+        return parsed
+            .filter(item => Array.isArray(item.einsatzarten) && item.einsatzarten.includes(getAktiveEinsatzart()))
+            .map(item => ({
+                id: item.id || `admin_${Date.now()}`,
+                titel: item.titel || "Admin-Maßnahme",
+                bereich: item.bereich || "eintreffen",
+                type: item.type || "optional",
+                intervallMinutes: item.type === "intervall" ? Number(item.intervallMinutes || 0) || null : null,
+                status: "offen",
+                nextDue: item.type === "intervall" && Number(item.intervallMinutes) > 0 ? Date.now() + Number(item.intervallMinutes) * 60000 : null,
+                dueState: "neutral",
+                infoText: item.infoText || "",
+                infoLinks: Array.isArray(item.infoLinks) ? item.infoLinks.join(", ") : (item.infoLinks || ""),
+                infoOpen: false,
+                attachments: Array.isArray(item.attachments) ? item.attachments : [],
+                source: "admin"
+            }));
+    } catch (error) {
+        console.warn("Admin-Maßnahmen konnten nicht geladen werden", error);
+        return [];
+    }
+}
+
+function mergeAdminMassnahmen() {
+    const existingIds = new Set(massnahmen.map(m => m.id));
+    const adminMassnahmen = loadAdminMassnahmen().filter(m => !existingIds.has(m.id));
+    if (adminMassnahmen.length) {
+        massnahmen = massnahmen.concat(adminMassnahmen);
+    }
+}
+
+function saveMassnahmeToAdminCatalog(m) {
+    try {
+        const raw = localStorage.getItem(ADMIN_MASSNAHMEN_STORAGE_KEY);
+        const catalog = raw ? JSON.parse(raw) : [];
+        const list = Array.isArray(catalog) ? catalog : [];
+
+        list.unshift({
+            id: `admin_massnahme_${Date.now()}_${Math.random().toString(16).slice(2, 8)}`,
+            titel: m.titel,
+            bereich: m.bereich,
+            type: m.type,
+            intervallMinutes: m.intervallMinutes || null,
+            infoText: m.infoText || "",
+            infoLinks: m.infoLinks ? m.infoLinks.split(",").map(x => x.trim()).filter(Boolean) : [],
+            attachments: [],
+            einsatzarten: [getAktiveEinsatzart()],
+            source: "einsatzseite",
+            createdAt: new Date().toISOString()
+        });
+
+        localStorage.setItem(ADMIN_MASSNAHMEN_STORAGE_KEY, JSON.stringify(list));
+    } catch (error) {
+        console.warn("Maßnahme konnte nicht in den Adminkatalog gespeichert werden", error);
+    }
+}
+
 /* ----------------------------------------------------
    CSS-Klassen für Maßnahmen
 ---------------------------------------------------- */
@@ -1772,10 +1841,17 @@ function addMassnahmeNeu() {
 
     massnahmen.push(m);
 
+     const storeInAdmin = document.getElementById("neu_massnahme_in_db");
+    if (storeInAdmin && storeInAdmin.checked) {
+        saveMassnahmeToAdminCatalog(m);
+    }
+
     document.getElementById("neu_massnahme_titel").value = "";
     document.getElementById("neu_massnahme_bereich").value = "";
     document.getElementById("neu_massnahme_intervall").value = "";
     document.querySelectorAll("input[name='neu_massnahme_typ']").forEach(r => r.checked = false);
+    const storeInAdminReset = document.getElementById("neu_massnahme_in_db");
+    if (storeInAdminReset) storeInAdminReset.checked = false;
 
     renderMassnahmen();
 }
@@ -2292,6 +2368,7 @@ function importStateJSON(ev) {
    Initialisierung
 ---------------------------------------------------- */
 window.onload = () => {
+	mergeAdminMassnahmen();
     renderMassnahmen();
 	    // Modal-Schließen: sichere Initialisierung
     const modalBtn = document.getElementById("lagebildModalClose");

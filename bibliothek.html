@@ -220,6 +220,8 @@
       margin-top: 6px;
       display: flex;
       justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 6px;
     }
 
     .entry-link-btn {
@@ -243,6 +245,17 @@
 
     .entry-link-btn:active {
       transform: scale(0.97);
+    }
+
+    .attachment-badge {
+      font-size: 0.72rem;
+      background: #eef3fa;
+      color: var(--primary);
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-top: 4px;
+      display: inline-flex;
+      width: fit-content;
     }
 
     .empty-state {
@@ -415,6 +428,7 @@
     };
 
     const LESSONS_STORAGE_KEY = "bibliothek_lessons_learned";
+    const CUSTOM_STORAGE_KEY = "bibliothek_custom_entries_v1";
 
     function loadLessonLearnedEntries() {
       try {
@@ -437,12 +451,36 @@
       }
     }
 
+    function loadCustomEntries() {
+      try {
+        const raw = localStorage.getItem(CUSTOM_STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+
+        return parsed.map((item, index) => ({
+          id: item.id || `custom_${index}`,
+          title: item.title || "Bibliothekseintrag",
+          description: item.description || "",
+          categories: Array.isArray(item.categories) && item.categories.length ? item.categories : ["allgemein"],
+          tags: Array.isArray(item.tags) ? item.tags : [],
+          link: item.link || "",
+          version: item.version || "lokaler Eintrag",
+          attachments: Array.isArray(item.attachments) ? item.attachments : []
+        }));
+      } catch (error) {
+        console.warn("Benutzerdefinierte Bibliothekseinträge konnten nicht geladen werden:", error);
+        return [];
+      }
+    }
+
     // -----------------------------
     // Zustand & Initialisierung
     // -----------------------------
     let activeCategoryId = "alle";
     let currentSearchTerm = "";
     let lessonLearnedEntries = [];
+    let customEntries = [];
 
     const categoryContainer = document.getElementById("categoryContainer");
     const searchInput = document.getElementById("searchInput");
@@ -492,7 +530,7 @@
 
     function filterEntries() {
       const term = normalise(currentSearchTerm);
-      const allEntries = [...bibliothekData.entries, ...lessonLearnedEntries];
+      const allEntries = [...bibliothekData.entries, ...lessonLearnedEntries, ...customEntries];
       return allEntries.filter(entry => {
         // Kategorie-Filter
         if (activeCategoryId !== "alle" && !entry.categories.includes(activeCategoryId)) {
@@ -563,6 +601,13 @@
           metaEl.appendChild(versionSpan);
         }
 
+        if (Array.isArray(entry.attachments) && entry.attachments.length > 0) {
+          const attachmentBadge = document.createElement("span");
+          attachmentBadge.className = "attachment-badge";
+          attachmentBadge.textContent = `${entry.attachments.length} Anhang/Anhänge verfügbar`;
+          metaEl.appendChild(attachmentBadge);
+        }
+
         const tagsWrapper = document.createElement("div");
         tagsWrapper.className = "entry-tags";
         (entry.tags || []).forEach(tag => {
@@ -585,6 +630,21 @@
             window.open(entry.link, "_blank");
           });
           actions.appendChild(btn);
+        }
+
+        if (Array.isArray(entry.attachments) && entry.attachments.length > 0) {
+          entry.attachments.forEach((attachment, index) => {
+            if (!attachment || !attachment.dataUrl) return;
+
+            const attachmentBtn = document.createElement("button");
+            attachmentBtn.type = "button";
+            attachmentBtn.className = "entry-link-btn";
+            attachmentBtn.innerHTML = `<span>Anhang: ${attachment.name || "Datei " + (index + 1)}</span><span>↗</span>`;
+            attachmentBtn.addEventListener("click", () => {
+              window.open(attachment.dataUrl, "_blank");
+            });
+            actions.appendChild(attachmentBtn);
+          });
         }
 
         card.appendChild(titleEl);
@@ -632,6 +692,7 @@
 
     function initBibliothek() {
       lessonLearnedEntries = loadLessonLearnedEntries();
+      customEntries = loadCustomEntries();
       buildCategories();
       initSearch();
       applyUrlPreset();

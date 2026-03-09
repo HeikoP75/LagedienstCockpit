@@ -376,84 +376,19 @@
           color: "#7c3aed"
         }
       ],
-      entries: [
-        {
-          id: "lagebild_erweitert",
-          title: "Erweitertes Lagebild – Ausfüllhilfe",
-          description: "Leitfaden zur Erstellung, Ausfüllung und Versendung des erweiterten Lagebildes in der Einsatzbearbeitung. Mit Pflichtfeldern und Versandweg KMvD.",
-          categories: ["einsatzbearbeitung"],
-          tags: ["lagebild", "kmvd", "einsatzleitung", "uebergabe"],
-          link: "docs/lagebild_erweitert.html",
-          version: "1.0"
-        },
-        {
-          id: "kmvd_informieren_checkliste",
-          title: "KMvD informieren – Checkliste",
-          description: "Pflichtschritte zur Information des KMvD bei definierten Einsatzereignissen. Strukturierte Orientierung für LDF.",
-          categories: ["einsatzbearbeitung"],
-          tags: ["kmvd", "einsatz", "checkliste", "pflichtmassnahme"],
-          link: "docs/kmvd_checkliste.html",
-          version: "1.1"
-        },
-        {
-          id: "massnahmenkatalog_einsatz",
-          title: "Maßnahmenkatalog Einsatzbearbeitung",
-          description: "Übersicht der Maßnahmen je Einsatzart inkl. Pflichtmaßnahmen und Zeitüberwachung. Bindend für LDF im Einsatzfall.",
-          categories: ["einsatzbearbeitung"],
-          tags: ["massnahmen", "einsatz", "katalog", "pflichtmassnahmen"],
-          link: "docs/massnahmen_einsatz.html",
-          version: "2.0"
-        },
-        {
-          id: "stoerung_telefonie_it",
-          title: "Störungsprozess – Telefonie/IT",
-          description: "Ablaufbeschreibung zur Meldung und Bearbeitung von Störungen im Bereich IT, Kommunikation und Telefonie. Mit Eskalationswegen.",
-          categories: ["stoerungsbearbeitung"],
-          tags: ["stoerung", "it", "telefonie", "kommunikation", "prozess"],
-          link: "docs/stoerung_it.html",
-          version: "1.2"
-        },
-        {
-          id: "stoerungsmatrix_leitnetz",
-          title: "Störungsmatrix Leitnetz",
-          description: "Matrix zur Bewertung und Meldung von Leitnetz-Störungen mit Ansprechpartnern und Eskalationsstufen.",
-          categories: ["stoerungsbearbeitung"],
-          tags: ["stoerung", "leitnetz", "matrix", "kommunikation"],
-          link: "docs/stoerungsmatrix_leitnetz.pdf",
-          version: "1.0"
-        },
-        {
-          id: "organigramm_sicherheitszentrale",
-          title: "Organigramm Sicherheitszentrale",
-          description: "Organisatorische Struktur der Sicherheitszentrale mit Rollen, Verantwortlichkeiten und Kommunikationswegen.",
-          categories: ["allgemein"],
-          tags: ["organisation", "struktur", "sicherheitszentrale", "rollen"],
-          link: "docs/organigramm_szz.pdf",
-          version: "1.0"
-        },
-        {
-          id: "kommunikationswege_intern",
-          title: "Kommunikationswege intern",
-          description: "Übersicht der offiziellen Kommunikationskanäle, Erreichbarkeiten und Abläufe für interne Informationsketten.",
-          categories: ["allgemein"],
-          tags: ["kommunikation", "intern", "erreichbarkeit", "wege"],
-          link: "docs/kommunikationswege.html",
-          version: "1.0"
-        },
-        {
-          id: "glossar_fachbegriffe",
-          title: "Glossar – zentrale Fachbegriffe",
-          description: "Erklärung relevanter Begriffe aus Einsatzbearbeitung, Störungsbearbeitung, IT und Organisation (fortlaufend erweiterbar).",
-          categories: ["allgemein"],
-          tags: ["glossar", "begriffe", "erklaerung", "definition"],
-          link: "docs/glossar.html",
-          version: "0.9"
-        }
-      ]
+        entries: []
     };
 
-        const LESSONS_STORAGE_KEY = "bibliothek_lessons_learned";
+    const BIBLIOTHEK_RESET_FLAG = "bibliothek_reset_done_v1";
+    const LESSONS_STORAGE_KEY = "bibliothek_lessons_learned";
     const CUSTOM_STORAGE_KEY = "bibliothek_custom_entries_v1";
+
+    function resetLegacyBibliothekEntriesOnce() {
+      if (localStorage.getItem(BIBLIOTHEK_RESET_FLAG) === "1") return;
+      localStorage.removeItem(LESSONS_STORAGE_KEY);
+      localStorage.removeItem(CUSTOM_STORAGE_KEY);
+      localStorage.setItem(BIBLIOTHEK_RESET_FLAG, "1");
+    }
 
       function loadLessonLearnedEntries() {
       try {
@@ -753,3 +688,4 @@
   </script>
 </body>
 </html>
+

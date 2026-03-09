@@ -42,13 +42,82 @@ main{max-width:1100px;margin:16px auto;padding:0 12px}.card{background:#fff;bord
 </main>
 <script>
 const KEY='admin_massnahmen_v1';
+  const EINSATZARTEN_QUELLEN=[
+  {id:'feuer',file:'feuer.html'},
+  {id:'hilfeleistung',file:'hilfeleistung.html'},
+  {id:'gefahrgut',file:'gefahrgut.html'}
+];
 const form=document.getElementById('measureForm'),list=document.getElementById('list'),statusEl=document.getElementById('status'),editId=document.getElementById('measureEditId');
 function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return []}}
 function save(v){localStorage.setItem(KEY,JSON.stringify(v))}
 function clearForm(){form.reset();editId.value='';statusEl.textContent='';}
-function render(){const arr=load();list.innerHTML='';if(!arr.length){list.innerHTML='<p class="muted">Noch keine Maßnahmen vorhanden.</p>';return;}arr.forEach((m,i)=>{const el=document.createElement('div');el.className='item';el.innerHTML=`<div class="row"><strong>${m.titel||'-'}</strong><div><button class="btn" data-edit="${i}" type="button">Bearbeiten</button> <button class="btn" data-del="${i}" type="button">Löschen</button></div></div><div class="muted">Bereich: ${m.bereich||'-'} · Typ: ${m.type||'optional'}${m.intervallMinutes?` (${m.intervallMinutes} min)`:''}</div><div class="muted">Einsatzarten: ${(m.einsatzarten||[]).join(', ')||'-'}</div>`;list.appendChild(el);});}
+function getMassnahmenArrayLiteral(html){
+  const marker='let massnahmen = [';
+  const start=html.indexOf(marker);
+  if(start<0)return null;
+  const open=html.indexOf('[',start);
+  let depth=0;
+  for(let i=open;i<html.length;i++){
+    if(html[i]==='[')depth++;
+    if(html[i]===']'){
+      depth--;
+      if(depth===0)return html.slice(open,i+1);
+    }
+  }
+  return null;
+}
+async function loadBasisMassnahmen(){
+  const byId=new Map();
+  for(const q of EINSATZARTEN_QUELLEN){
+    try{
+      const text=await (await fetch(q.file,{cache:'no-store'})).text();
+      const literal=getMassnahmenArrayLiteral(text);
+      if(!literal)continue;
+      const arr=Function(`"use strict";return (${literal});`)();
+      if(!Array.isArray(arr))continue;
+      for(const raw of arr){
+        if(!raw||!raw.id||!raw.titel)continue;
+        const existing=byId.get(raw.id);
+        if(existing){
+          const set=new Set([...(existing.einsatzarten||[]),q.id]);
+          existing.einsatzarten=[...set];
+          continue;
+        }
+        byId.set(raw.id,{...raw,einsatzarten:[q.id],source:raw.source||'basis'});
+      }
+    }catch(err){
+      console.warn(`Basis-Maßnahmen aus ${q.file} konnten nicht geladen werden.`,err);
+    }
+  }
+  return [...byId.values()];
+}
+async function ensureBasisMassnahmen(){
+  const arr=load();
+  const basis=await loadBasisMassnahmen();
+  if(!basis.length)return false;
+  const map=new Map(arr.map(m=>[m.id,m]));
+  let changed=false;
+  for(const m of basis){
+    const existing=map.get(m.id);
+    if(!existing){
+      map.set(m.id,m);
+      changed=true;
+      continue;
+    }
+    const mergedTypes=[...(existing.einsatzarten||[]),...(m.einsatzarten||[])];
+    const einsatzarten=[...new Set(mergedTypes.filter(Boolean))];
+    if(einsatzarten.length!==(existing.einsatzarten||[]).length){
+      existing.einsatzarten=einsatzarten;
+      changed=true;
+    }
+  }
+  if(changed)save([...map.values()]);
+  return changed;
+}
+function render(){const arr=load();list.innerHTML='';if(!arr.length){list.innerHTML='<p class="muted">Noch keine Maßnahmen vorhanden.</p>';return;}arr.forEach((m,i)=>{const el=document.createElement('div');el.className='item';const basisHinweis=m.source==='basis'?' <span class="muted">(Basismaßnahme)</span>':'';el.innerHTML=`<div class="row"><strong>${m.titel||'-'}</strong><div><button class="btn" data-edit="${i}" type="button">Bearbeiten</button> <button class="btn" data-del="${i}" type="button">Löschen</button></div></div><div class="muted">Bereich: ${m.bereich||'-'} · Typ: ${m.type||'optional'}${m.intervallMinutes?` (${m.intervallMinutes} min)`:''}${basisHinweis}</div><div class="muted">Einsatzarten: ${(m.einsatzarten||[]).join(', ')||'-'}</div>`;list.appendChild(el);});}
 form.addEventListener('submit',e=>{e.preventDefault();const fd=new FormData(form);const titel=(fd.get('measureTitle')||'').toString().trim();const einsatzarten=fd.getAll('einsatzarten').map(String);if(!titel||!einsatzarten.length){statusEl.textContent='Titel und mindestens eine Einsatzart sind Pflicht.';return;}const type=(fd.get('measureType')||'optional').toString();const intRaw=(fd.get('measureIntervall')||'').toString().trim();const intervallMinutes=type==='intervall'?Number(intRaw||0):null;if(type==='intervall'&&(!Number.isFinite(intervallMinutes)||intervallMinutes<=0)){statusEl.textContent='Bitte ein Intervall > 0 eintragen.';return;}const obj={id:editId.value||`admin_massnahme_${Date.now()}`,titel,bereich:(fd.get('measureBereich')||'eintreffen').toString(),type,intervallMinutes,infoText:(fd.get('measureInfo')||'').toString().trim(),infoLinks:(fd.get('measureLinks')||'').toString().split(',').map(s=>s.trim()).filter(Boolean),einsatzarten,attachments:[],source:'admin',createdAt:new Date().toISOString()};const arr=load();const idx=arr.findIndex(x=>x.id===obj.id);if(idx>=0){const old=arr[idx];obj.attachments=old.attachments||[];arr[idx]=obj;}else arr.unshift(obj);save(arr);clearForm();render();statusEl.textContent='Gespeichert.';});
 list.addEventListener('click',e=>{const eb=e.target.closest('[data-edit]'),db=e.target.closest('[data-del]');const arr=load();if(eb){const m=arr[Number(eb.dataset.edit)];if(!m)return;editId.value=m.id;form.measureTitle.value=m.titel||'';form.measureBereich.value=m.bereich||'eintreffen';form.measureType.value=m.type||'optional';form.measureIntervall.value=m.intervallMinutes||'';form.measureInfo.value=m.infoText||'';form.measureLinks.value=(m.infoLinks||[]).join(', ');form.querySelectorAll("input[name='einsatzarten']").forEach(c=>c.checked=(m.einsatzarten||[]).includes(c.value));statusEl.textContent='Bearbeitungsmodus aktiv.';}if(db){arr.splice(Number(db.dataset.del),1);save(arr);render();statusEl.textContent='Gelöscht.';}});
-document.getElementById('resetBtn').addEventListener('click',clearForm);render();
+document.getElementById('resetBtn').addEventListener('click',clearForm);
+(async()=>{await ensureBasisMassnahmen();render();})();
 </script>
 </body></html>

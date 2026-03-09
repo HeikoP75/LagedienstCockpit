@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin – Maßnahmen</title>
+<style>
+body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;background:#f3f5f7;color:#263238}header{background:#20323b;color:#fff;padding:14px 18px;display:flex;justify-content:space-between}.btn{background:#455a64;color:#fff;border:none;border-radius:8px;padding:8px 12px;text-decoration:none;cursor:pointer}.primary{background:#004080}
+main{max-width:1100px;margin:16px auto;padding:0 12px}.card{background:#fff;border:1px solid #d5dde2;border-radius:10px;padding:14px;margin-bottom:14px}.grid{display:grid;grid-template-columns:repeat(2,minmax(220px,1fr));gap:10px}.group{display:flex;flex-direction:column;gap:6px}input,textarea,select{border:1px solid #c5ced6;border-radius:8px;padding:8px;font:inherit}.chips{display:flex;flex-wrap:wrap;gap:8px}.chips label{border:1px solid #c5ced6;border-radius:999px;padding:4px 10px;font-size:.9rem}.item{border:1px solid #d5dde2;border-radius:8px;padding:10px;margin-top:8px}.row{display:flex;justify-content:space-between;gap:8px;align-items:center}.muted{color:#546e7a;font-size:.9rem}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><strong>Maßnahmen verwalten</strong><div><a class="btn" href="admin.html">Admin-Start</a> <a class="btn" href="index.html">Startseite</a></div></header>
+<main>
+<section class="card">
+<form id="measureForm">
+<input type="hidden" id="measureEditId">
+<div class="grid">
+<div class="group"><label>Titel *</label><input name="measureTitle" required></div>
+<div class="group"><label>Bereich</label><select name="measureBereich"><option value="eintreffen">Eintreffen</option><option value="lagebild">Lagebild</option><option value="einsatzleitung">Einsatzleitung</option><option value="kommunikation">Kommunikation</option><option value="sicherheit">Sicherheit</option><option value="abschluss">Abschluss</option></select></div>
+</div>
+<div class="grid">
+<div class="group"><label>Typ</label><select name="measureType" id="measureType"><option value="optional">Optional</option><option value="pflicht">Pflicht</option><option value="intervall">Intervall</option></select></div>
+<div class="group"><label>Intervall (Minuten)</label><input name="measureIntervall" type="number" min="1"></div>
+</div>
+<div class="group"><label>Info</label><textarea name="measureInfo"></textarea></div>
+<div class="group"><label>Links (kommagetrennt)</label><input name="measureLinks"></div>
+<div class="group"><label>Einsatzarten *</label><div class="chips">
+<label><input type="checkbox" name="einsatzarten" value="feuer"> Feuer</label>
+<label><input type="checkbox" name="einsatzarten" value="hilfeleistung"> Hilfeleistung</label>
+<label><input type="checkbox" name="einsatzarten" value="rettung"> Rettung</label>
+<label><input type="checkbox" name="einsatzarten" value="gefahrgut"> Gefahrgut</label>
+<label><input type="checkbox" name="einsatzarten" value="stoerung"> Störung</label>
+<label><input type="checkbox" name="einsatzarten" value="tuis"> TUIS</label>
+<label><input type="checkbox" name="einsatzarten" value="sonstiges"> Sonstiges</label>
+</div></div>
+<button class="btn primary" type="submit">Speichern</button> <button class="btn" type="button" id="resetBtn">Zurücksetzen</button>
+<div id="status" class="muted"></div>
+</form>
+</section>
+<section class="card"><h3>Alle Maßnahmen</h3><div id="list"></div></section>
+</main>
+<script>
+const KEY='admin_massnahmen_v1';
+const form=document.getElementById('measureForm'),list=document.getElementById('list'),statusEl=document.getElementById('status'),editId=document.getElementById('measureEditId');
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return []}}
+function save(v){localStorage.setItem(KEY,JSON.stringify(v))}
+function clearForm(){form.reset();editId.value='';statusEl.textContent='';}
+function render(){const arr=load();list.innerHTML='';if(!arr.length){list.innerHTML='<p class="muted">Noch keine Maßnahmen vorhanden.</p>';return;}arr.forEach((m,i)=>{const el=document.createElement('div');el.className='item';el.innerHTML=`<div class="row"><strong>${m.titel||'-'}</strong><div><button class="btn" data-edit="${i}" type="button">Bearbeiten</button> <button class="btn" data-del="${i}" type="button">Löschen</button></div></div><div class="muted">Bereich: ${m.bereich||'-'} · Typ: ${m.type||'optional'}${m.intervallMinutes?` (${m.intervallMinutes} min)`:''}</div><div class="muted">Einsatzarten: ${(m.einsatzarten||[]).join(', ')||'-'}</div>`;list.appendChild(el);});}
+form.addEventListener('submit',e=>{e.preventDefault();const fd=new FormData(form);const titel=(fd.get('measureTitle')||'').toString().trim();const einsatzarten=fd.getAll('einsatzarten').map(String);if(!titel||!einsatzarten.length){statusEl.textContent='Titel und mindestens eine Einsatzart sind Pflicht.';return;}const type=(fd.get('measureType')||'optional').toString();const intRaw=(fd.get('measureIntervall')||'').toString().trim();const intervallMinutes=type==='intervall'?Number(intRaw||0):null;if(type==='intervall'&&(!Number.isFinite(intervallMinutes)||intervallMinutes<=0)){statusEl.textContent='Bitte ein Intervall > 0 eintragen.';return;}const obj={id:editId.value||`admin_massnahme_${Date.now()}`,titel,bereich:(fd.get('measureBereich')||'eintreffen').toString(),type,intervallMinutes,infoText:(fd.get('measureInfo')||'').toString().trim(),infoLinks:(fd.get('measureLinks')||'').toString().split(',').map(s=>s.trim()).filter(Boolean),einsatzarten,attachments:[],source:'admin',createdAt:new Date().toISOString()};const arr=load();const idx=arr.findIndex(x=>x.id===obj.id);if(idx>=0){const old=arr[idx];obj.attachments=old.attachments||[];arr[idx]=obj;}else arr.unshift(obj);save(arr);clearForm();render();statusEl.textContent='Gespeichert.';});
+list.addEventListener('click',e=>{const eb=e.target.closest('[data-edit]'),db=e.target.closest('[data-del]');const arr=load();if(eb){const m=arr[Number(eb.dataset.edit)];if(!m)return;editId.value=m.id;form.measureTitle.value=m.titel||'';form.measureBereich.value=m.bereich||'eintreffen';form.measureType.value=m.type||'optional';form.measureIntervall.value=m.intervallMinutes||'';form.measureInfo.value=m.infoText||'';form.measureLinks.value=(m.infoLinks||[]).join(', ');form.querySelectorAll("input[name='einsatzarten']").forEach(c=>c.checked=(m.einsatzarten||[]).includes(c.value));statusEl.textContent='Bearbeitungsmodus aktiv.';}if(db){arr.splice(Number(db.dataset.del),1);save(arr);render();statusEl.textContent='Gelöscht.';}});
+document.getElementById('resetBtn').addEventListener('click',clearForm);render();
+</script>
+</body></html>

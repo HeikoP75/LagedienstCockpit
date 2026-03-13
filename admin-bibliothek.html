@@ -1,22 +1,297 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Admin – Bibliothek</title>
-<style>body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;background:#f3f5f7;color:#263238}header{background:#20323b;color:#fff;padding:14px 18px;display:flex;justify-content:space-between}.btn{background:#455a64;color:#fff;border:none;border-radius:8px;padding:8px 12px;text-decoration:none;cursor:pointer}.primary{background:#004080}main{max-width:1100px;margin:16px auto;padding:0 12px}.card{background:#fff;border:1px solid #d5dde2;border-radius:10px;padding:14px;margin-bottom:14px}.grid{display:grid;grid-template-columns:repeat(2,minmax(220px,1fr));gap:10px}.group{display:flex;flex-direction:column;gap:6px}input,textarea{border:1px solid #c5ced6;border-radius:8px;padding:8px;font:inherit}.chips{display:flex;flex-wrap:wrap;gap:8px}.chips label{border:1px solid #c5ced6;border-radius:999px;padding:4px 10px;font-size:.9rem}.item{border:1px solid #d5dde2;border-radius:8px;padding:10px;margin-top:8px}.row{display:flex;justify-content:space-between;gap:8px;align-items:center}.muted{color:#546e7a;font-size:.9rem}@media(max-width:760px){.grid{grid-template-columns:1fr}}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin – Bibliothek</title>
+<style>
+  body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: #f3f5f7; color: #263238; }
+  header { background: #20323b; color: #fff; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; }
+  .btn { background: #455a64; color: #fff; border: none; border-radius: 8px; padding: 8px 12px; text-decoration: none; cursor: pointer; font-size: 14px; }
+  .btn.primary { background: #004080; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  main { max-width: 1100px; margin: 16px auto; padding: 0 12px; }
+  .card { background: #fff; border: 1px solid #d5dde2; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap: 10px; }
+  .group { display: flex; flex-direction: column; gap: 6px; }
+  input, textarea { border: 1px solid #c5ced6; border-radius: 8px; padding: 8px; font: inherit; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips label { border: 1px solid #c5ced6; border-radius: 999px; padding: 4px 10px; font-size: .9rem; cursor: pointer; }
+  .chips label:has(input:checked) { background: #004080; color: #fff; border-color: #004080; }
+  .item { border: 1px solid #d5dde2; border-radius: 8px; padding: 10px; margin-top: 8px; }
+  .row { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+  .muted { color: #546e7a; font-size: .9rem; }
+  .sp-banner {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 14px; border-radius: 8px; margin-bottom: 12px; font-size: 13px;
+  }
+  .sp-banner.ok    { background: #e6f4ea; color: #1a5c2a; }
+  .sp-banner.warn  { background: #fff8e1; color: #6b4c00; }
+  .sp-banner.error { background: #fdecea; color: #7a1212; }
+  .status-msg { font-size: 13px; }
+  .status-msg.ok    { color: #1a5c2a; }
+  .status-msg.error { color: #7a1212; }
+  .status-msg.warn  { color: #6b4c00; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
-<header><strong>Bibliothek verwalten</strong><div><a class="btn" href="admin.html">Admin-Start</a> <a class="btn" href="index.html">Startseite</a></div></header>
+
+<header>
+  <strong>Bibliothek verwalten</strong>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button class="btn" id="btnSync" title="Mit SharePoint synchronisieren">⟳ Sync</button>
+    <a class="btn" href="admin.html">Admin-Start</a>
+    <a class="btn" href="index.html">Startseite</a>
+  </div>
+</header>
+
 <main>
-<section class="card"><form id="f"><input type="hidden" id="editId"><div class="grid"><div class="group"><label>Titel *</label><input name="title" required></div><div class="group"><label>Version</label><input name="version"></div></div><div class="group"><label>Beschreibung</label><textarea name="description"></textarea></div><div class="grid"><div class="group"><label>Tags (kommagetrennt)</label><input name="tags"></div><div class="group"><label>Link</label><input name="link"></div></div><div class="group"><label>Kategorien *</label><div class="chips"><label><input type="checkbox" name="categories" value="einsatzbearbeitung"> Einsatzbearbeitung</label><label><input type="checkbox" name="categories" value="stoerungsbearbeitung"> Störungsbearbeitung</label><label><input type="checkbox" name="categories" value="allgemein"> Allgemein</label><label><input type="checkbox" name="categories" value="lessonlearned"> Lesson Learned</label></div></div><button class="btn primary" type="submit">Speichern</button> <button class="btn" id="reset" type="button">Zurücksetzen</button><div id="status" class="muted"></div></form></section>
-<section class="card"><h3>Alle Bibliothekseinträge</h3><div id="list"></div></section>
+
+  <!-- SharePoint-Status -->
+  <div id="spBanner" class="sp-banner warn">
+    <span>SharePoint wird geprüft…</span>
+  </div>
+
+  <!-- Formular -->
+  <section class="card">
+    <form id="f">
+      <input type="hidden" id="editId">
+      <div class="grid">
+        <div class="group">
+          <label>Titel *</label>
+          <input name="title" required>
+        </div>
+        <div class="group">
+          <label>Version</label>
+          <input name="version">
+        </div>
+      </div>
+      <div class="group">
+        <label>Beschreibung</label>
+        <textarea name="description" rows="3"></textarea>
+      </div>
+      <div class="grid">
+        <div class="group">
+          <label>Tags (kommagetrennt)</label>
+          <input name="tags">
+        </div>
+        <div class="group">
+          <label>Link</label>
+          <input name="link" type="url" placeholder="https://…">
+        </div>
+      </div>
+      <div class="group">
+        <label>Kategorien *</label>
+        <div class="chips">
+          <label><input type="checkbox" name="categories" value="einsatzbearbeitung"> Einsatzbearbeitung</label>
+          <label><input type="checkbox" name="categories" value="stoerungsbearbeitung"> Störungsbearbeitung</label>
+          <label><input type="checkbox" name="categories" value="allgemein"> Allgemein</label>
+          <label><input type="checkbox" name="categories" value="lessonlearned"> Lesson Learned</label>
+        </div>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="btn primary" type="submit" id="btnSubmit">Speichern</button>
+        <button class="btn" id="reset" type="button">Zurücksetzen</button>
+        <span id="status" class="muted status-msg"></span>
+      </div>
+    </form>
+  </section>
+
+  <!-- Liste -->
+  <section class="card">
+    <h3 style="margin:0 0 8px">Alle Bibliothekseinträge</h3>
+    <div id="list"></div>
+  </section>
+
 </main>
+
+<script src="assets/js/sharepoint-service.js"></script>
 <script>
-const KEY='bibliothek_custom_entries_v1';const form=document.getElementById('f'),list=document.getElementById('list'),statusEl=document.getElementById('status'),editId=document.getElementById('editId');
-const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return []}};const save=v=>localStorage.setItem(KEY,JSON.stringify(v));
-function clearForm(){form.reset();editId.value='';statusEl.textContent='';}
-function render(){const arr=load();list.innerHTML='';if(!arr.length){list.innerHTML='<p class="muted">Noch keine Einträge vorhanden.</p>';return;}arr.forEach((m,i)=>{const el=document.createElement('div');el.className='item';el.innerHTML=`<div class="row"><strong>${m.title||'-'}</strong><div><button class="btn" data-edit="${i}" type="button">Bearbeiten</button> <button class="btn" data-del="${i}" type="button">Löschen</button></div></div><div class="muted">Kategorien: ${(m.categories||[]).join(', ')||'-'}</div>`;list.appendChild(el);});}
-form.addEventListener('submit',e=>{e.preventDefault();const fd=new FormData(form);const title=(fd.get('title')||'').toString().trim();const categories=fd.getAll('categories').map(String);if(!title||!categories.length){statusEl.textContent='Titel und mindestens eine Kategorie sind Pflicht.';return;}const obj={id:editId.value||`${title.toLowerCase().replace(/[^a-z0-9]+/g,'-')}_${Date.now()}`,title,version:(fd.get('version')||'').toString().trim(),description:(fd.get('description')||'').toString().trim(),tags:(fd.get('tags')||'').toString().split(',').map(s=>s.trim().toLowerCase()).filter(Boolean),link:(fd.get('link')||'').toString().trim(),categories,attachments:[],createdAt:new Date().toISOString(),source:'admin'};const arr=load();const idx=arr.findIndex(x=>x.id===obj.id);if(idx>=0){const old=arr[idx];obj.attachments=old.attachments||[];arr[idx]=obj;}else arr.unshift(obj);save(arr);clearForm();render();statusEl.textContent='Gespeichert.';});
-list.addEventListener('click',e=>{const eb=e.target.closest('[data-edit]'),db=e.target.closest('[data-del]');const arr=load();if(eb){const m=arr[Number(eb.dataset.edit)];if(!m)return;editId.value=m.id;form.title.value=m.title||'';form.version.value=m.version||'';form.description.value=m.description||'';form.tags.value=(m.tags||[]).join(', ');form.link.value=m.link||'';form.querySelectorAll("input[name='categories']").forEach(c=>c.checked=(m.categories||[]).includes(c.value));statusEl.textContent='Bearbeitungsmodus aktiv.';}if(db){arr.splice(Number(db.dataset.del),1);save(arr);render();statusEl.textContent='Gelöscht.';}});
-document.getElementById('reset').addEventListener('click',clearForm);render();
+'use strict';
+
+const LOCAL_KEY = 'bibliothek_custom_entries_v1';
+
+const form      = document.getElementById('f');
+const listEl    = document.getElementById('list');
+const statusEl  = document.getElementById('status');
+const editId    = document.getElementById('editId');
+const spBanner  = document.getElementById('spBanner');
+const btnSync   = document.getElementById('btnSync');
+const btnSubmit = document.getElementById('btnSubmit');
+
+/* ── SharePoint-Status Banner ── */
+async function updateSpBanner() {
+  if (!spStorage.isConfigured()) {
+    spBanner.className = 'sp-banner warn';
+    spBanner.innerHTML = '⚠ SharePoint nicht konfiguriert – Daten werden lokal gespeichert. ' +
+      '<a href="admin-settings.html" style="color:inherit;font-weight:600">Jetzt konfigurieren →</a>';
+    return;
+  }
+  const r = await spStorage.testConnection();
+  if (r.ok) {
+    spBanner.className = 'sp-banner ok';
+    spBanner.innerHTML = `✓ SharePoint verbunden (${r.title}) – Änderungen werden automatisch synchronisiert.`;
+  } else {
+    spBanner.className = 'sp-banner error';
+    spBanner.innerHTML = `✗ SharePoint nicht erreichbar: ${r.error} – Daten werden nur lokal gespeichert.`;
+  }
+}
+
+/* ── Daten laden (SharePoint → localStorage Fallback) ── */
+async function loadData() {
+  if (spStorage.isConfigured()) {
+    try {
+      const data = await spStorage.readData('bibliothek');
+      if (data !== null) {
+        localStorage.setItem(LOCAL_KEY, JSON.stringify(data));
+        return data;
+      }
+    } catch (err) {
+      console.warn('SharePoint-Lesen fehlgeschlagen, nutze lokalen Cache:', err);
+    }
+  }
+  try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); } catch { return []; }
+}
+
+/* ── Daten speichern (localStorage + SharePoint) ── */
+async function saveData(arr) {
+  localStorage.setItem(LOCAL_KEY, JSON.stringify(arr));
+  if (spStorage.isConfigured()) {
+    try {
+      await spStorage.writeData('bibliothek', arr);
+    } catch (err) {
+      console.warn('SharePoint-Schreiben fehlgeschlagen:', err);
+      showStatus('Lokal gespeichert. SharePoint-Sync fehlgeschlagen: ' + err.message, 'warn');
+    }
+  }
+}
+
+/* ── Status-Meldung ── */
+function showStatus(msg, type = '') {
+  statusEl.textContent = msg;
+  statusEl.className = `muted status-msg ${type}`;
+}
+
+/* ── Formular zurücksetzen ── */
+function clearForm() {
+  form.reset();
+  editId.value = '';
+  statusEl.textContent = '';
+}
+
+/* ── Liste rendern ── */
+function render(arr) {
+  listEl.innerHTML = '';
+  if (!arr.length) {
+    listEl.innerHTML = '<p class="muted">Noch keine Einträge vorhanden.</p>';
+    return;
+  }
+  arr.forEach((m, i) => {
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `
+      <div class="row">
+        <strong>${m.title || '-'}</strong>
+        <div>
+          <button class="btn" data-edit="${i}" type="button">Bearbeiten</button>
+          <button class="btn" data-del="${i}"  type="button">Löschen</button>
+        </div>
+      </div>
+      <div class="muted">Kategorien: ${(m.categories || []).join(', ') || '-'}</div>
+      ${m.version ? `<div class="muted">Version: ${m.version}</div>` : ''}`;
+    listEl.appendChild(el);
+  });
+}
+
+/* ── Globaler Daten-Cache ── */
+let _cache = [];
+
+async function refreshList() {
+  _cache = await loadData();
+  render(_cache);
+}
+
+/* ── Formular absenden ── */
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const fd         = new FormData(form);
+  const title      = (fd.get('title') || '').toString().trim();
+  const categories = fd.getAll('categories').map(String);
+  if (!title || !categories.length) {
+    showStatus('Titel und mindestens eine Kategorie sind Pflicht.', 'error');
+    return;
+  }
+  const obj = {
+    id:          editId.value || `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}_${Date.now()}`,
+    title,
+    version:     (fd.get('version')     || '').toString().trim(),
+    description: (fd.get('description') || '').toString().trim(),
+    tags:        (fd.get('tags')        || '').toString().split(',').map(s => s.trim().toLowerCase()).filter(Boolean),
+    link:        (fd.get('link')        || '').toString().trim(),
+    categories,
+    attachments: [],
+    createdAt:   new Date().toISOString(),
+    source:      'admin'
+  };
+  const idx = _cache.findIndex(x => x.id === obj.id);
+  if (idx >= 0) { obj.attachments = _cache[idx].attachments || []; _cache[idx] = obj; }
+  else          { _cache.unshift(obj); }
+
+  btnSubmit.disabled = true;
+  showStatus('Wird gespeichert…');
+  await saveData(_cache);
+  render(_cache);
+  clearForm();
+  showStatus('Gespeichert.', 'ok');
+  btnSubmit.disabled = false;
+});
+
+/* ── Bearbeiten / Löschen ── */
+listEl.addEventListener('click', async e => {
+  const eb = e.target.closest('[data-edit]');
+  const db = e.target.closest('[data-del]');
+  if (eb) {
+    const m = _cache[Number(eb.dataset.edit)];
+    if (!m) return;
+    editId.value        = m.id;
+    form.title.value    = m.title || '';
+    form.version.value  = m.version || '';
+    form.description.value = m.description || '';
+    form.tags.value     = (m.tags || []).join(', ');
+    form.link.value     = m.link || '';
+    form.querySelectorAll("input[name='categories']")
+        .forEach(c => { c.checked = (m.categories || []).includes(c.value); });
+    showStatus('Bearbeitungsmodus aktiv.');
+  }
+  if (db) {
+    _cache.splice(Number(db.dataset.del), 1);
+    await saveData(_cache);
+    render(_cache);
+    showStatus('Gelöscht.', 'ok');
+  }
+});
+
+/* ── Zurücksetzen ── */
+document.getElementById('reset').addEventListener('click', clearForm);
+
+/* ── Manueller Sync ── */
+btnSync.addEventListener('click', async () => {
+  btnSync.disabled = true;
+  btnSync.textContent = '⟳ …';
+  await refreshList();
+  await updateSpBanner();
+  btnSync.disabled = false;
+  btnSync.textContent = '⟳ Sync';
+  showStatus('Synchronisiert.', 'ok');
+});
+
+/* ── Init ── */
+(async () => {
+  await updateSpBanner();
+  await refreshList();
+})();
 </script>
-</body></html>
+
+</body>
+</html>

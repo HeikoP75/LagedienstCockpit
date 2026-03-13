@@ -1,122 +1,390 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin – Maßnahmen</title>
 <style>
-body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;background:#f3f5f7;color:#263238}header{background:#20323b;color:#fff;padding:14px 18px;display:flex;justify-content:space-between}.btn{background:#455a64;color:#fff;border:none;border-radius:8px;padding:8px 12px;text-decoration:none;cursor:pointer}.primary{background:#004080}
-main{max-width:1100px;margin:16px auto;padding:0 12px}.card{background:#fff;border:1px solid #d5dde2;border-radius:10px;padding:14px;margin-bottom:14px}.grid{display:grid;grid-template-columns:repeat(2,minmax(220px,1fr));gap:10px}.group{display:flex;flex-direction:column;gap:6px}input,textarea,select{border:1px solid #c5ced6;border-radius:8px;padding:8px;font:inherit}.chips{display:flex;flex-wrap:wrap;gap:8px}.chips label{border:1px solid #c5ced6;border-radius:999px;padding:4px 10px;font-size:.9rem}.item{border:1px solid #d5dde2;border-radius:8px;padding:10px;margin-top:8px}.row{display:flex;justify-content:space-between;gap:8px;align-items:center}.muted{color:#546e7a;font-size:.9rem}
-@media(max-width:760px){.grid{grid-template-columns:1fr}}
+  body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: #f3f5f7; color: #263238; }
+  header { background: #20323b; color: #fff; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; }
+  .btn { background: #455a64; color: #fff; border: none; border-radius: 8px; padding: 8px 12px; text-decoration: none; cursor: pointer; font-size: 14px; }
+  .btn.primary { background: #004080; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  main { max-width: 1100px; margin: 16px auto; padding: 0 12px; }
+  .card { background: #fff; border: 1px solid #d5dde2; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap: 10px; }
+  .group { display: flex; flex-direction: column; gap: 6px; }
+  input, textarea, select { border: 1px solid #c5ced6; border-radius: 8px; padding: 8px; font: inherit; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips label { border: 1px solid #c5ced6; border-radius: 999px; padding: 4px 10px; font-size: .9rem; cursor: pointer; }
+  .chips label:has(input:checked) { background: #004080; color: #fff; border-color: #004080; }
+  .item { border: 1px solid #d5dde2; border-radius: 8px; padding: 10px; margin-top: 8px; }
+  .row { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+  .muted { color: #546e7a; font-size: .9rem; }
+  .sp-banner {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 14px; border-radius: 8px; margin-bottom: 12px;
+    font-size: 13px;
+  }
+  .sp-banner.ok    { background: #e6f4ea; color: #1a5c2a; }
+  .sp-banner.warn  { background: #fff8e1; color: #6b4c00; }
+  .sp-banner.error { background: #fdecea; color: #7a1212; }
+  .status-msg { font-size: 13px; }
+  .status-msg.ok    { color: #1a5c2a; }
+  .status-msg.error { color: #7a1212; }
+  .status-msg.warn  { color: #6b4c00; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
-<header><strong>Maßnahmen verwalten</strong><div><a class="btn" href="admin.html">Admin-Start</a> <a class="btn" href="index.html">Startseite</a></div></header>
+
+<header>
+  <strong>Maßnahmen verwalten</strong>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button class="btn" id="btnSync" title="Mit SharePoint synchronisieren">⟳ Sync</button>
+    <a class="btn" href="admin.html">Admin-Start</a>
+    <a class="btn" href="index.html">Startseite</a>
+  </div>
+</header>
+
 <main>
-<section class="card">
-<form id="measureForm">
-<input type="hidden" id="measureEditId">
-<div class="grid">
-<div class="group"><label>Titel *</label><input name="measureTitle" required></div>
-<div class="group"><label>Bereich</label><select name="measureBereich"><option value="eintreffen">Beim Eintreffen</option><option value="5min">Nach 5 Minuten</option><option value="10_20_30">Nach 10 / 20 / 30 Minuten</option><option value="30_45_60">Nach 30 / 45 / 60 Minuten</option><option value="ende">Nach Einsatzende</option></select></div></div>
-<div class="grid">
-<div class="group"><label>Typ</label><select name="measureType" id="measureType"><option value="optional">Optional</option><option value="pflicht">Pflicht</option><option value="intervall">Intervall</option></select></div>
-<div class="group"><label>Intervall (Minuten)</label><input name="measureIntervall" type="number" min="1"></div>
-</div>
-<div class="group"><label>Info</label><textarea name="measureInfo"></textarea></div>
-<div class="group"><label>Links (kommagetrennt)</label><input name="measureLinks"></div>
-<div class="group"><label>Einsatzarten *</label><div class="chips">
-<label><input type="checkbox" name="einsatzarten" value="feuer"> Feuer</label>
-<label><input type="checkbox" name="einsatzarten" value="hilfeleistung"> Hilfeleistung</label>
-<label><input type="checkbox" name="einsatzarten" value="rettung"> Rettung</label>
-<label><input type="checkbox" name="einsatzarten" value="gefahrgut"> Gefahrgut</label>
-<label><input type="checkbox" name="einsatzarten" value="stoerung"> Störung</label>
-<label><input type="checkbox" name="einsatzarten" value="tuis"> TUIS</label>
-<label><input type="checkbox" name="einsatzarten" value="sonstiges"> Sonstiges</label>
-</div></div>
-<button class="btn primary" type="submit">Speichern</button> <button class="btn" type="button" id="resetBtn">Zurücksetzen</button>
-<div id="status" class="muted"></div>
-</form>
-</section>
-<section class="card"><h3>Alle Maßnahmen</h3><div id="list"></div></section>
+
+  <!-- SharePoint-Status -->
+  <div id="spBanner" class="sp-banner warn">
+    <span>SharePoint wird geprüft…</span>
+  </div>
+
+  <!-- Formular -->
+  <section class="card">
+    <form id="measureForm">
+      <input type="hidden" id="measureEditId">
+      <div class="grid">
+        <div class="group">
+          <label>Titel *</label>
+          <input name="measureTitle" required>
+        </div>
+        <div class="group">
+          <label>Bereich</label>
+          <select name="measureBereich">
+            <option value="eintreffen">Beim Eintreffen</option>
+            <option value="5min">Nach 5 Minuten</option>
+            <option value="10_20_30">Nach 10 / 20 / 30 Minuten</option>
+            <option value="30_45_60">Nach 30 / 45 / 60 Minuten</option>
+            <option value="ende">Nach Einsatzende</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="group">
+          <label>Typ</label>
+          <select name="measureType" id="measureType">
+            <option value="optional">Optional</option>
+            <option value="pflicht">Pflicht</option>
+            <option value="intervall">Intervall</option>
+          </select>
+        </div>
+        <div class="group">
+          <label>Intervall (Minuten)</label>
+          <input name="measureIntervall" type="number" min="1">
+        </div>
+      </div>
+      <div class="group">
+        <label>Info</label>
+        <textarea name="measureInfo"></textarea>
+      </div>
+      <div class="group">
+        <label>Links (kommagetrennt)</label>
+        <input name="measureLinks">
+      </div>
+      <div class="group">
+        <label>Einsatzarten *</label>
+        <div class="chips">
+          <label><input type="checkbox" name="einsatzarten" value="feuer"> Feuer</label>
+          <label><input type="checkbox" name="einsatzarten" value="hilfeleistung"> Hilfeleistung</label>
+          <label><input type="checkbox" name="einsatzarten" value="rettung"> Rettung</label>
+          <label><input type="checkbox" name="einsatzarten" value="gefahrgut"> Gefahrgut</label>
+          <label><input type="checkbox" name="einsatzarten" value="stoerung"> Störung</label>
+          <label><input type="checkbox" name="einsatzarten" value="tuis"> TUIS</label>
+          <label><input type="checkbox" name="einsatzarten" value="sonstiges"> Sonstiges</label>
+        </div>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="btn primary" type="submit" id="btnSubmit">Speichern</button>
+        <button class="btn" type="button" id="resetBtn">Zurücksetzen</button>
+        <span id="status" class="muted status-msg"></span>
+      </div>
+    </form>
+  </section>
+
+  <!-- Liste -->
+  <section class="card">
+    <h3 style="margin:0 0 8px">Alle Maßnahmen</h3>
+    <div id="list"></div>
+  </section>
+
 </main>
+
+<script src="assets/js/sharepoint-service.js"></script>
 <script>
-const KEY='admin_massnahmen_v1';
-  const EINSATZARTEN_QUELLEN=[
-  {id:'feuer',file:'feuer.html'},
-  {id:'hilfeleistung',file:'hilfeleistung.html'},
-  {id:'gefahrgut',file:'gefahrgut.html'}
+'use strict';
+
+const LOCAL_KEY = 'admin_massnahmen_v1';
+
+const EINSATZARTEN_QUELLEN = [
+  { id: 'feuer',         file: 'feuer.html' },
+  { id: 'hilfeleistung', file: 'hilfeleistung.html' },
+  { id: 'gefahrgut',     file: 'gefahrgut.html' }
 ];
-const form=document.getElementById('measureForm'),list=document.getElementById('list'),statusEl=document.getElementById('status'),editId=document.getElementById('measureEditId');
-function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return []}}
-function save(v){localStorage.setItem(KEY,JSON.stringify(v))}
-function clearForm(){form.reset();editId.value='';statusEl.textContent='';}
-function getMassnahmenArrayLiteral(html){
-  const marker='let massnahmen = [';
-  const start=html.indexOf(marker);
-  if(start<0)return null;
-  const open=html.indexOf('[',start);
-  let depth=0;
-  for(let i=open;i<html.length;i++){
-    if(html[i]==='[')depth++;
-    if(html[i]===']'){
-      depth--;
-      if(depth===0)return html.slice(open,i+1);
+
+const form      = document.getElementById('measureForm');
+const listEl    = document.getElementById('list');
+const statusEl  = document.getElementById('status');
+const editId    = document.getElementById('measureEditId');
+const spBanner  = document.getElementById('spBanner');
+const btnSync   = document.getElementById('btnSync');
+const btnSubmit = document.getElementById('btnSubmit');
+
+/* ── SharePoint-Status Banner ── */
+async function updateSpBanner() {
+  if (!spStorage.isConfigured()) {
+    spBanner.className = 'sp-banner warn';
+    spBanner.innerHTML = '⚠ SharePoint nicht konfiguriert – Daten werden lokal gespeichert. ' +
+      '<a href="admin-settings.html" style="color:inherit;font-weight:600">Jetzt konfigurieren →</a>';
+    return;
+  }
+  const r = await spStorage.testConnection();
+  if (r.ok) {
+    spBanner.className = 'sp-banner ok';
+    spBanner.innerHTML = `✓ SharePoint verbunden (${r.title}) – Änderungen werden automatisch synchronisiert.`;
+  } else {
+    spBanner.className = 'sp-banner error';
+    spBanner.innerHTML = `✗ SharePoint nicht erreichbar: ${r.error} – Daten werden nur lokal gespeichert.`;
+  }
+}
+
+/* ── Daten laden (SharePoint → localStorage Fallback) ── */
+async function loadData() {
+  if (spStorage.isConfigured()) {
+    try {
+      const data = await spStorage.readData('massnahmen');
+      if (data !== null) {
+        localStorage.setItem(LOCAL_KEY, JSON.stringify(data));
+        return data;
+      }
+    } catch (err) {
+      console.warn('SharePoint-Lesen fehlgeschlagen, nutze lokalen Cache:', err);
     }
+  }
+  try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); } catch { return []; }
+}
+
+/* ── Daten speichern (localStorage + SharePoint) ── */
+async function saveData(arr) {
+  localStorage.setItem(LOCAL_KEY, JSON.stringify(arr));
+  if (spStorage.isConfigured()) {
+    try {
+      await spStorage.writeData('massnahmen', arr);
+    } catch (err) {
+      console.warn('SharePoint-Schreiben fehlgeschlagen:', err);
+      showStatus('Lokal gespeichert. SharePoint-Sync fehlgeschlagen: ' + err.message, 'warn');
+    }
+  }
+}
+
+/* ── Status-Meldung anzeigen ── */
+function showStatus(msg, type = '') {
+  statusEl.textContent = msg;
+  statusEl.className = `muted status-msg ${type}`;
+}
+
+/* ── Formular zurücksetzen ── */
+function clearForm() {
+  form.reset();
+  editId.value = '';
+  statusEl.textContent = '';
+}
+
+/* ── Basis-Maßnahmen aus HTML-Dateien extrahieren ── */
+function getMassnahmenArrayLiteral(html) {
+  const marker = 'let massnahmen = [';
+  const start  = html.indexOf(marker);
+  if (start < 0) return null;
+  const open = html.indexOf('[', start);
+  let depth = 0;
+  for (let i = open; i < html.length; i++) {
+    if (html[i] === '[') depth++;
+    if (html[i] === ']') { depth--; if (depth === 0) return html.slice(open, i + 1); }
   }
   return null;
 }
-async function loadBasisMassnahmen(){
-  const byId=new Map();
-  for(const q of EINSATZARTEN_QUELLEN){
-    try{
-      const text=await (await fetch(q.file,{cache:'no-store'})).text();
-      const literal=getMassnahmenArrayLiteral(text);
-      if(!literal)continue;
-      const arr=Function(`"use strict";return (${literal});`)();
-      if(!Array.isArray(arr))continue;
-      for(const raw of arr){
-        if(!raw||!raw.id||!raw.titel)continue;
-        const existing=byId.get(raw.id);
-        if(existing){
-          const set=new Set([...(existing.einsatzarten||[]),q.id]);
-          existing.einsatzarten=[...set];
+
+async function loadBasisMassnahmen() {
+  const byId = new Map();
+  for (const q of EINSATZARTEN_QUELLEN) {
+    try {
+      const text    = await (await fetch(q.file, { cache: 'no-store' })).text();
+      const literal = getMassnahmenArrayLiteral(text);
+      if (!literal) continue;
+      const arr = Function('"use strict";return (' + literal + ');')();
+      if (!Array.isArray(arr)) continue;
+      for (const raw of arr) {
+        if (!raw || !raw.id || !raw.titel) continue;
+        const existing = byId.get(raw.id);
+        if (existing) {
+          existing.einsatzarten = [...new Set([...(existing.einsatzarten || []), q.id])];
           continue;
         }
-        byId.set(raw.id,{...raw,einsatzarten:[q.id],source:raw.source||'basis'});
+        byId.set(raw.id, { ...raw, einsatzarten: [q.id], source: raw.source || 'basis' });
       }
-    }catch(err){
-      console.warn(`Basis-Maßnahmen aus ${q.file} konnten nicht geladen werden.`,err);
+    } catch (err) {
+      console.warn(`Basis-Maßnahmen aus ${q.file} konnten nicht geladen werden.`, err);
     }
   }
   return [...byId.values()];
 }
-async function ensureBasisMassnahmen(){
-  const arr=load();
-  const basis=await loadBasisMassnahmen();
-  if(!basis.length)return false;
-  const map=new Map(arr.map(m=>[m.id,m]));
-  let changed=false;
-  for(const m of basis){
-    const existing=map.get(m.id);
-    if(!existing){
-      map.set(m.id,m);
-      changed=true;
-      continue;
-    }
-    const mergedTypes=[...(existing.einsatzarten||[]),...(m.einsatzarten||[])];
-    const einsatzarten=[...new Set(mergedTypes.filter(Boolean))];
-    if(einsatzarten.length!==(existing.einsatzarten||[]).length){
-      existing.einsatzarten=einsatzarten;
-      changed=true;
+
+async function ensureBasisMassnahmen(arr) {
+  const basis = await loadBasisMassnahmen();
+  if (!basis.length) return arr;
+  const map = new Map(arr.map(m => [m.id, m]));
+  let changed = false;
+  for (const m of basis) {
+    const existing = map.get(m.id);
+    if (!existing) { map.set(m.id, m); changed = true; continue; }
+    const merged = [...new Set([...(existing.einsatzarten || []), ...(m.einsatzarten || [])])];
+    if (merged.length !== (existing.einsatzarten || []).length) {
+      existing.einsatzarten = merged; changed = true;
     }
   }
-  if(changed)save([...map.values()]);
-  return changed;
+  return changed ? [...map.values()] : arr;
 }
-function render(){const arr=load();list.innerHTML='';if(!arr.length){list.innerHTML='<p class="muted">Noch keine Maßnahmen vorhanden.</p>';return;}arr.forEach((m,i)=>{const el=document.createElement('div');el.className='item';const basisHinweis=m.source==='basis'?' <span class="muted">(Basismaßnahme)</span>':'';el.innerHTML=`<div class="row"><strong>${m.titel||'-'}</strong><div><button class="btn" data-edit="${i}" type="button">Bearbeiten</button> <button class="btn" data-del="${i}" type="button">Löschen</button></div></div><div class="muted">Bereich: ${m.bereich||'-'} · Typ: ${m.type||'optional'}${m.intervallMinutes?` (${m.intervallMinutes} min)`:''}${basisHinweis}</div><div class="muted">Einsatzarten: ${(m.einsatzarten||[]).join(', ')||'-'}</div>`;list.appendChild(el);});}
-form.addEventListener('submit',e=>{e.preventDefault();const fd=new FormData(form);const titel=(fd.get('measureTitle')||'').toString().trim();const einsatzarten=fd.getAll('einsatzarten').map(String);if(!titel||!einsatzarten.length){statusEl.textContent='Titel und mindestens eine Einsatzart sind Pflicht.';return;}const type=(fd.get('measureType')||'optional').toString();const intRaw=(fd.get('measureIntervall')||'').toString().trim();const intervallMinutes=type==='intervall'?Number(intRaw||0):null;if(type==='intervall'&&(!Number.isFinite(intervallMinutes)||intervallMinutes<=0)){statusEl.textContent='Bitte ein Intervall > 0 eintragen.';return;}const obj={id:editId.value||`admin_massnahme_${Date.now()}`,titel,bereich:(fd.get('measureBereich')||'eintreffen').toString(),type,intervallMinutes,infoText:(fd.get('measureInfo')||'').toString().trim(),infoLinks:(fd.get('measureLinks')||'').toString().split(',').map(s=>s.trim()).filter(Boolean),einsatzarten,attachments:[],source:'admin',createdAt:new Date().toISOString()};const arr=load();const idx=arr.findIndex(x=>x.id===obj.id);if(idx>=0){const old=arr[idx];obj.attachments=old.attachments||[];arr[idx]=obj;}else arr.unshift(obj);save(arr);clearForm();render();statusEl.textContent='Gespeichert.';});
-list.addEventListener('click',e=>{const eb=e.target.closest('[data-edit]'),db=e.target.closest('[data-del]');const arr=load();if(eb){const m=arr[Number(eb.dataset.edit)];if(!m)return;editId.value=m.id;form.measureTitle.value=m.titel||'';form.measureBereich.value=m.bereich||'eintreffen';form.measureType.value=m.type||'optional';form.measureIntervall.value=m.intervallMinutes||'';form.measureInfo.value=m.infoText||'';form.measureLinks.value=(m.infoLinks||[]).join(', ');form.querySelectorAll("input[name='einsatzarten']").forEach(c=>c.checked=(m.einsatzarten||[]).includes(c.value));statusEl.textContent='Bearbeitungsmodus aktiv.';}if(db){arr.splice(Number(db.dataset.del),1);save(arr);render();statusEl.textContent='Gelöscht.';}});
-document.getElementById('resetBtn').addEventListener('click',clearForm);
-(async()=>{await ensureBasisMassnahmen();render();})();
+
+/* ── Liste rendern ── */
+function render(arr) {
+  listEl.innerHTML = '';
+  if (!arr.length) {
+    listEl.innerHTML = '<p class="muted">Noch keine Maßnahmen vorhanden.</p>';
+    return;
+  }
+  arr.forEach((m, i) => {
+    const el = document.createElement('div');
+    el.className = 'item';
+    const basisHinweis = m.source === 'basis' ? ' <span class="muted">(Basismaßnahme)</span>' : '';
+    el.innerHTML = `
+      <div class="row">
+        <strong>${m.titel || '-'}</strong>
+        <div>
+          <button class="btn" data-edit="${i}" type="button">Bearbeiten</button>
+          <button class="btn" data-del="${i}"  type="button">Löschen</button>
+        </div>
+      </div>
+      <div class="muted">
+        Bereich: ${m.bereich || '-'} · Typ: ${m.type || 'optional'}
+        ${m.intervallMinutes ? ` (${m.intervallMinutes} min)` : ''}${basisHinweis}
+      </div>
+      <div class="muted">Einsatzarten: ${(m.einsatzarten || []).join(', ') || '-'}</div>`;
+    listEl.appendChild(el);
+  });
+}
+
+/* ── Globaler Daten-Cache (async geladen) ── */
+let _cache = [];
+
+async function refreshList() {
+  _cache = await loadData();
+  _cache = await ensureBasisMassnahmen(_cache);
+  render(_cache);
+}
+
+/* ── Formular absenden ── */
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const fd          = new FormData(form);
+  const titel       = (fd.get('measureTitle') || '').toString().trim();
+  const einsatzarten = fd.getAll('einsatzarten').map(String);
+  if (!titel || !einsatzarten.length) {
+    showStatus('Titel und mindestens eine Einsatzart sind Pflicht.', 'error');
+    return;
+  }
+  const type           = (fd.get('measureType') || 'optional').toString();
+  const intRaw         = (fd.get('measureIntervall') || '').toString().trim();
+  const intervallMinutes = type === 'intervall' ? Number(intRaw || 0) : null;
+  if (type === 'intervall' && (!Number.isFinite(intervallMinutes) || intervallMinutes <= 0)) {
+    showStatus('Bitte ein Intervall > 0 eintragen.', 'error');
+    return;
+  }
+  const obj = {
+    id:             editId.value || `admin_massnahme_${Date.now()}`,
+    titel,
+    bereich:        (fd.get('measureBereich') || 'eintreffen').toString(),
+    type,
+    intervallMinutes,
+    infoText:       (fd.get('measureInfo') || '').toString().trim(),
+    infoLinks:      (fd.get('measureLinks') || '').toString().split(',').map(s => s.trim()).filter(Boolean),
+    einsatzarten,
+    attachments:    [],
+    source:         'admin',
+    createdAt:      new Date().toISOString()
+  };
+  const idx = _cache.findIndex(x => x.id === obj.id);
+  if (idx >= 0) { obj.attachments = _cache[idx].attachments || []; _cache[idx] = obj; }
+  else          { _cache.unshift(obj); }
+
+  btnSubmit.disabled = true;
+  showStatus('Wird gespeichert…');
+  await saveData(_cache);
+  render(_cache);
+  clearForm();
+  showStatus('Gespeichert.', 'ok');
+  btnSubmit.disabled = false;
+});
+
+/* ── Bearbeiten / Löschen ── */
+listEl.addEventListener('click', async e => {
+  const eb = e.target.closest('[data-edit]');
+  const db = e.target.closest('[data-del]');
+  if (eb) {
+    const m = _cache[Number(eb.dataset.edit)];
+    if (!m) return;
+    editId.value              = m.id;
+    form.measureTitle.value   = m.titel || '';
+    form.measureBereich.value = m.bereich || 'eintreffen';
+    form.measureType.value    = m.type || 'optional';
+    form.measureIntervall.value = m.intervallMinutes || '';
+    form.measureInfo.value    = m.infoText || '';
+    form.measureLinks.value   = (m.infoLinks || []).join(', ');
+    form.querySelectorAll("input[name='einsatzarten']")
+        .forEach(c => { c.checked = (m.einsatzarten || []).includes(c.value); });
+    showStatus('Bearbeitungsmodus aktiv.');
+  }
+  if (db) {
+    _cache.splice(Number(db.dataset.del), 1);
+    await saveData(_cache);
+    render(_cache);
+    showStatus('Gelöscht.', 'ok');
+  }
+});
+
+/* ── Zurücksetzen ── */
+document.getElementById('resetBtn').addEventListener('click', clearForm);
+
+/* ── Manueller Sync-Button ── */
+btnSync.addEventListener('click', async () => {
+  btnSync.disabled = true;
+  btnSync.textContent = '⟳ …';
+  await refreshList();
+  await updateSpBanner();
+  btnSync.disabled = false;
+  btnSync.textContent = '⟳ Sync';
+  showStatus('Synchronisiert.', 'ok');
+});
+
+/* ── Init ── */
+(async () => {
+  await updateSpBanner();
+  await refreshList();
+})();
 </script>
-</body></html>
+
+</body>
+</html>

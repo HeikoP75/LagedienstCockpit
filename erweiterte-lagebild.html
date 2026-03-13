@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Erweitertes Lagebild</title>
+<style>
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: #eceff1;
+    color: #263238;
+  }
+
+  .global-nav {
+    background: #37474f;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-link {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .page-header {
+    background: #455a64;
+    color: #ffffff;
+    padding: 18px 26px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .page-header-title {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .page-header-sub {
+    font-size: 14px;
+    color: #b0bec5;
+    margin-top: 2px;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 30px auto;
+    padding: 0 16px 60px;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 24px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+  }
+
+  .card h2 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #37474f;
+    border-bottom: 1px solid #eceff1;
+    padding-bottom: 10px;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #455a64;
+    margin-bottom: 5px;
+    margin-top: 14px;
+  }
+
+  label:first-of-type {
+    margin-top: 0;
+  }
+
+  input[type="text"],
+  input[type="datetime-local"],
+  textarea,
+  select {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #b0bec5;
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #263238;
+    background: #fafafa;
+    transition: border-color 0.15s;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: #455a64;
+    background: #ffffff;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
+
+  .btn {
+    padding: 10px 22px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.15s;
+  }
+
+  .btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    background: #1d4ed8;
+  }
+
+  .btn-secondary {
+    background: #4b5563;
+    color: #ffffff;
+  }
+
+  .btn-secondary:hover {
+    background: #374151;
+  }
+
+  .btn-print {
+    background: #607d8b;
+    color: #ffffff;
+  }
+
+  .btn-print:hover {
+    background: #455a64;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: #78909c;
+    margin-top: 4px;
+  }
+
+  .status-bar {
+    background: #fff8e1;
+    border-left: 4px solid #f59e0b;
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    font-size: 13px;
+    color: #78580a;
+    margin-bottom: 20px;
+    display: none;
+  }
+
+  .status-bar.visible {
+    display: block;
+  }
+
+  .status-bar.success {
+    background: #e6f4ea;
+    border-color: #22c55e;
+    color: #14532d;
+  }
+
+  @media (max-width: 600px) {
+    .row-2 {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+
+<nav class="global-nav">
+  <a href="javascript:history.back()" class="nav-link">⬅ Zurück</a>
+</nav>
+
+<div class="page-header">
+  <div>
+    <div class="page-header-title">Erweitertes Lagebild</div>
+    <div class="page-header-sub">Maßnahme: KMvD informieren</div>
+  </div>
+  <div id="headerTime" style="font-size:13px; color:#b0bec5;"></div>
+</div>
+
+<div class="container">
+
+  <div id="statusBar" class="status-bar">Bitte alle Pflichtfelder ausfüllen.</div>
+
+  <!-- Basisdaten -->
+  <div class="card">
+    <h2>Basisdaten</h2>
+    <div class="row-2">
+      <div>
+        <label for="datum">Datum / Uhrzeit</label>
+        <input type="datetime-local" id="datum">
+      </div>
+      <div>
+        <label for="einsatzart">Einsatzart</label>
+        <select id="einsatzart">
+          <option value="">– Auswählen –</option>
+          <option value="feuer">Feuer</option>
+          <option value="gefahrgut">Gefahrgut</option>
+          <option value="hilfeleistung">Hilfeleistung</option>
+          <option value="rettung">Rettung</option>
+          <option value="tuis">TUIS</option>
+          <option value="stoerung">Störung</option>
+          <option value="sonstiges">Sonstiges</option>
+        </select>
+      </div>
+    </div>
+    <div class="row-2" style="margin-top:14px;">
+      <div>
+        <label for="ort">Einsatzort / Anlage</label>
+        <input type="text" id="ort" placeholder="z. B. Halle 4, Anlage XY">
+      </div>
+      <div>
+        <label for="meldender">Lagedienst / Meldender</label>
+        <input type="text" id="meldender" placeholder="Name">
+      </div>
+    </div>
+  </div>
+
+  <!-- Lage -->
+  <div class="card">
+    <h2>Aktuelle Lage</h2>
+    <label for="lagebeschreibung">Lagebeschreibung *</label>
+    <textarea id="lagebeschreibung" rows="5" placeholder="Kurze, präzise Beschreibung der aktuellen Lage – Was ist passiert? Wie ist die aktuelle Situation?"></textarea>
+
+    <label for="betroffene">Betroffene Bereiche / Personen</label>
+    <textarea id="betroffene" rows="3" placeholder="Welche Bereiche, Anlagen oder Personengruppen sind betroffen?"></textarea>
+
+    <div class="row-2" style="margin-top:14px;">
+      <div>
+        <label for="verletzt">Verletzte / Betroffene Personen</label>
+        <input type="text" id="verletzt" placeholder="Anzahl oder keine">
+      </div>
+      <div>
+        <label for="tendenz">Tendenz</label>
+        <select id="tendenz">
+          <option value="">– Auswählen –</option>
+          <option value="zunehmend">Zunehmend</option>
+          <option value="gleichbleibend">Gleichbleibend</option>
+          <option value="abnehmend">Abnehmend</option>
+          <option value="beendet">Beendet / Unter Kontrolle</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Maßnahmen -->
+  <div class="card">
+    <h2>Eingeleitete Maßnahmen</h2>
+    <label for="massnahmen">Bereits eingeleitete Maßnahmen *</label>
+    <textarea id="massnahmen" rows="4" placeholder="Welche Maßnahmen wurden bereits eingeleitet?"></textarea>
+
+    <label for="anforderungen">Offene Anforderungen / Nächste Schritte</label>
+    <textarea id="anforderungen" rows="3" placeholder="Was wird noch benötigt? Was sind die nächsten Schritte?"></textarea>
+  </div>
+
+  <!-- KMvD-Information -->
+  <div class="card">
+    <h2>Information KMvD</h2>
+    <div class="row-2">
+      <div>
+        <label for="kmvdPerson">Informierter KMvD</label>
+        <input type="text" id="kmvdPerson" placeholder="Name der informierten Person">
+      </div>
+      <div>
+        <label for="kmvdZeit">Informiert um</label>
+        <input type="datetime-local" id="kmvdZeit">
+      </div>
+    </div>
+    <label for="kmvdHinweise">Rückmeldung / Anweisungen KMvD</label>
+    <textarea id="kmvdHinweise" rows="3" placeholder="Was wurde durch den KMvD zurückgemeldet oder angewiesen?"></textarea>
+  </div>
+
+  <!-- Aktionen -->
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="speichern()">Speichern</button>
+    <button class="btn btn-print" onclick="drucken()">Drucken / PDF</button>
+    <button class="btn btn-secondary" onclick="history.back()">Zurück</button>
+  </div>
+
+</div>
+
+<script>
+  // Aktuelles Datum/Uhrzeit vorbelegen
+  function toLocalDatetimeValue(d) {
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  const now = new Date();
+  document.getElementById('datum').value = toLocalDatetimeValue(now);
+  document.getElementById('kmvdZeit').value = toLocalDatetimeValue(now);
+  document.getElementById('headerTime').textContent = now.toLocaleString('de-DE', {dateStyle:'full', timeStyle:'short'});
+
+  // Einsatzart aus URL-Parameter vorausfüllen
+  const params = new URLSearchParams(window.location.search);
+  const ea = params.get('einsatzart');
+  if (ea) {
+    const sel = document.getElementById('einsatzart');
+    for (let o of sel.options) { if (o.value === ea) { o.selected = true; break; } }
+  }
+
+  function speichern() {
+    const statusBar = document.getElementById('statusBar');
+    const lage = document.getElementById('lagebeschreibung').value.trim();
+    const massnahmen = document.getElementById('massnahmen').value.trim();
+
+    if (!lage || !massnahmen) {
+      statusBar.textContent = 'Bitte Lagebeschreibung und eingeleitete Maßnahmen ausfüllen.';
+      statusBar.className = 'status-bar visible';
+      window.scrollTo({top: 0, behavior: 'smooth'});
+      return;
+    }
+
+    const daten = {
+      datum: document.getElementById('datum').value,
+      einsatzart: document.getElementById('einsatzart').value,
+      ort: document.getElementById('ort').value,
+      meldender: document.getElementById('meldender').value,
+      lagebeschreibung: lage,
+      betroffene: document.getElementById('betroffene').value,
+      verletzt: document.getElementById('verletzt').value,
+      tendenz: document.getElementById('tendenz').value,
+      massnahmen: massnahmen,
+      anforderungen: document.getElementById('anforderungen').value,
+      kmvdPerson: document.getElementById('kmvdPerson').value,
+      kmvdZeit: document.getElementById('kmvdZeit').value,
+      kmvdHinweise: document.getElementById('kmvdHinweise').value,
+      gespeichertAm: new Date().toISOString()
+    };
+
+    try {
+      const vorhandene = JSON.parse(localStorage.getItem('erweitertes_lagebild') || '[]');
+      vorhandene.push(daten);
+      localStorage.setItem('erweitertes_lagebild', JSON.stringify(vorhandene));
+      statusBar.textContent = 'Erweitertes Lagebild gespeichert.';
+      statusBar.className = 'status-bar visible success';
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    } catch(e) {
+      statusBar.textContent = 'Fehler beim Speichern.';
+      statusBar.className = 'status-bar visible';
+    }
+  }
+
+  function drucken() {
+    window.print();
+  }
+</script>
+</body>
+</html>

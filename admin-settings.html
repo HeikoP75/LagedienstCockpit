@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SharePoint-Einstellungen – Lagedienst Cockpit</title>
+<style>
+  body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: #f3f5f7; color: #263238; }
+  header { background: #20323b; color: #fff; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; }
+  header strong { font-size: 16px; }
+  .btn { background: #455a64; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; text-decoration: none; cursor: pointer; font-size: 14px; display: inline-block; }
+  .btn.primary { background: #004080; }
+  .btn.success { background: #1e7e34; }
+  .btn.danger  { background: #b71c1c; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  main { max-width: 860px; margin: 24px auto; padding: 0 16px; }
+  .card { background: #fff; border: 1px solid #d5dde2; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+  h2 { margin: 0 0 6px; color: #004080; font-size: 17px; }
+  .subtitle { color: #546e7a; font-size: 13px; margin-bottom: 16px; }
+  .group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  label { font-weight: 600; font-size: 14px; }
+  label .optional { font-weight: 400; color: #546e7a; }
+  input[type="text"], input[type="url"] {
+    border: 1px solid #c5ced6; border-radius: 8px; padding: 9px 12px;
+    font: inherit; font-size: 14px; width: 100%; box-sizing: border-box;
+  }
+  input:focus { outline: 2px solid #004080; border-color: transparent; }
+  .hint { color: #546e7a; font-size: 12px; margin-top: 3px; }
+  .status-box {
+    margin-top: 12px; padding: 10px 14px; border-radius: 8px;
+    font-size: 13px; display: none;
+  }
+  .status-box.ok    { background: #e6f4ea; color: #1a5c2a; border: 1px solid #a8d5b5; }
+  .status-box.error { background: #fdecea; color: #7a1212; border: 1px solid #f5c0bc; }
+  .status-box.warn  { background: #fff8e1; color: #6b4c00; border: 1px solid #ffe082; }
+  .status-box.info  { background: #e7f1ff; color: #1c3f7a; border: 1px solid #b0c9f5; }
+  .steps { margin: 0; padding-left: 20px; }
+  .steps li { margin-bottom: 8px; font-size: 14px; color: #37474f; }
+  .steps code { background: #eceff1; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 13px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .sync-result { font-size: 13px; margin-top: 10px; color: #37474f; }
+  .sync-result ul { margin: 6px 0; padding-left: 20px; }
+  hr { border: none; border-top: 1px solid #e0e7ec; margin: 20px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <strong>SharePoint-Einstellungen</strong><br>
+    <small style="color:#90a4ae">Lagedienst Cockpit</small>
+  </div>
+  <div style="display:flex;gap:8px">
+    <a class="btn" href="admin.html">Admin-Start</a>
+    <a class="btn" href="index.html">← Startseite</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- Einleitung -->
+  <div class="card">
+    <h2>Warum SharePoint?</h2>
+    <p class="subtitle">Daten aus dem Lagedienst Cockpit werden in SharePoint gespeichert, damit alle Geräte und Nutzer denselben Stand haben – ohne Server oder IT-Berechtigungen.</p>
+
+    <p style="font-size:14px;color:#37474f;margin:0 0 12px">
+      Die App nutzt die <strong>SharePoint REST API</strong> mit deiner bestehenden SharePoint-Anmeldung.
+      Solange du im Browser bei SharePoint eingeloggt bist, werden alle Änderungen automatisch synchronisiert.
+    </p>
+
+    <details style="margin-top:8px">
+      <summary style="cursor:pointer;font-weight:600;font-size:14px;color:#004080">Einrichtungsanleitung anzeigen</summary>
+      <div style="margin-top:12px">
+        <ol class="steps">
+          <li>Öffne deine SharePoint-Website (z. B. <code>https://firma.sharepoint.com/sites/Lagedienst</code>).</li>
+          <li>Navigiere zu einer <strong>Dokumentenbibliothek</strong> (z. B. „Freigegebene Dokumente").</li>
+          <li>Erstelle dort einen neuen Ordner mit dem Namen <code>LDC_Daten</code>.</li>
+          <li>
+            Notiere den <strong>serverrelativen Pfad</strong> des Ordners:<br>
+            Der Pfad beginnt immer mit <code>/sites/...</code> und enthält den Namen der Bibliothek und des Ordners.<br>
+            <em>Beispiel: <code>/sites/Lagedienst/Freigegebene Dokumente/LDC_Daten</code></em>
+          </li>
+          <li>Trage die Werte unten ein und klicke auf <strong>„Verbindung testen"</strong>.</li>
+          <li>Klicke auf <strong>„Lokale Daten nach SharePoint exportieren"</strong>, um vorhandene Daten zu übertragen.</li>
+        </ol>
+        <p style="font-size:13px;color:#546e7a;margin:8px 0 0">
+          <strong>Hinweis:</strong> Du benötigst keine IT-Berechtigungen – nur Zugriff auf die SharePoint-Website und das Recht, Dateien in der Bibliothek abzulegen.
+        </p>
+      </div>
+    </details>
+  </div>
+
+  <!-- Konfiguration -->
+  <div class="card">
+    <h2>Verbindungskonfiguration</h2>
+    <p class="subtitle">Gib die SharePoint-Adresse und den Ordnerpfad ein und speichere die Einstellungen.</p>
+
+    <div class="group">
+      <label for="siteUrl">SharePoint-Site-URL</label>
+      <input type="url" id="siteUrl" placeholder="https://firma.sharepoint.com/sites/Lagedienst">
+      <span class="hint">Die URL deiner SharePoint-Website ohne abschließenden Schrägstrich.</span>
+    </div>
+
+    <div class="group">
+      <label for="folderPath">Ordnerpfad <span class="optional">(serverrelativer Pfad)</span></label>
+      <input type="text" id="folderPath" placeholder="/sites/Lagedienst/Freigegebene Dokumente/LDC_Daten">
+      <span class="hint">Beginnt mit <code>/sites/</code>. Enthält Bibliotheksname und Unterordner.</span>
+    </div>
+
+    <div class="row">
+      <button class="btn primary" id="btnSave">Einstellungen speichern</button>
+      <button class="btn" id="btnTest">Verbindung testen</button>
+      <button class="btn danger" id="btnClear" style="margin-left:auto">Einstellungen löschen</button>
+    </div>
+
+    <div class="status-box" id="statusConfig"></div>
+  </div>
+
+  <!-- Datensynchronisation -->
+  <div class="card">
+    <h2>Datensynchronisation</h2>
+    <p class="subtitle">Übertrage bestehende Daten zwischen lokalem Speicher und SharePoint.</p>
+
+    <div class="row">
+      <div style="flex:1;min-width:220px">
+        <strong style="font-size:14px">Lokal → SharePoint</strong>
+        <p style="font-size:13px;color:#546e7a;margin:4px 0 8px">
+          Überträgt alle lokal gespeicherten Maßnahmen und Bibliothekseinträge nach SharePoint.
+          Vorhandene SharePoint-Daten werden überschrieben.
+        </p>
+        <button class="btn primary" id="btnExport">Lokale Daten nach SharePoint exportieren</button>
+      </div>
+
+      <div style="width:1px;background:#e0e7ec;align-self:stretch"></div>
+
+      <div style="flex:1;min-width:220px">
+        <strong style="font-size:14px">SharePoint → Lokal</strong>
+        <p style="font-size:13px;color:#546e7a;margin:4px 0 8px">
+          Lädt die Daten aus SharePoint in den lokalen Speicher dieses Browsers.
+          Nützlich bei einem neuen Gerät oder Browser.
+        </p>
+        <button class="btn" id="btnImport">Daten aus SharePoint importieren</button>
+      </div>
+    </div>
+
+    <div class="sync-result" id="syncResult" style="display:none"></div>
+    <div class="status-box" id="statusSync"></div>
+  </div>
+
+  <!-- Aktueller Status -->
+  <div class="card">
+    <h2>Aktueller Status</h2>
+    <div id="currentStatus" style="font-size:14px;color:#37474f"></div>
+  </div>
+
+</main>
+
+<script src="assets/js/sharepoint-service.js"></script>
+<script>
+(function () {
+  const CONFIG_KEY = 'ldc_sp_config';
+
+  const inputSite   = document.getElementById('siteUrl');
+  const inputFolder = document.getElementById('folderPath');
+  const btnSave     = document.getElementById('btnSave');
+  const btnTest     = document.getElementById('btnTest');
+  const btnClear    = document.getElementById('btnClear');
+  const btnExport   = document.getElementById('btnExport');
+  const btnImport   = document.getElementById('btnImport');
+  const statusCfg   = document.getElementById('statusConfig');
+  const statusSync  = document.getElementById('statusSync');
+  const syncResult  = document.getElementById('syncResult');
+  const currentStat = document.getElementById('currentStatus');
+
+  function showStatus(el, type, msg) {
+    el.className = `status-box ${type}`;
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function loadConfig() {
+    try { return JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}'); } catch { return {}; }
+  }
+
+  function renderCurrentStatus() {
+    const cfg = loadConfig();
+    if (cfg.siteUrl && cfg.folderPath) {
+      currentStat.innerHTML = `
+        <div style="margin-bottom:6px"><span style="color:#1a5c2a;font-weight:600">✓ SharePoint konfiguriert</span></div>
+        <div><strong>Site-URL:</strong> ${cfg.siteUrl}</div>
+        <div><strong>Ordnerpfad:</strong> ${cfg.folderPath}</div>
+        <div style="margin-top:8px;font-size:12px;color:#546e7a">
+          Zuletzt gespeichert: ${cfg.savedAt ? new Date(cfg.savedAt).toLocaleString('de-DE') : 'unbekannt'}
+        </div>`;
+    } else {
+      currentStat.innerHTML = '<span style="color:#7a1212">⚠ Noch nicht konfiguriert – bitte Site-URL und Ordnerpfad eintragen.</span>';
+    }
+  }
+
+  // Gespeicherte Werte in Felder laden
+  (function init() {
+    const cfg = loadConfig();
+    if (cfg.siteUrl)    inputSite.value   = cfg.siteUrl;
+    if (cfg.folderPath) inputFolder.value = cfg.folderPath;
+    renderCurrentStatus();
+  })();
+
+  // Speichern
+  btnSave.addEventListener('click', () => {
+    const siteUrl    = inputSite.value.trim().replace(/\/$/, '');
+    const folderPath = inputFolder.value.trim().replace(/\/$/, '');
+    if (!siteUrl || !folderPath) {
+      showStatus(statusCfg, 'error', 'Bitte beide Felder ausfüllen.');
+      return;
+    }
+    const cfg = { siteUrl, folderPath, savedAt: new Date().toISOString() };
+    localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
+    spStorage._reload();
+    showStatus(statusCfg, 'ok', 'Einstellungen gespeichert. Bitte jetzt die Verbindung testen.');
+    renderCurrentStatus();
+  });
+
+  // Verbindung testen
+  btnTest.addEventListener('click', async () => {
+    btnTest.disabled = true;
+    btnTest.textContent = 'Teste…';
+    showStatus(statusCfg, 'info', 'Verbindung wird geprüft…');
+    try {
+      const r1 = await spStorage.testConnection();
+      if (!r1.ok) {
+        showStatus(statusCfg, 'error', `Verbindung zur Site fehlgeschlagen: ${r1.error}`);
+        return;
+      }
+      const r2 = await spStorage.testFolder();
+      if (!r2.ok) {
+        showStatus(statusCfg, 'warn',
+          `Site erreichbar (${r1.title}), aber Ordner nicht gefunden: ${r2.error}\n` +
+          `Bitte sicherstellen, dass der Ordner existiert.`);
+        return;
+      }
+      showStatus(statusCfg, 'ok',
+        `✓ Verbindung erfolgreich! Site: „${r1.title}", Ordner: „${r2.name}"`);
+    } catch (err) {
+      showStatus(statusCfg, 'error', `Fehler: ${err.message}`);
+    } finally {
+      btnTest.disabled = false;
+      btnTest.textContent = 'Verbindung testen';
+    }
+  });
+
+  // Einstellungen löschen
+  btnClear.addEventListener('click', () => {
+    if (!confirm('SharePoint-Einstellungen wirklich löschen? Die App nutzt dann wieder nur den lokalen Speicher.')) return;
+    localStorage.removeItem(CONFIG_KEY);
+    inputSite.value   = '';
+    inputFolder.value = '';
+    spStorage._reload();
+    showStatus(statusCfg, 'warn', 'Einstellungen gelöscht. Die App nutzt jetzt den lokalen Browserspeicher.');
+    renderCurrentStatus();
+  });
+
+  // Export: Lokal → SharePoint
+  btnExport.addEventListener('click', async () => {
+    if (!spStorage.isConfigured()) {
+      showStatus(statusSync, 'error', 'Bitte zuerst SharePoint konfigurieren und Verbindung testen.');
+      return;
+    }
+    btnExport.disabled = true;
+    showStatus(statusSync, 'info', 'Daten werden nach SharePoint übertragen…');
+    syncResult.style.display = 'none';
+    try {
+      const results = await spStorage.exportAllToSharePoint();
+      const lines = Object.entries(results).map(([k, v]) =>
+        v.ok ? `<li>✓ ${k}.json erfolgreich übertragen</li>`
+              : `<li>✗ ${k}.json – Fehler: ${v.error}</li>`
+      ).join('');
+      syncResult.innerHTML = `<strong>Ergebnis:</strong><ul>${lines}</ul>`;
+      syncResult.style.display = 'block';
+      const allOk = Object.values(results).every(v => v.ok);
+      showStatus(statusSync, allOk ? 'ok' : 'warn',
+        allOk ? 'Alle Daten erfolgreich nach SharePoint exportiert.' : 'Export teilweise fehlgeschlagen – Details oben.');
+    } catch (err) {
+      showStatus(statusSync, 'error', `Export fehlgeschlagen: ${err.message}`);
+    } finally {
+      btnExport.disabled = false;
+    }
+  });
+
+  // Import: SharePoint → Lokal
+  btnImport.addEventListener('click', async () => {
+    if (!spStorage.isConfigured()) {
+      showStatus(statusSync, 'error', 'Bitte zuerst SharePoint konfigurieren und Verbindung testen.');
+      return;
+    }
+    if (!confirm('Lokale Daten mit SharePoint-Daten überschreiben?')) return;
+    btnImport.disabled = true;
+    showStatus(statusSync, 'info', 'Daten werden von SharePoint geladen…');
+    syncResult.style.display = 'none';
+    try {
+      const results = await spStorage.importAllFromSharePoint();
+      const lines = Object.entries(results).map(([k, v]) =>
+        v.ok ? `<li>✓ ${k}: ${v.count} Einträge importiert${v.note ? ' (' + v.note + ')' : ''}</li>`
+              : `<li>✗ ${k} – Fehler: ${v.error}</li>`
+      ).join('');
+      syncResult.innerHTML = `<strong>Ergebnis:</strong><ul>${lines}</ul>`;
+      syncResult.style.display = 'block';
+      const allOk = Object.values(results).every(v => v.ok);
+      showStatus(statusSync, allOk ? 'ok' : 'warn',
+        allOk ? 'Import abgeschlossen. Bitte Seite neu laden.' : 'Import teilweise fehlgeschlagen.');
+    } catch (err) {
+      showStatus(statusSync, 'error', `Import fehlgeschlagen: ${err.message}`);
+    } finally {
+      btnImport.disabled = false;
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>

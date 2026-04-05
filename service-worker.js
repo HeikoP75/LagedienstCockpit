@@ -1,12 +1,25 @@
 // service-worker.js – Lagedienst Cockpit
 
-const CACHE_NAME = "lagedienst-cockpit-v1";
+const CACHE_NAME = "lagedienst-cockpit-v2";
 
-// Nur Dateien cachen, die WIRKLICH existieren!
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
   "./feuer.html",
+  "./gefahrgut.html",
+  "./hilfeleistung.html",
+  "./rettung.html",
+  "./stoerung.html",
+  "./tuis.html",
+  "./sonstiges.html",
+  "./bibliothek.html",
+  "./erweiterte-lagebild.html",
+  "./admin.html",
+  "./admin-massnahmen.html",
+  "./admin-bibliothek.html",
+  "./admin-settings.html",
+  "./assets/js/sharepoint-service.js",
+  "./assets/js/engine.js",
   "./manifest.json"
 ];
 

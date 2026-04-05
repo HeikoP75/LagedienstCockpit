@@ -461,7 +461,7 @@ body {
     Status wechseln
   </button>
 
-  <a href="uebergabe.html" class="dash-btn">Übergabe bearbeiten</a>
+  <span class="dash-btn" style="opacity:0.45;cursor:default;" title="Wird noch entwickelt">Übergabe bearbeiten</span>
 </div>
 
 
@@ -602,38 +602,20 @@ body {
   }
 
   /* -------- Bibliothek -------- */
-  const KEY_BIB_NEWS = "ldc_bibliothek_news";
-  const KEY_BIB_ACK  = "ldc_bibliothek_ack";
-
-  if (localStorage.getItem(KEY_BIB_NEWS) === null)
-    localStorage.setItem(KEY_BIB_NEWS, "0");
-
-  if (localStorage.getItem(KEY_BIB_ACK) === null)
-    localStorage.setItem(KEY_BIB_ACK, "yes");
-
   function renderBibliothek() {
-    const n = parseInt(localStorage.getItem(KEY_BIB_NEWS), 10);
-    const ack = localStorage.getItem(KEY_BIB_ACK);
-
     const btn = document.getElementById("btn-bibliothek-ack");
-
-    if (n > 0 && ack !== "yes") {
+    if (btn) btn.style.display = "none";
+    try {
+      const entries = JSON.parse(localStorage.getItem('bibliothek_custom_entries_v1') || '[]');
+      const count = Array.isArray(entries) ? entries.length : 0;
       setHTML("status-bibliothek",
-        `<span class="status status-open">Neu: ${n} Eintrag(e)</span>`);
-      if (btn) btn.style.display = "inline-block";
-    } else {
-      setHTML("status-bibliothek",
-        `<span class="status status-info">Keine neuen Einträge</span>`);
-      if (btn) btn.style.display = "none";
+        count > 0
+          ? `<span class="status status-info">${count} Eintrag${count !== 1 ? 'e' : ''}</span>`
+          : `<span class="status status-info">Noch leer</span>`
+      );
+    } catch(e) {
+      setHTML("status-bibliothek", '<span class="status status-info">–</span>');
     }
-  }
-
-  const btnB = document.getElementById("btn-bibliothek-ack");
-  if (btnB) {
-    btnB.addEventListener("click", () => {
-      localStorage.setItem(KEY_BIB_ACK, "yes");
-      renderBibliothek();
-    });
   }
 
   /* -------- Initial -------- */

@@ -1529,11 +1529,14 @@ function loadAdminMassnahmen() {
 }
 
 function mergeAdminMassnahmen() {
-    const existingIds = new Set(massnahmen.map(m => m.id));
-    const adminMassnahmen = loadAdminMassnahmen().filter(m => !existingIds.has(m.id));
-    if (adminMassnahmen.length) {
-        massnahmen = massnahmen.concat(adminMassnahmen);
-    }
+    const adminMassnahmen = loadAdminMassnahmen();
+    if (!adminMassnahmen.length) return; // kein Admin-Inhalt → Fallback auf Hardkodiertes
+
+    // Admin ist Source of Truth: überschreibt hardkodierte Maßnahmen per ID
+    const adminById = new Map(adminMassnahmen.map(m => [m.id, m]));
+    massnahmen = massnahmen.map(m => adminById.has(m.id) ? adminById.get(m.id) : m);
+    const hardIds = new Set(massnahmen.map(m => m.id));
+    massnahmen = massnahmen.concat(adminMassnahmen.filter(m => !hardIds.has(m.id)));
 }
 
 function saveMassnahmeToAdminCatalog(m) {

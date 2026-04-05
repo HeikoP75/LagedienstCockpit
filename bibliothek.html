@@ -675,7 +675,16 @@
       });
     }
 
-   function initBibliothek() {
+   async function initBibliothek() {
+      // Optional: Daten aus SharePoint laden (überschreibt localStorage-Cache)
+      if (typeof spStorage !== 'undefined' && spStorage.isConfigured()) {
+        try {
+          const spData = await spStorage.readData('bibliothek');
+          if (spData !== null) {
+            localStorage.setItem(CUSTOM_STORAGE_KEY, JSON.stringify(spData));
+          }
+        } catch(e) { /* offline – localStorage als Fallback */ }
+      }
       lessonLearnedEntries = loadLessonLearnedEntries();
       customEntries = loadCustomEntries();
       buildCategories();
@@ -686,6 +695,7 @@
 
     window.addEventListener("DOMContentLoaded", initBibliothek);
   </script>
+  <script src="assets/js/sharepoint-service.js"></script>
 </body>
 </html>
 

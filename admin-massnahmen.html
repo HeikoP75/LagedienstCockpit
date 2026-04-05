@@ -250,7 +250,15 @@ async function ensureBasisMassnahmen(arr) {
   let changed = false;
   for (const m of basis) {
     const existing = map.get(m.id);
-    if (!existing) { map.set(m.id, m); changed = true; continue; }
+    if (!existing) {
+      // Neue Basis-Maßnahme: standardmäßig alle 7 Einsatzarten aktivieren
+      map.set(m.id, {
+        ...m,
+        einsatzarten: ['feuer','gefahrgut','hilfeleistung','rettung','stoerung','tuis','sonstiges']
+      });
+      changed = true;
+      continue;
+    }
     const merged = [...new Set([...(existing.einsatzarten || []), ...(m.einsatzarten || [])])];
     if (merged.length !== (existing.einsatzarten || []).length) {
       existing.einsatzarten = merged; changed = true;

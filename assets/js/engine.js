@@ -95,11 +95,11 @@ function initLessonLearnedActions() {
    Bereiche fuer Masnahmen
 ---------------------------------------------------- */
 const BEREICHE = [
-    { id: "eintreffen",   label: "Beim Eintreffen" },
-    { id: "5min",         label: "Nach 5 Minuten" },
-    { id: "10_20_30",     label: "Nach 10 / 20 / 30 Minuten" },
-    { id: "30_45_60",     label: "Nach 30 / 45 / 60 Minuten" },
-    { id: "ende",         label: "Nach Einsatzende" }
+    { id: "eintreffen", label: "Beim Eintreffen" },
+    { id: "t+5",        label: "Nach 5 Minuten" },
+    { id: "t+10",       label: "Nach 10 / 20 / 30 Minuten" },
+    { id: "t+30",       label: "Nach 30 / 45 / 60 Minuten" },
+    { id: "ende",       label: "Nach Einsatzende" }
 ];
 
 function getBereichLabel(id) {
@@ -211,9 +211,9 @@ function handleMassnahmeClick(m) {
         m.status = "erledigt";
     }
 
-    // KMvD-Abhängigkeit: m27 -> m38 aktivieren
-    if (m.id === "m27") {
-        const lage = massnahmen.find(x => x.id === "m38");
+    // KMvD-Abhängigkeit: m27/m-027 -> m38/m-038 aktivieren
+    if (m.id === "m27" || m.id === "m-027") {
+        const lage = massnahmen.find(x => x.id === "m38" || x.id === "m-038");
         if (lage) {
             lage.hidden = false;
             lage.type = "pflicht";
@@ -920,7 +920,32 @@ function importStateJSON(ev) {
 /* ----------------------------------------------------
    Initialisierung
 ---------------------------------------------------- */
-window.onload = () => {
+window.onload = async () => {
+    // JSON-Basis-Maßnahmen laden, wenn MASSNAHMEN_JSON_URL definiert und Array leer
+    if (typeof MASSNAHMEN_JSON_URL !== "undefined" && massnahmen.length === 0) {
+        try {
+            const resp = await fetch(MASSNAHMEN_JSON_URL);
+            const data = await resp.json();
+            massnahmen = data.map(m => ({
+                id:              m.id,
+                titel:           m.titel,
+                bereich:         m.bereich,
+                type:            m.type,
+                intervallMinutes: m.intervallMinutes,
+                hidden:          m.hidden || false,
+                status:          "offen",
+                nextDue:         null,
+                dueState:        "neutral",
+                infoText:        m.infoText || "",
+                infoLinks:       "",
+                infoOpen:        false
+            }));
+            massnahmeCounter = massnahmen.filter(m => !m.hidden).length + 1;
+        } catch(e) {
+            console.warn("Basis-Maßnahmen aus JSON konnten nicht geladen werden:", e);
+        }
+    }
+
     mergeAdminMassnahmen();
     renderMassnahmen();
 

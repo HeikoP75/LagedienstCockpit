@@ -1,0 +1,411 @@
+/*
+ * main.css – Lagedienst Cockpit / HEIKO-OS
+ * Gemeinsames Stylesheet aller Checklisten-Seiten.
+ * Extrahiert aus feuer.html – identisch in allen 7 Einsatzarten.
+ */
+
+/* --------------------------------------------------
+   RESET / BASE
+-------------------------------------------------- */
+body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: #eceff1;
+    color: #263238;
+}
+
+/* --------------------------------------------------
+   GLOBALE NAVIGATIONSLEISTE (← Start / Admin)
+-------------------------------------------------- */
+.global-nav {
+    background: #263238;
+    color: #ffffff;
+    padding: 6px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+
+.global-nav-left,
+.global-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.global-nav a.nav-link {
+    text-decoration: none;
+    color: #ffffff;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.25);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.2s;
+    font-size: 13px;
+}
+
+.global-nav a.nav-link:hover {
+    background: rgba(255,255,255,0.14);
+}
+
+/* --------------------------------------------------
+   HEADER – Titel links / Buttons rechts
+-------------------------------------------------- */
+header {
+    width: 100%;
+}
+
+.top-header {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #455a64;
+    padding: 18px 26px;
+    box-sizing: border-box;
+}
+
+.header-title {
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Capsule-Buttons */
+.header-btn {
+    background: #607d8b;
+    color: white;
+    padding: 10px 26px;
+    font-size: 15px;
+    font-weight: 500;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-btn:hover {
+    background: #78909c;
+    transform: translateY(-1px);
+}
+
+.header-btn.primary {
+    background: #336699;
+}
+
+.header-btn.primary:hover {
+    background: #3f7ec2;
+}
+
+/* Datei-Input unsichtbar hinter Label-Button */
+.header-buttons input[type="file"] {
+    display: none;
+}
+
+.header-buttons label.header-btn {
+    cursor: pointer;
+}
+
+/* --------------------------------------------------
+   MAIN LAYOUT
+-------------------------------------------------- */
+main {
+    padding: 16px;
+    max-width: 1100px;
+    margin: 0 auto 40px;
+}
+
+/* --------------------------------------------------
+   CARDS
+-------------------------------------------------- */
+.card, .alarm-card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+.alarm-card {
+    border-left: 4px solid #546e7a;
+}
+
+/* --------------------------------------------------
+   TYPOGRAFIE
+-------------------------------------------------- */
+h1, h2, h3 {
+    margin-top: 0;
+}
+
+h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+/* --------------------------------------------------
+   FORMULARE
+-------------------------------------------------- */
+label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 4px;
+    color: #455a64;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="datetime-local"],
+select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #b0bec5;
+    font-size: 14px;
+}
+
+input[type="datetime-local"] {
+    max-width: 210px;
+}
+
+.form-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 12px 16px;
+}
+
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 12px 16px;
+}
+
+.field {
+    min-width: 0;
+}
+
+.block-divider {
+    height: 16px;
+}
+
+/* --------------------------------------------------
+   BUTTONS
+-------------------------------------------------- */
+.primary-btn,
+.secondary-btn,
+.warn-btn {
+    border-radius: 999px;
+    border: none;
+    padding: 8px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.primary-btn   { background: #546e7a; color: #ffffff; }
+.secondary-btn { background: #cfd8dc; color: #37474f; }
+.warn-btn      { background: #ffca28; color: #000000; }
+
+.primary-btn:hover   { background: #455a64; }
+.secondary-btn:hover { background: #b0bec5; }
+.warn-btn:hover      { background: #ffb300; }
+
+/* --------------------------------------------------
+   TABELLEN
+-------------------------------------------------- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th, td {
+    border: 1px solid #cfd8dc;
+    padding: 4px 6px;
+    text-align: left;
+}
+
+th {
+    background: #eceff1;
+    font-weight: 600;
+}
+
+/* --------------------------------------------------
+   MAẞNAHMEN
+-------------------------------------------------- */
+#massnahmenContainer h3 {
+    margin-top: 16px;
+    margin-bottom: 6px;
+}
+
+.massnahme {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    color: #ffffff;
+}
+
+.mass-left  { flex: 1; }
+
+.mass-icons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 16px;
+}
+
+.mass-icons span { cursor: pointer; }
+
+.mass-pflicht  { background: #c62828; }
+.mass-optional { background: #b0bec5; color: #263238; }
+.mass-intervall{ background: #1565c0; }
+.mass-done     { background: #2e7d32 !important; color: #ffffff; }
+
+/* --------------------------------------------------
+   INFO-BOX (aufklappbare Anleitung)
+-------------------------------------------------- */
+.infoBox {
+    margin: 6px 0 10px 0;
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: #eceff1;
+    color: #263238;
+}
+
+.infoBox h4 {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+}
+
+.infoBox p {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+}
+
+/* --------------------------------------------------
+   KOMMENTARE
+-------------------------------------------------- */
+.comment-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 8px 0 0 0;
+    font-size: 13px;
+}
+
+.comment-list li {
+    margin-bottom: 4px;
+}
+
+/* --------------------------------------------------
+   MODALS
+-------------------------------------------------- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(2px);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    width: 360px;
+    margin: 100px auto;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 14px;
+}
+
+.modal-content input,
+.modal-content select {
+    width: 100%;
+    margin-bottom: 14px;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #b0bec5;
+    font-size: 14px;
+}
+
+.modal-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+/* --------------------------------------------------
+   EINSATZ-STATUS / LINKS
+-------------------------------------------------- */
+.einsatz-status-card    { background: #f7f9fa; }
+.einsatz-status-section { margin-bottom: 12px; }
+
+.einsatz-status-section p {
+    margin: 6px 0 8px 0;
+    color: #37474f;
+    font-size: 14px;
+}
+
+.einsatz-links {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0 14px 0;
+    font-size: 15px;
+    color: #37474f;
+}
+
+.einsatz-link a {
+    color: #37474f;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.einsatz-link a.einsatz-aktiv,
+.einsatz-aktiv {
+    color: #0b7a28 !important;
+    font-weight: 700;
+}
+
+.einsatz-link a:hover { opacity: 0.75; }
+
+.action-flag {
+    font-weight: 700;
+    font-size: 1.05em;
+    cursor: pointer;
+    color: #37474f;
+}
+
+.action-flag.active { color: #2e7d32; }

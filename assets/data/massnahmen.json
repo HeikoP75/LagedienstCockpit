@@ -1,0 +1,534 @@
+[
+  {
+    "id": "m-001",
+    "titel": "AP10 einschalten",
+    "type": "pflicht",
+    "bereich": "eintreffen",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-002",
+    "titel": "Lagetool öffnen",
+    "type": "pflicht",
+    "bereich": "eintreffen",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-003",
+    "titel": "Einsatz an Lagetool übergeben",
+    "type": "optional",
+    "bereich": "eintreffen",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-004",
+    "titel": "Lagebild mit DGL abgleichen",
+    "type": "optional",
+    "bereich": "eintreffen",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-005",
+    "titel": "Einsatzart und Alarmstufe prüfen",
+    "type": "optional",
+    "bereich": "eintreffen",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "FwDV 100 – Lagefeststellung",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-006",
+    "titel": "Kräfte gemäß AAO überprüfen",
+    "type": "optional",
+    "bereich": "eintreffen",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "FwDV 100 – Kräfteansatz",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-007",
+    "titel": "Windrichtung und Umgebungsverhältnisse prüfen",
+    "type": "optional",
+    "bereich": "eintreffen",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-008",
+    "titel": "Warnaktivitäten einschätzen",
+    "type": "optional",
+    "bereich": "eintreffen",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-009",
+    "titel": "Erfordernis einer ZWA-Durchsage prüfen",
+    "type": "optional",
+    "bereich": "eintreffen",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-010",
+    "titel": "Einsatz an externer Leitstelle melden (außerhalb Werk/Rhein)",
+    "type": "optional",
+    "bereich": "eintreffen",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-011",
+    "titel": "Information an BF Leverkusen veranlassen (Bereich Bürrig)",
+    "type": "optional",
+    "bereich": "eintreffen",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-012",
+    "titel": "DGL- und Videokonferenz bei bestätigter AS3 starten",
+    "type": "optional",
+    "bereich": "eintreffen",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-013",
+    "titel": "Alarmierung externer Kräfte überprüfen",
+    "type": "optional",
+    "bereich": "eintreffen",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "FwDV 100",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-014",
+    "titel": "Einsatzort überprüfen",
+    "type": "pflicht",
+    "bereich": "t+5",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "FwDV 100 – Einsatzführung",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-015",
+    "titel": "Alarmstufenbestätigung einholen",
+    "type": "pflicht",
+    "bereich": "t+5",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-016",
+    "titel": "Erste Rückmeldung einholen",
+    "type": "pflicht",
+    "bereich": "t+5",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "FwDV 100 – Führungsregelkreis",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-017",
+    "titel": "Erfordernis einer D-Meldung prüfen",
+    "type": "optional",
+    "bereich": "t+5",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-018",
+    "titel": "Erfordernis einer Sofortmeldung prüfen",
+    "type": "optional",
+    "bereich": "t+5",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-019",
+    "titel": "Informationsbedarf bei umliegenden BF/FF prüfen",
+    "type": "optional",
+    "bereich": "t+5",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-020",
+    "titel": "Information an KMvD veranlassen",
+    "type": "optional",
+    "bereich": "t+5",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-021",
+    "titel": "Presseinformation über KMvD abstimmen",
+    "type": "optional",
+    "bereich": "t+5",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-022",
+    "titel": "Lagebild mit DGL abgleichen",
+    "type": "intervall",
+    "bereich": "t+10",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "FwDV 100 – Führungsregelkreis",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-023",
+    "titel": "Lagebild mit Einsatzleiter abgleichen",
+    "type": "intervall",
+    "bereich": "t+10",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "FwDV 100",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-024",
+    "titel": "Warnaktivitäten einschätzen",
+    "type": "intervall",
+    "bereich": "t+10",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-025",
+    "titel": "Angemessenheit der Alarmstufe prüfen",
+    "type": "intervall",
+    "bereich": "t+10",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-026",
+    "titel": "Informationsbedarf bei umliegenden BF/FF prüfen",
+    "type": "intervall",
+    "bereich": "t+10",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-027",
+    "titel": "Information an KMvD veranlassen",
+    "type": "intervall",
+    "bereich": "t+10",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-028",
+    "titel": "Presseinformation über KMvD abstimmen",
+    "type": "intervall",
+    "bereich": "t+10",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-029",
+    "titel": "DGL-Konferenz durchführen und Aufgaben delegieren",
+    "type": "intervall",
+    "bereich": "t+10",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-030",
+    "titel": "Betroffene Betriebe feststellen",
+    "type": "intervall",
+    "bereich": "t+10",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-031",
+    "titel": "Auswirkungen auf Versorgung anderer CPP feststellen",
+    "type": "intervall",
+    "bereich": "t+10",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-032",
+    "titel": "Betroffenheit von Kanal- und Rückhaltesystemen prüfen",
+    "type": "intervall",
+    "bereich": "t+10",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "Gewässerschutz",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-033",
+    "titel": "Erfordernis eines Hausalarms für SiZe oder Werkfeuerwehr prüfen",
+    "type": "optional",
+    "bereich": "t+30",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-034",
+    "titel": "Erfordernis einer Verpflegung an der Einsatzstelle prüfen",
+    "type": "optional",
+    "bereich": "t+30",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-035",
+    "titel": "Einrücken aller Kräfte überprüfen",
+    "type": "pflicht",
+    "bereich": "ende",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "FwDV 100",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-036",
+    "titel": "Räumlichkeiten ordnungsgemäß verlassen",
+    "type": "pflicht",
+    "bereich": "ende",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-037",
+    "titel": "Nachbereitung durchführen",
+    "type": "optional",
+    "bereich": "ende",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "",
+    "fwdv_referenz": "FwDV 100 – Auswertung",
+    "source": "basis",
+    "hidden": false
+  },
+  {
+    "id": "m-038",
+    "titel": "Erweitertes Lagebild ausfüllen & versenden",
+    "type": "pflicht",
+    "bereich": "t+10",
+    "intervallMinutes": null,
+    "einsatzarten": [
+      "alle"
+    ],
+    "infoText": "Wird automatisch aktiviert wenn m-027 (KMvD informieren) erledigt wurde.",
+    "fwdv_referenz": "",
+    "source": "basis",
+    "hidden": true
+  }
+]

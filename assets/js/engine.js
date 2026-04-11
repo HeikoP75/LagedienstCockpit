@@ -272,6 +272,16 @@ function renderMassnahmen() {
     const container = document.getElementById("massnahmenContainer");
     container.innerHTML = "";
 
+    const sichtbar = massnahmen.filter(m => !m.hidden);
+    if (sichtbar.length === 0) {
+        container.innerHTML =
+            '<p style="color:#888;font-size:14px;padding:12px 0;">' +
+            'Keine Maßnahmen konfiguriert. Bitte zuerst den ' +
+            '<a href="admin-massnahmen.html">Admin-Bereich</a> öffnen.' +
+            '</p>';
+        return;
+    }
+
     BEREICHE.forEach(b => {
         const blockDiv = document.createElement("div");
         const blockTitle = document.createElement("h3");
@@ -923,31 +933,8 @@ function importStateJSON(ev) {
    Initialisierung
 ---------------------------------------------------- */
 window.onload = async () => {
-    // JSON-Basis-Maßnahmen laden, wenn MASSNAHMEN_JSON_URL definiert und Array leer
-    if (typeof MASSNAHMEN_JSON_URL !== "undefined" && massnahmen.length === 0) {
-        try {
-            const resp = await fetch(MASSNAHMEN_JSON_URL);
-            const data = await resp.json();
-            massnahmen = data.map(m => ({
-                id:              m.id,
-                titel:           m.titel,
-                bereich:         m.bereich,
-                type:            m.type,
-                intervallMinutes: m.intervallMinutes,
-                hidden:          m.hidden || false,
-                status:          "offen",
-                nextDue:         null,
-                dueState:        "neutral",
-                infoText:        m.infoText || "",
-                infoLinks:       "",
-                infoOpen:        false
-            }));
-            massnahmeCounter = massnahmen.filter(m => !m.hidden).length + 1;
-        } catch(e) {
-            console.warn("Basis-Maßnahmen aus JSON konnten nicht geladen werden:", e);
-        }
-    }
-
+    // Maßnahmen kommen ausschließlich aus dem Admin-Katalog (localStorage).
+    // massnahmen.json ist nur Seed-Quelle für admin-massnahmen.html.
     mergeAdminMassnahmen();
     renderMassnahmen();
 

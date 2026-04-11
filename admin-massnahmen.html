@@ -229,7 +229,11 @@ async function ensureBasisMassnahmen(arr) {
       changed = true;
       continue;
     }
-    const merged = [...new Set([...(existing.einsatzarten || []), ...(m.einsatzarten || [])])];
+    // "alle" aus massnahmen.json auf konkrete Einsatzarten expandieren
+    const basisArts = (m.einsatzarten || []).includes('alle')
+      ? ['feuer','gefahrgut','hilfeleistung','rettung','stoerung','tuis','sonstiges']
+      : (m.einsatzarten || []);
+    const merged = [...new Set([...(existing.einsatzarten || []), ...basisArts])];
     if (merged.length !== (existing.einsatzarten || []).length) {
       existing.einsatzarten = merged; changed = true;
     }
@@ -269,8 +273,13 @@ function render(arr) {
 let _cache = [];
 
 async function refreshList() {
-  _cache = await loadData();
-  _cache = await ensureBasisMassnahmen(_cache);
+  const loaded  = await loadData();
+  const ensured = await ensureBasisMassnahmen(loaded);
+  if (ensured.length !== loaded.length) {
+    // Neu aus massnahmen.json geseede Einträge in localStorage (+ SP) speichern
+    await saveData(ensured);
+  }
+  _cache = ensured;
   render(_cache);
 }
 

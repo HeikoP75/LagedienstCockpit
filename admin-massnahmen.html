@@ -97,7 +97,7 @@
         <input name="measureLinks">
       </div>
       <div class="group">
-        <label>Einsatzarten *</label>
+        <label>Einsatzarten (optional – leer = nur im Pool)</label>
         <div class="chips">
           <label><input type="checkbox" name="einsatzarten" value="feuer"> Feuer</label>
           <label><input type="checkbox" name="einsatzarten" value="hilfeleistung"> Hilfeleistung</label>
@@ -111,6 +111,7 @@
       <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <button class="btn primary" type="submit" id="btnSubmit">Speichern</button>
         <button class="btn" type="button" id="resetBtn">Zurücksetzen</button>
+        <button class="btn" type="button" id="resetPoolBtn" title="Alle Maßnahmen aus localStorage entfernen und aus massnahmen.json neu laden">↺ Pool zurücksetzen</button>
         <span id="status" class="muted status-msg"></span>
       </div>
     </form>
@@ -221,21 +222,9 @@ async function ensureBasisMassnahmen(arr) {
   for (const m of basis) {
     const existing = map.get(m.id);
     if (!existing) {
-      // Neue Basis-Maßnahme: standardmäßig alle 7 Einsatzarten aktivieren
-      map.set(m.id, {
-        ...m,
-        einsatzarten: ['feuer','gefahrgut','hilfeleistung','rettung','stoerung','tuis','sonstiges']
-      });
+      // Neue Basis-Maßnahme: ohne Einsatzart-Zuweisung in den Pool aufnehmen
+      map.set(m.id, { ...m, einsatzarten: [] });
       changed = true;
-      continue;
-    }
-    // "alle" aus massnahmen.json auf konkrete Einsatzarten expandieren
-    const basisArts = (m.einsatzarten || []).includes('alle')
-      ? ['feuer','gefahrgut','hilfeleistung','rettung','stoerung','tuis','sonstiges']
-      : (m.einsatzarten || []);
-    const merged = [...new Set([...(existing.einsatzarten || []), ...basisArts])];
-    if (merged.length !== (existing.einsatzarten || []).length) {
-      existing.einsatzarten = merged; changed = true;
     }
   }
   return changed ? [...map.values()] : arr;
@@ -264,7 +253,7 @@ function render(arr) {
         Bereich: ${m.bereich || '-'} · Typ: ${m.type || 'optional'}
         ${m.intervallMinutes ? ` (${m.intervallMinutes} min)` : ''}${basisHinweis}
       </div>
-      <div class="muted">Einsatzarten: ${(m.einsatzarten || []).join(', ') || '-'}</div>`;
+      <div class="muted">Einsatzarten: ${(m.einsatzarten || []).length ? m.einsatzarten.join(', ') : '<em>Kein Einsatz zugewiesen</em>'}</div>`;
     listEl.appendChild(el);
   });
 }
@@ -289,8 +278,8 @@ form.addEventListener('submit', async e => {
   const fd          = new FormData(form);
   const titel       = (fd.get('measureTitle') || '').toString().trim();
   const einsatzarten = fd.getAll('einsatzarten').map(String);
-  if (!titel || !einsatzarten.length) {
-    showStatus('Titel und mindestens eine Einsatzart sind Pflicht.', 'error');
+  if (!titel) {
+    showStatus('Titel ist Pflicht.', 'error');
     return;
   }
   const type           = (fd.get('measureType') || 'optional').toString();
@@ -364,6 +353,14 @@ btnSync.addEventListener('click', async () => {
   btnSync.disabled = false;
   btnSync.textContent = '⟳ Sync';
   showStatus('Synchronisiert.', 'ok');
+});
+
+/* ── Pool zurücksetzen (localStorage leeren → neu aus massnahmen.json seeden) ── */
+document.getElementById('resetPoolBtn').addEventListener('click', async () => {
+  if (!confirm('Alle Maßnahmen im Admin-Katalog löschen und aus massnahmen.json neu laden?\n\nAlle bisherigen Einsatzart-Zuweisungen und Änderungen gehen verloren.')) return;
+  localStorage.removeItem(LOCAL_KEY);
+  await refreshList();
+  showStatus('Pool zurückgesetzt. Maßnahmen aus massnahmen.json geladen.', 'ok');
 });
 
 /* ── Init ── */

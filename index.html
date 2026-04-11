@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lagedienst Cockpit</title>
+<title>Cockpit OS</title>
 <link rel="manifest" href="manifest.json">
 
 <!-- Standard Favicons -->
@@ -17,7 +17,7 @@
 <meta name="theme-color" content="#00C8C8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Lagedienst">
+<meta name="apple-mobile-web-app-title" content="Cockpit OS">
 
 
 
@@ -309,10 +309,6 @@ h2 {
   color: #37474f;
 }
 
-/* einzelne Icons */
-.icon-uebergabe::before {
-  content: "↔";
-}
 
 
 .icon-bibliothek::before {
@@ -430,7 +426,7 @@ body {
 
 <header class="main-header">
   <div class="header-left" id="header-date"></div>
-  <div class="header-title">Lagedienst Cockpit</div>
+  <div class="header-title">Cockpit OS</div>
   <a href="admin.html" class="admin-link" title="Administration">⚙</a>
 </header>
 
@@ -445,25 +441,6 @@ body {
   <h1>Tagesgeschäft & Führung</h1>
 
   <div class="dash-grid">
-
-<!-- Übergabe -->
-<div class="dash-tile">
-  <h2 class="icon-uebergabe">Übergabe</h2>
-  <div class="dash-subtitle">tägliche Übergabe</div>
-
-  <!-- Status (wird per JS gesetzt) -->
-  <div class="dash-status" id="status-uebergabe"></div>
-
-  <!-- Status wechseln (nur UI, lokal) -->
-  <button type="button"
-          class="dash-btn secondary"
-          id="btn-uebergabe-toggle">
-    Status wechseln
-  </button>
-
-  <span class="dash-btn" style="opacity:0.45;cursor:default;" title="Wird noch entwickelt">Übergabe bearbeiten</span>
-</div>
-
 
 
 
@@ -578,26 +555,6 @@ body {
     if (el) el.innerHTML = html;
   }
 
-  /* -------- Übergabe -------- */
-  const KEY_UEB = "ldc_uebergabe_status"; // open | done
-
-  function renderUebergabe() {
-    const s = localStorage.getItem(KEY_UEB) || "open";
-    if (s === "done") {
-      setHTML("status-uebergabe",
-        '<span class="status status-done">Übergabe abgeschlossen</span>');
-    } else {
-      setHTML("status-uebergabe",
-        '<span class="status status-open">Übergabe offen</span>');
-    }
-  }
-
-  const btnU = document.getElementById("btn-uebergabe-toggle");
-  if (btnU) {
-    btnU.addEventListener("click", () => {
-      const cur = localStorage.getItem(KEY_UEB) || "open";
-      localStorage.setItem(KEY_UEB, cur === "done" ? "open" : "done");
-      renderUebergabe();
     });
   }
 
@@ -619,7 +576,6 @@ body {
   }
 
   /* -------- Initial -------- */
-  renderUebergabe();
   renderBibliothek();
 
 })();

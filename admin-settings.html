@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SharePoint-Einstellungen – Lagedienst Cockpit</title>
+<title>SharePoint-Einstellungen – Cockpit OS</title>
 <style>
   body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: #f3f5f7; color: #263238; }
   header { background: #20323b; color: #fff; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; }
@@ -48,7 +48,7 @@
 <header>
   <div>
     <strong>SharePoint-Einstellungen</strong><br>
-    <small style="color:#90a4ae">Lagedienst Cockpit</small>
+    <small style="color:#90a4ae">Cockpit OS</small>
   </div>
   <div style="display:flex;gap:8px">
     <a class="btn" href="admin.html">Admin-Start</a>
@@ -61,7 +61,7 @@
   <!-- Einleitung -->
   <div class="card">
     <h2>Warum SharePoint?</h2>
-    <p class="subtitle">Daten aus dem Lagedienst Cockpit werden in SharePoint gespeichert, damit alle Geräte und Nutzer denselben Stand haben – ohne Server oder IT-Berechtigungen.</p>
+    <p class="subtitle">Daten aus dem Cockpit OS werden in SharePoint gespeichert, damit alle Geräte und Nutzer denselben Stand haben – ohne Server oder IT-Berechtigungen.</p>
 
     <p style="font-size:14px;color:#37474f;margin:0 0 12px">
       Die App nutzt die <strong>SharePoint REST API</strong> mit deiner bestehenden SharePoint-Anmeldung.
@@ -78,7 +78,7 @@
           <li>
             Notiere den <strong>serverrelativen Pfad</strong> des Ordners:<br>
             Der Pfad beginnt immer mit <code>/sites/...</code> und enthält den Namen der Bibliothek und des Ordners.<br>
-            <em>Beispiel: <code>/sites/Lagedienst/Freigegebene Dokumente/LDC_Daten</code></em>
+            <em>Beispiel: <code>/sites/CockpitOS/Freigegebene Dokumente/LDC_Daten</code></em>
           </li>
           <li>Trage die Werte unten ein und klicke auf <strong>„Verbindung testen"</strong>.</li>
           <li>Klicke auf <strong>„Lokale Daten nach SharePoint exportieren"</strong>, um vorhandene Daten zu übertragen.</li>
@@ -97,13 +97,13 @@
 
     <div class="group">
       <label for="siteUrl">SharePoint-Site-URL</label>
-      <input type="url" id="siteUrl" placeholder="https://firma.sharepoint.com/sites/Lagedienst">
+      <input type="url" id="siteUrl" placeholder="https://firma.sharepoint.com/sites/CockpitOS">
       <span class="hint">Die URL deiner SharePoint-Website ohne abschließenden Schrägstrich.</span>
     </div>
 
     <div class="group">
       <label for="folderPath">Ordnerpfad <span class="optional">(serverrelativer Pfad)</span></label>
-      <input type="text" id="folderPath" placeholder="/sites/Lagedienst/Freigegebene Dokumente/LDC_Daten">
+      <input type="text" id="folderPath" placeholder="/sites/CockpitOS/Freigegebene Dokumente/LDC_Daten">
       <span class="hint">Beginnt mit <code>/sites/</code>. Enthält Bibliotheksname und Unterordner.</span>
     </div>
 

@@ -1,6 +1,6 @@
-// service-worker.js – Lagedienst Cockpit
+// service-worker.js – Cockpit OS
 
-const CACHE_NAME = "lagedienst-cockpit-v2";
+const CACHE_NAME = "cockpit-os-v2";
 
 const ASSETS_TO_CACHE = [
   "./",

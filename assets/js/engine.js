@@ -276,8 +276,8 @@ function renderMassnahmen() {
     if (sichtbar.length === 0) {
         container.innerHTML =
             '<p style="color:#888;font-size:14px;padding:12px 0;">' +
-            'Keine Maßnahmen konfiguriert. Bitte zuerst den ' +
-            '<a href="admin-massnahmen.html">Admin-Bereich</a> öffnen.' +
+            'Keine Maßnahmen für diese Einsatzart konfiguriert – ' +
+            'bitte im <a href="admin-massnahmen.html">Admin-Bereich</a> zuweisen.' +
             '</p>';
         return;
     }

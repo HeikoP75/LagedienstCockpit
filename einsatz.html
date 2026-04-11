@@ -373,9 +373,8 @@ const EINSATZART_LABEL = _cfg.label;
 let massnahmeCounter   = 1;
 let massnahmen         = [];
 
-if (_cfg.loadJson) {
-    var MASSNAHMEN_JSON_URL = "assets/data/massnahmen.json";
-}
+// Maßnahmen kommen ausschließlich aus dem Admin-Katalog (localStorage).
+// massnahmen.json wird nur in admin-massnahmen.html als Seed-Quelle verwendet.
 
 // DOM-Elemente sofort beschriften (before engine.js onload)
 document.addEventListener("DOMContentLoaded", () => {

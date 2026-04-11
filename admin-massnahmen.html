@@ -130,11 +130,7 @@
 
 const LOCAL_KEY = 'admin_massnahmen_v1';
 
-const EINSATZARTEN_QUELLEN = [
-  { id: 'feuer',         file: 'feuer.html' },
-  { id: 'hilfeleistung', file: 'hilfeleistung.html' },
-  { id: 'gefahrgut',     file: 'gefahrgut.html' }
-];
+const MASSNAHMEN_JSON = 'assets/data/massnahmen.json';
 
 const form      = document.getElementById('measureForm');
 const listEl    = document.getElementById('list');
@@ -204,43 +200,17 @@ function clearForm() {
   statusEl.textContent = '';
 }
 
-/* ── Basis-Maßnahmen aus HTML-Dateien extrahieren ── */
-function getMassnahmenArrayLiteral(html) {
-  const marker = 'let massnahmen = [';
-  const start  = html.indexOf(marker);
-  if (start < 0) return null;
-  const open = html.indexOf('[', start);
-  let depth = 0;
-  for (let i = open; i < html.length; i++) {
-    if (html[i] === '[') depth++;
-    if (html[i] === ']') { depth--; if (depth === 0) return html.slice(open, i + 1); }
-  }
-  return null;
-}
-
+/* ── Basis-Maßnahmen aus massnahmen.json laden ── */
 async function loadBasisMassnahmen() {
-  const byId = new Map();
-  for (const q of EINSATZARTEN_QUELLEN) {
-    try {
-      const text    = await (await fetch(q.file, { cache: 'no-store' })).text();
-      const literal = getMassnahmenArrayLiteral(text);
-      if (!literal) continue;
-      const arr = Function('"use strict";return (' + literal + ');')();
-      if (!Array.isArray(arr)) continue;
-      for (const raw of arr) {
-        if (!raw || !raw.id || !raw.titel) continue;
-        const existing = byId.get(raw.id);
-        if (existing) {
-          existing.einsatzarten = [...new Set([...(existing.einsatzarten || []), q.id])];
-          continue;
-        }
-        byId.set(raw.id, { ...raw, einsatzarten: [q.id], source: raw.source || 'basis' });
-      }
-    } catch (err) {
-      console.warn(`Basis-Maßnahmen aus ${q.file} konnten nicht geladen werden.`, err);
-    }
+  try {
+    const response = await fetch(MASSNAHMEN_JSON, { cache: 'no-store' });
+    const arr = await response.json();
+    if (!Array.isArray(arr)) return [];
+    return arr.filter(m => m.id && m.titel);
+  } catch (err) {
+    console.warn('Basis-Maßnahmen konnten nicht geladen werden.', err);
+    return [];
   }
-  return [...byId.values()];
 }
 
 async function ensureBasisMassnahmen(arr) {
@@ -259,7 +229,11 @@ async function ensureBasisMassnahmen(arr) {
       changed = true;
       continue;
     }
-    const merged = [...new Set([...(existing.einsatzarten || []), ...(m.einsatzarten || [])])];
+    // "alle" aus massnahmen.json auf konkrete Einsatzarten expandieren
+    const basisArts = (m.einsatzarten || []).includes('alle')
+      ? ['feuer','gefahrgut','hilfeleistung','rettung','stoerung','tuis','sonstiges']
+      : (m.einsatzarten || []);
+    const merged = [...new Set([...(existing.einsatzarten || []), ...basisArts])];
     if (merged.length !== (existing.einsatzarten || []).length) {
       existing.einsatzarten = merged; changed = true;
     }
@@ -299,8 +273,13 @@ function render(arr) {
 let _cache = [];
 
 async function refreshList() {
-  _cache = await loadData();
-  _cache = await ensureBasisMassnahmen(_cache);
+  const loaded  = await loadData();
+  const ensured = await ensureBasisMassnahmen(loaded);
+  if (ensured.length !== loaded.length) {
+    // Neu aus massnahmen.json geseede Einträge in localStorage (+ SP) speichern
+    await saveData(ensured);
+  }
+  _cache = ensured;
   render(_cache);
 }
 

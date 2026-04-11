@@ -1,17 +1,11 @@
 // service-worker.js – Cockpit OS
 
-const CACHE_NAME = "cockpit-os-v2";
+const CACHE_NAME = "cockpit-os-v3";
 
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
-  "./feuer.html",
-  "./gefahrgut.html",
-  "./hilfeleistung.html",
-  "./rettung.html",
-  "./stoerung.html",
-  "./tuis.html",
-  "./sonstiges.html",
+  "./einsatz.html",
   "./bibliothek.html",
   "./erweiterte-lagebild.html",
   "./admin.html",
@@ -20,6 +14,8 @@ const ASSETS_TO_CACHE = [
   "./admin-settings.html",
   "./assets/js/sharepoint-service.js",
   "./assets/js/engine.js",
+  "./assets/css/main.css",
+  "./assets/data/massnahmen.json",
   "./manifest.json"
 ];
 

@@ -1,4 +1,4 @@
-// engine.js – Lagedienst Cockpit / HEIKO-OS
+// engine.js – Cockpit OS / HEIKO-OS
 // Gemeinsame JS-Logik aller 7 Checklisten-Seiten.
 // Voraussetzung: EINSATZ_ID, EINSATZART_LABEL und massnahmen-Array
 // müssen vom einbindenden HTML vor diesem Script definiert werden.
@@ -1021,26 +1021,13 @@ window.onload = async () => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-    const uebergabeLink = document.getElementById("flagUebergabe");
     const llLink = document.getElementById("flagLL");
-
-    const keyU = "uebergabe_" + EINSATZ_ID;
     const keyL = "ll_" + EINSATZ_ID;
-
-    if (uebergabeLink) {
-        uebergabeLink.addEventListener("click", () => {
-            localStorage.setItem(keyU, "true");
-        });
-    }
 
     if (llLink) {
         llLink.addEventListener("click", () => {
             localStorage.setItem(keyL, "true");
         });
-    }
-
-    if (uebergabeLink && localStorage.getItem(keyU)) {
-        uebergabeLink.classList.add("einsatz-aktiv");
     }
 
     if (llLink && localStorage.getItem(keyL)) {

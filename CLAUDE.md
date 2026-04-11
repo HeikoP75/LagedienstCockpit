@@ -2,7 +2,7 @@
 
 ## Was ist Cockpit OS?
 
-Cockpit OS (früher: Lagedienst Cockpit) ist ein **offlinefähiges PWA-Führungstool** für den Feuerwehr-Lagedienst (Werkfeuerwehr Chempark Leverkusen). Es unterstützt den Lagedienst-Koordinator (LdK) bei der strukturierten Abarbeitung von Einsätzen anhand von Checklisten, Maßnahmen und Dokumentation.
+Cockpit OS (früher: Cockpit OS) ist ein **offlinefähiges PWA-Führungstool** für den Feuerwehr-Lagedienst (Werkfeuerwehr Chempark Leverkusen). Es unterstützt den Lagedienst-Koordinator (LdK) bei der strukturierten Abarbeitung von Einsätzen anhand von Checklisten, Maßnahmen und Dokumentation.
 
 **Tech-Stack:** Vanilla JS + HTML + CSS, kein Framework, kein Build-Tool. Service Worker v2 für Offline-Betrieb.
 

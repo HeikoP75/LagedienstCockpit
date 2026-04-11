@@ -1,5 +1,5 @@
 /**
- * SharePoint Storage Service – Lagedienst Cockpit
+ * SharePoint Storage Service – Cockpit OS
  * Version: 1.0
  *
  * Speichert Daten als JSON-Dateien in einer SharePoint-Dokumentenbibliothek.
@@ -9,7 +9,7 @@
  * Einrichtung (einmalig, ohne IT-Berechtigungen):
  *  1. In SharePoint eine Dokumentenbibliothek oder einen Ordner erstellen,
  *     z. B. "Freigegebene Dokumente / LDC_Daten"
- *  2. Den serverrelativen Pfad notieren (Beispiel: /sites/Lagedienst/Freigegebene Dokumente/LDC_Daten)
+ *  2. Den serverrelativen Pfad notieren (Beispiel: /sites/CockpitOS/Freigegebene Dokumente/LDC_Daten)
  *  3. In der App unter Admin → SharePoint-Einstellungen konfigurieren
  */
 

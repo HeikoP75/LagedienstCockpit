@@ -95,10 +95,12 @@ function initLessonLearnedActions() {
    Bereiche fuer Masnahmen
 ---------------------------------------------------- */
 const BEREICHE = [
+    { id: "sofort",     label: "Sofort" },
     { id: "eintreffen", label: "Beim Eintreffen" },
     { id: "t+5",        label: "Nach 5 Minuten" },
     { id: "t+10",       label: "Nach 10 / 20 / 30 Minuten" },
     { id: "t+30",       label: "Nach 30 / 45 / 60 Minuten" },
+    { id: "t+60",       label: "Nach 60+ Minuten" },
     { id: "ende",       label: "Nach Einsatzende" }
 ];
 

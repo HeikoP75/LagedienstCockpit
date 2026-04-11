@@ -1,12 +1,12 @@
 {
-  "name": "Lagedienst Cockpit",
-  "short_name": "Lagedienst",
+  "name": "Cockpit OS",
+  "short_name": "CockpitOS",
   "start_url": "/LagedienstCockpit/index.html",
   "scope": "/LagedienstCockpit/",
   "display": "standalone",
   "background_color": "#1E1E22",
   "theme_color": "#00C8C8",
-  "description": "Offlinefähiges Einsatz- und Lagedienst-Cockpit",
+  "description": "Persönliches Führungstool für den Feuerwehr-Lagedienst",
   "icons": [
     {
       "src": "assets/icons/icon-16.png",
@@ -26,7 +26,8 @@
     {
       "src": "assets/icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "assets/icons/apple-touch-icon-180.png",
@@ -36,4 +37,3 @@
     }
   ]
 }
-

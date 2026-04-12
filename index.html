@@ -23,17 +23,27 @@
 
 <!-- Grunddesign -->
 <style>
+    :root {
+        --primary: #5780ae;
+        --dark: #333333;
+        --light: #a5b8c9;
+        --mid: #7c8a97;
+        --muted: #868f98;
+        --bg: #f4f6f8;
+        --white: #ffffff;
+    }
+
     body {
         margin: 0;
         padding: 0;
         font-family: "Segoe UI", sans-serif;
-        background: #eceff1;
-        color: #263238;
+        background: var(--bg);
+        color: var(--dark);
     }
 
     header {
-        background: #37474f;
-        color: white;
+        background: var(--dark);
+        color: var(--white);
         padding: 20px;
         text-align: center;
         font-size: 26px;
@@ -56,7 +66,7 @@
     .tile {
         width: 240px;
         height: 160px;
-        background: white;
+        background: var(--white);
         border-radius: 22px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         display: flex;
@@ -64,7 +74,7 @@
         justify-content: center;
         align-items: center;
         text-decoration: none;
-        color: #263238;
+        color: var(--dark);
         font-size: 20px;
         font-weight: 600;
         transition: all 0.2s ease;
@@ -77,15 +87,15 @@
 
     .tile .icon {
   font-size: 34px;
-  color: #455a64;
+  color: var(--mid);
 }
 
 
     footer {
         margin-top: 60px;
         padding: 20px;
-        background: #37474f;
-        color: #cfd8dc;
+        background: var(--dark);
+        color: var(--light);
         text-align: center;
         font-size: 14px;
     }
@@ -168,9 +178,9 @@
 /* ================================================= */
 
 .dash {
-  background: #f8fafc;
+  background: var(--bg);
   padding: 24px;
-  border-bottom: 1px solid #dbe2ea;
+  border-bottom: 1px solid var(--light);
 }
 
 .dash h1 {
@@ -186,7 +196,7 @@
 }
 
 .dash-tile {
-  background: #ffffff;
+  background: var(--white);
   border-radius: 10px;
   padding: 16px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
@@ -205,7 +215,7 @@
 }
 
 .dash-subtitle {
-  color: #6b7280;
+  color: var(--mid);
   font-size: 13px;
   margin: 6px 0 10px 0;
 }
@@ -217,22 +227,22 @@
 
 .dash-status span {
   font-weight: 400;
-  color: #6b7280;
+  color: var(--mid);
 }
 
 .dash-btn {
   display: inline-block;
   margin-top: 10px;
   padding: 8px 14px;
-  background: #2563eb;
-  color: #ffffff;
+  background: var(--primary);
+  color: var(--white);
   text-decoration: none;
   border-radius: 6px;
   font-size: 14px;
 }
 
 .dash-btn.secondary {
-  background: #4b5563;
+  background: var(--mid);
 }
 
 /* ===== Logo-Trenner ===== */
@@ -242,8 +252,8 @@
   justify-content: center;
   align-items: center;
   padding: 18px 0;
-  background: #eef1f4;
-  border-bottom: 2px solid #cfd8e3;
+  background: var(--bg);
+  border-bottom: 2px solid var(--light);
 }
 
 .logo-divider img {
@@ -264,12 +274,12 @@ h2 {
   font-size: 22px;
   font-weight: 600;
   margin-bottom: 16px;
-  color: #263238;
+  color: var(--dark);
 }
 
 /* Einsatzbereich Header */
 .einsatz-header {
-  border-top: 1px solid #dbe2ea;
+  border-top: 1px solid var(--light);
   padding-top: 24px;
   margin-top: 40px;
 }
@@ -345,14 +355,14 @@ body {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  background: #37474f;
-  color: white;
+  background: var(--dark);
+  color: var(--white);
   padding: 14px 24px;
 }
 
 .header-left {
   font-size: 14px;
-  color: #cfd8dc;
+  color: var(--light);
 }
 
 .header-title {
@@ -364,7 +374,7 @@ body {
 
 .admin-link {
   justify-self: end;
-  color: #cfd8dc;
+  color: var(--light);
   font-size: 22px;
   text-decoration: none;
   padding: 6px 8px;
@@ -400,8 +410,8 @@ body {
 }
 
 .status-info {
-  background: #e7f1ff;
-  color: #1c5db6;
+  background: rgba(87, 128, 174, 0.14);
+  color: var(--primary);
 }
 
 /* ================================================= */
@@ -410,7 +420,7 @@ body {
 
 .dash-content {
   font-size: 14px;
-  color: #37474f;
+  color: var(--dark);
   margin-bottom: 8px;
 }
 
@@ -463,6 +473,20 @@ body {
   </button>
 
   <a href="bibliothek.html" class="dash-btn secondary">Zur Bibliothek</a>
+</div>
+
+<div class="dash-tile dash-tile-small">
+  <h2>Personalmodul</h2>
+
+  <div class="dash-subtitle">
+    Geschuetzter Zugriff auf Mitarbeiterliste, Datenblaetter, freie Eintraege und PDF-Export.
+  </div>
+
+  <div class="dash-status">
+    <span class="status status-info">Neu verfuegbar</span>
+  </div>
+
+  <a href="personal.html" class="dash-btn">Zum Personalmodul</a>
 </div>
 
   </div><!-- /.dash-grid -->

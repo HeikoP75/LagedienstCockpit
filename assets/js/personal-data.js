@@ -1,275 +1,347 @@
-/* ============================================================
-   personal-data.js – Cockpit OS Personalmodul
-   CRUD · SharePoint-Sync via spStorage · localStorage-Cache
-   Foto-Komprimierung: max 200×200px, JPEG 80 %
-   ============================================================ */
+(function attachPersonalData(global) {
+  const STORAGE_KEY = "personal";
+  const CACHE_KEY = "personal.cache";
+  const IMAGE_SIZE = 200;
+  const IMAGE_QUALITY = 0.8;
 
-const PersonalData = (() => {
-  const LOCAL_KEY = 'pers_data_cache';  // localStorage-Cache
-  const SP_KEY    = 'personal';         // Dateiname in SharePoint (personal.json)
-
-  // ── ID-Generator ──────────────────────────────────────────
-  function _uid(prefix = 'id') {
-    return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,6)}`;
+  function nowIso() {
+    return new Date().toISOString();
   }
 
-  // ── Leer-Mitarbeiter-Template ─────────────────────────────
-  function _emptyMa() {
+  function createId(prefix) {
+    return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  }
+
+  function deepClone(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function createEmptyEmployee() {
+    const createdAt = nowIso();
     return {
-      id:   _uid('ma'),
-      foto: null,
+      id: createId("mitarbeiter"),
+      foto: "",
       stammdaten: {
-        vorname: '', nachname: '', geburtsdatum: '', geburtsort: '',
-        familienstand: '',
+        vorname: "",
+        nachname: "",
+        geburtsdatum: "",
+        geburtsort: "",
+        familienstand: "",
         kinder: [],
-        notfallkontakt1: { name: '', beziehung: '', telefon: '' },
-        notfallkontakt2: { name: '', beziehung: '', telefon: '' },
-        funktion: '', dienstgrad: '', schicht: '',
-        eintrittUnternehmen: '', eintrittFeuerwehr: '',
-        beschaeftigungsart: '', diensttelefon: '', privattelefon: '', email: ''
+        notfallkontakt1: "",
+        notfallkontakt2: "",
+        funktion: "",
+        dienstgrad: "",
+        schicht: "",
+        eintrittUnternehmen: "",
+        eintrittFeuerwehr: "",
+        beschaeftigungsart: "",
+        diensttelefon: "",
+        privattelefon: "",
+        email: ""
       },
       feuerwehr: {
-        atemschutztauglich: false,
-        maschinistStatus:   'kein',      // kein | teil | voll | sonder
-        rtwQualifikation:   'keine'      // keine | RS | RA | NFS
+        atemschutztauglich: "",
+        maschinistStatus: "",
+        rtwQualifikation: ""
       },
-      eintraege:    [],
+      eintraege: [],
       eigeneFelder: [],
       meta: {
-        erstelltAm:  new Date().toISOString(),
-        geaendertAm: new Date().toISOString()
+        erstelltAm: createdAt,
+        geaendertAm: createdAt
       }
     };
   }
 
-  // ── Leer-Eintrag-Template ─────────────────────────────────
-  function _emptyEintrag() {
+  function createDefaultDataset() {
     return {
-      id:        _uid('e'),
-      kategorie: 'Notiz',
-      datum:     new Date().toISOString().slice(0,10),
-      titel:     '',
-      inhalt:    '',
-      tags:      [],
-      erstelltAm: new Date().toISOString()
+      version: 1,
+      exportedAt: "",
+      mitarbeiter: []
     };
   }
 
-  // ── Root-Objekt ───────────────────────────────────────────
-  function _emptyRoot() {
-    return { version: 1, exportedAt: new Date().toISOString(), mitarbeiter: [] };
-  }
-
-  // ── localStorage ──────────────────────────────────────────
-  function _readCache() {
-    try {
-      const raw = localStorage.getItem(LOCAL_KEY);
-      const d   = raw ? JSON.parse(raw) : null;
-      return (d && Array.isArray(d.mitarbeiter)) ? d : _emptyRoot();
-    } catch { return _emptyRoot(); }
-  }
-
-  function _writeCache(root) {
-    root.exportedAt = new Date().toISOString();
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(root));
-  }
-
-  // ── SharePoint laden ──────────────────────────────────────
-  async function _loadFromSP() {
-    try {
-      if (!spStorage.isConfigured()) return null;
-      const data = await spStorage.readData(SP_KEY);
-      if (data && Array.isArray(data.mitarbeiter)) {
-        _writeCache(data);
-        return data;
+  function normalizeEmployee(employee = {}) {
+    const base = createEmptyEmployee();
+    const merged = {
+      ...base,
+      ...employee,
+      stammdaten: {
+        ...base.stammdaten,
+        ...(employee.stammdaten || {})
+      },
+      feuerwehr: {
+        ...base.feuerwehr,
+        ...(employee.feuerwehr || {})
+      },
+      eintraege: Array.isArray(employee.eintraege)
+        ? employee.eintraege
+            .map((entry) => ({
+              id: entry.id || createId("eintrag"),
+              kategorie: entry.kategorie || "",
+              datum: entry.datum || "",
+              titel: entry.titel || "",
+              inhalt: entry.inhalt || "",
+              tags: Array.isArray(entry.tags) ? entry.tags : [],
+              erstelltAm: entry.erstelltAm || nowIso()
+            }))
+            .sort((left, right) => new Date(right.datum || right.erstelltAm) - new Date(left.datum || left.erstelltAm))
+        : [],
+      eigeneFelder: Array.isArray(employee.eigeneFelder)
+        ? employee.eigeneFelder.map((field) => ({
+            schluessel: field.schluessel || createId("feld"),
+            label: field.label || "",
+            wert: field.wert || ""
+          }))
+        : [],
+      meta: {
+        ...base.meta,
+        ...(employee.meta || {})
       }
-      return null;
-    } catch (e) {
-      console.warn('SP-Laden fehlgeschlagen:', e.message);
-      return null;
+    };
+
+    if (!Array.isArray(merged.stammdaten.kinder)) {
+      merged.stammdaten.kinder = [];
     }
+
+    return merged;
   }
 
-  // ── SharePoint speichern ──────────────────────────────────
-  async function _saveToSP(root) {
+  function normalizeDataset(dataset = {}) {
+    const base = createDefaultDataset();
+    return {
+      ...base,
+      ...dataset,
+      mitarbeiter: Array.isArray(dataset.mitarbeiter)
+        ? dataset.mitarbeiter.map(normalizeEmployee)
+        : []
+    };
+  }
+
+  function cacheDataset(dataset) {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(dataset));
+  }
+
+  function readCachedDataset() {
     try {
-      if (!spStorage.isConfigured()) return false;
-      await spStorage.writeData(SP_KEY, root);
-      return true;
-    } catch (e) {
-      console.warn('SP-Speichern fehlgeschlagen:', e.message);
-      return false;
+      return normalizeDataset(JSON.parse(localStorage.getItem(CACHE_KEY) || "null") || createDefaultDataset());
+    } catch (error) {
+      console.warn("Offline cache could not be parsed.", error);
+      return createDefaultDataset();
     }
   }
 
-  // ── Foto komprimieren: max 200×200, JPEG 80 % ─────────────
-  async function compressPhoto(file) {
+  async function readRemoteDataset() {
+    if (!global.spStorage?.readData) {
+      throw new Error("spStorage.readData ist nicht verfuegbar.");
+    }
+    const remoteData = await global.spStorage.readData(STORAGE_KEY);
+    return normalizeDataset(remoteData || createDefaultDataset());
+  }
+
+  async function writeRemoteDataset(dataset) {
+    if (!global.spStorage?.writeData) {
+      throw new Error("spStorage.writeData ist nicht verfuegbar.");
+    }
+    await global.spStorage.writeData(STORAGE_KEY, dataset);
+  }
+
+  async function loadDataset() {
+    try {
+      const remoteDataset = await readRemoteDataset();
+      cacheDataset(remoteDataset);
+      return remoteDataset;
+    } catch (error) {
+      console.warn("SharePoint read failed, using offline cache.", error);
+      return readCachedDataset();
+    }
+  }
+
+  async function saveDataset(dataset) {
+    const normalized = normalizeDataset({
+      ...dataset,
+      exportedAt: nowIso()
+    });
+
+    cacheDataset(normalized);
+    try {
+      await writeRemoteDataset(normalized);
+      return { data: normalized, source: "sharepoint" };
+    } catch (error) {
+      console.warn("SharePoint write failed, offline cache updated.", error);
+      return { data: normalized, source: "cache", offline: true, error };
+    }
+  }
+
+  function updateEmployeeTimestamp(employee) {
+    return {
+      ...employee,
+      meta: {
+        ...employee.meta,
+        geaendertAm: nowIso(),
+        erstelltAm: employee.meta?.erstelltAm || nowIso()
+      }
+    };
+  }
+
+  async function upsertEmployee(employeeInput) {
+    const dataset = await loadDataset();
+    const normalizedEmployee = updateEmployeeTimestamp(normalizeEmployee(employeeInput));
+    const employeeIndex = dataset.mitarbeiter.findIndex((employee) => employee.id === normalizedEmployee.id);
+
+    if (employeeIndex >= 0) {
+      dataset.mitarbeiter[employeeIndex] = normalizedEmployee;
+    } else {
+      dataset.mitarbeiter.unshift(normalizedEmployee);
+    }
+
+    return saveDataset(dataset);
+  }
+
+  async function deleteEmployee(employeeId) {
+    const dataset = await loadDataset();
+    dataset.mitarbeiter = dataset.mitarbeiter.filter((employee) => employee.id !== employeeId);
+    return saveDataset(dataset);
+  }
+
+  async function addEntry(employeeId, entryInput) {
+    const dataset = await loadDataset();
+    const employee = dataset.mitarbeiter.find((item) => item.id === employeeId);
+    if (!employee) {
+      throw new Error("Mitarbeiter nicht gefunden.");
+    }
+
+    employee.eintraege.unshift({
+      id: entryInput.id || createId("eintrag"),
+      kategorie: entryInput.kategorie || "",
+      datum: entryInput.datum || "",
+      titel: entryInput.titel || "",
+      inhalt: entryInput.inhalt || "",
+      tags: Array.isArray(entryInput.tags) ? entryInput.tags : [],
+      erstelltAm: entryInput.erstelltAm || nowIso()
+    });
+    employee.meta.geaendertAm = nowIso();
+    employee.eintraege.sort(
+      (left, right) => new Date(right.datum || right.erstelltAm) - new Date(left.datum || left.erstelltAm)
+    );
+
+    return saveDataset(dataset);
+  }
+
+  async function deleteEntry(employeeId, entryId) {
+    const dataset = await loadDataset();
+    const employee = dataset.mitarbeiter.find((item) => item.id === employeeId);
+    if (!employee) {
+      throw new Error("Mitarbeiter nicht gefunden.");
+    }
+    employee.eintraege = employee.eintraege.filter((entry) => entry.id !== entryId);
+    employee.meta.geaendertAm = nowIso();
+    return saveDataset(dataset);
+  }
+
+  async function updateCustomFields(employeeId, fields) {
+    const dataset = await loadDataset();
+    const employee = dataset.mitarbeiter.find((item) => item.id === employeeId);
+    if (!employee) {
+      throw new Error("Mitarbeiter nicht gefunden.");
+    }
+    employee.eigeneFelder = Array.isArray(fields)
+      ? fields.map((field) => ({
+          schluessel: field.schluessel || createId("feld"),
+          label: field.label || "",
+          wert: field.wert || ""
+        }))
+      : [];
+    employee.meta.geaendertAm = nowIso();
+    return saveDataset(dataset);
+  }
+
+  function getEmployeeById(dataset, employeeId) {
+    return dataset.mitarbeiter.find((employee) => employee.id === employeeId) || null;
+  }
+
+  function filterEmployees(dataset, term) {
+    const searchTerm = (term || "").trim().toLowerCase();
+    if (!searchTerm) {
+      return dataset.mitarbeiter;
+    }
+
+    return dataset.mitarbeiter.filter((employee) => {
+      const textChunks = [
+        employee.stammdaten.vorname,
+        employee.stammdaten.nachname,
+        employee.stammdaten.funktion,
+        employee.stammdaten.dienstgrad,
+        employee.stammdaten.schicht,
+        employee.stammdaten.email,
+        employee.feuerwehr.atemschutztauglich,
+        employee.feuerwehr.maschinistStatus,
+        employee.feuerwehr.rtwQualifikation,
+        ...employee.eintraege.flatMap((entry) => [entry.kategorie, entry.titel, entry.inhalt, ...(entry.tags || [])]),
+        ...employee.eigeneFelder.flatMap((field) => [field.label, field.wert])
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return textChunks.includes(searchTerm);
+    });
+  }
+
+  function readFileAsDataUrl(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = ev => {
-        const img = new Image();
-        img.onload = () => {
-          const MAX = 200;
-          let w = img.width, h = img.height;
-          if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
-          else       { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
-          const canvas = document.createElement('canvas');
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL('image/jpeg', 0.8));
-        };
-        img.onerror = reject;
-        img.src = ev.target.result;
-      };
-      reader.onerror = reject;
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error("Datei konnte nicht gelesen werden."));
       reader.readAsDataURL(file);
     });
   }
 
-  // ── Öffentliche API ───────────────────────────────────────
-
-  /** Alle Daten laden (SP bevorzugt, Fallback Cache) */
-  async function load() {
-    const sp = await _loadFromSP();
-    return sp || _readCache();
-  }
-
-  /** Gesamten Datensatz speichern (Cache + SP) */
-  async function save(root) {
-    _writeCache(root);
-    await _saveToSP(root);
-  }
-
-  /** Alle Mitarbeiter */
-  async function listAll() {
-    const root = await load();
-    return root.mitarbeiter;
-  }
-
-  /** Einzelner Mitarbeiter per ID */
-  async function getById(id) {
-    const root = await load();
-    return root.mitarbeiter.find(m => m.id === id) || null;
-  }
-
-  /** Neuen Mitarbeiter anlegen */
-  async function create(data = {}) {
-    const root = await load();
-    const ma   = Object.assign(_emptyMa(), data);
-    ma.meta.erstelltAm = ma.meta.geaendertAm = new Date().toISOString();
-    root.mitarbeiter.push(ma);
-    await save(root);
-    return ma;
-  }
-
-  /** Mitarbeiter aktualisieren (partiell via patch-Objekt) */
-  async function update(id, patch) {
-    const root = await load();
-    const idx  = root.mitarbeiter.findIndex(m => m.id === id);
-    if (idx === -1) throw new Error(`Mitarbeiter ${id} nicht gefunden.`);
-    const ma = root.mitarbeiter[idx];
-    // Tiefes Merge auf Top-Level-Objekte
-    for (const [k, v] of Object.entries(patch)) {
-      if (v !== null && typeof v === 'object' && !Array.isArray(v) && typeof ma[k] === 'object') {
-        Object.assign(ma[k], v);
-      } else {
-        ma[k] = v;
-      }
-    }
-    ma.meta.geaendertAm = new Date().toISOString();
-    root.mitarbeiter[idx] = ma;
-    await save(root);
-    return ma;
-  }
-
-  /** Mitarbeiter löschen */
-  async function remove(id) {
-    const root = await load();
-    const before = root.mitarbeiter.length;
-    root.mitarbeiter = root.mitarbeiter.filter(m => m.id !== id);
-    if (root.mitarbeiter.length === before) throw new Error(`Mitarbeiter ${id} nicht gefunden.`);
-    await save(root);
-  }
-
-  // ── Einträge ──────────────────────────────────────────────
-
-  /** Eintrag hinzufügen */
-  async function addEintrag(maId, eintrag = {}) {
-    const root = await load();
-    const ma   = root.mitarbeiter.find(m => m.id === maId);
-    if (!ma) throw new Error(`Mitarbeiter ${maId} nicht gefunden.`);
-    const e = Object.assign(_emptyEintrag(), eintrag);
-    e.id = _uid('e');
-    e.erstelltAm = new Date().toISOString();
-    ma.eintraege.unshift(e);  // neueste zuerst
-    ma.meta.geaendertAm = new Date().toISOString();
-    await save(root);
-    return e;
-  }
-
-  /** Eintrag aktualisieren */
-  async function updateEintrag(maId, eintragId, patch) {
-    const root = await load();
-    const ma   = root.mitarbeiter.find(m => m.id === maId);
-    if (!ma) throw new Error('Mitarbeiter nicht gefunden.');
-    const idx  = ma.eintraege.findIndex(e => e.id === eintragId);
-    if (idx === -1) throw new Error('Eintrag nicht gefunden.');
-    Object.assign(ma.eintraege[idx], patch);
-    ma.meta.geaendertAm = new Date().toISOString();
-    await save(root);
-    return ma.eintraege[idx];
-  }
-
-  /** Eintrag löschen */
-  async function removeEintrag(maId, eintragId) {
-    const root = await load();
-    const ma   = root.mitarbeiter.find(m => m.id === maId);
-    if (!ma) throw new Error('Mitarbeiter nicht gefunden.');
-    ma.eintraege = ma.eintraege.filter(e => e.id !== eintragId);
-    ma.meta.geaendertAm = new Date().toISOString();
-    await save(root);
-  }
-
-  // ── Eigene Felder ─────────────────────────────────────────
-
-  async function setEigeneFelder(maId, felder) {
-    return update(maId, { eigeneFelder: felder });
-  }
-
-  // ── Suche ─────────────────────────────────────────────────
-
-  /**
-   * Volltext-Suche über Name, Funktion, Dienstgrad, Eintragsinhalt
-   * @param {string} q Suchbegriff
-   * @param {object[]} liste Mitarbeiter-Array
-   */
-  function search(q, liste) {
-    if (!q || !q.trim()) return liste;
-    const lower = q.toLowerCase().trim();
-    return liste.filter(ma => {
-      const sd = ma.stammdaten;
-      const fields = [
-        sd.vorname, sd.nachname, sd.funktion, sd.dienstgrad, sd.schicht,
-        sd.email, sd.diensttelefon
-      ];
-      if (fields.some(f => (f || '').toLowerCase().includes(lower))) return true;
-      return ma.eintraege.some(e =>
-        (e.titel + ' ' + e.inhalt + ' ' + (e.tags || []).join(' ')).toLowerCase().includes(lower)
-      );
+  function loadImage(src) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error("Bild konnte nicht geladen werden."));
+      image.src = src;
     });
   }
 
-  return {
-    load, save, listAll, getById,
-    create, update, remove,
-    addEintrag, updateEintrag, removeEintrag,
-    setEigeneFelder,
+  async function compressPhoto(fileOrDataUrl) {
+    const source = typeof fileOrDataUrl === "string" ? fileOrDataUrl : await readFileAsDataUrl(fileOrDataUrl);
+    const image = await loadImage(source);
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    if (!context) {
+      throw new Error("Canvas-Kontext konnte nicht erstellt werden.");
+    }
+
+    const scale = Math.min(IMAGE_SIZE / image.width, IMAGE_SIZE / image.height, 1);
+    const width = Math.max(1, Math.round(image.width * scale));
+    const height = Math.max(1, Math.round(image.height * scale));
+    canvas.width = width;
+    canvas.height = height;
+    context.drawImage(image, 0, 0, width, height);
+    return canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
+  }
+
+  global.personalData = {
+    STORAGE_KEY,
+    CACHE_KEY,
+    createDefaultDataset,
+    createEmptyEmployee,
+    normalizeDataset,
+    normalizeEmployee,
+    loadDataset,
+    saveDataset,
+    upsertEmployee,
+    deleteEmployee,
+    addEntry,
+    deleteEntry,
+    updateCustomFields,
+    getEmployeeById,
+    filterEmployees,
     compressPhoto,
-    search,
-    newEintrag: () => ({
-      id: '', kategorie: 'Notiz',
-      datum: new Date().toISOString().slice(0,10),
-      titel: '', inhalt: '', tags: [], erstelltAm: ''
-    })
+    deepClone
   };
-})();
+})(window);

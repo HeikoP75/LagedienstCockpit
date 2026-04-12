@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CockpitOS Personal</title>
+    <link rel="stylesheet" href="./assets/css/personal.css">
+    <script defer src="./assets/lib/html2pdf.bundle.min.js"></script>
+    <script defer src="./assets/js/personal-auth.js"></script>
+    <script defer src="./assets/js/personal-data.js"></script>
+    <script defer src="./assets/js/personal-ui.js"></script>
+  </head>
+  <body data-page="personal-list">
+    <main>
+      <div data-auth-root data-auth-only></div>
+
+      <section class="personal-shell hidden" data-auth-guard>
+        <header class="page-header">
+          <div>
+            <p class="muted">CockpitOS</p>
+            <h1 class="page-title">Mitarbeiterliste</h1>
+            <p class="page-subtitle">
+              Suche in Echtzeit über Name, Funktion, Dienstgrad und Eintragsinhalt. Die Ansicht ist
+              passwortgeschützt und direkt an das Personal-Datenblatt gekoppelt.
+            </p>
+          </div>
+          <div class="toolbar-actions">
+            <button class="btn btn-secondary" type="button" data-export-filtered>Gefilterte Einträge als PDF</button>
+            <button class="btn btn-primary" type="button" data-create-employee>Mitarbeiter anlegen</button>
+            <button class="btn btn-ghost" type="button" data-logout>Abmelden</button>
+          </div>
+        </header>
+
+        <div data-status class="status-banner info hidden"></div>
+
+        <section class="summary-strip" data-summary></section>
+
+        <section class="panel" style="margin-bottom: 24px;">
+          <div class="toolbar">
+            <div class="toolbar-filters">
+              <label class="sr-only" for="personal-search">Mitarbeiter durchsuchen</label>
+              <input
+                id="personal-search"
+                class="search-input"
+                type="search"
+                placeholder="Name, Funktion, Dienstgrad oder Inhalt durchsuchen"
+                data-search
+              >
+              <label class="sr-only" for="personal-filter">Fachfilter</label>
+              <select id="personal-filter" class="filter-select" data-filter>
+                <option value="alle">Alle anzeigen</option>
+                <option value="atemschutz">Mit Atemschutzstatus</option>
+                <option value="maschinist">Mit Maschinist-Status</option>
+                <option value="rtw">Mit RTW-Qualifikation</option>
+              </select>
+            </div>
+            <a class="btn btn-secondary" href="./personal-datenblatt.html" data-open-datasheet>Neues Datenblatt</a>
+          </div>
+        </section>
+
+        <section class="employee-list" data-employee-list></section>
+      </section>
+
+      <div class="modal-backdrop" data-modal-root></div>
+    </main>
+  </body>
+</html>

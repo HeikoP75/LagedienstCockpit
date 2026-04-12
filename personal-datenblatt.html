@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CockpitOS Personal Datenblatt</title>
+    <link rel="stylesheet" href="./assets/css/personal.css">
+    <script defer src="./assets/lib/html2pdf.bundle.min.js"></script>
+    <script defer src="./assets/js/personal-auth.js"></script>
+    <script defer src="./assets/js/personal-data.js"></script>
+    <script defer src="./assets/js/personal-ui.js"></script>
+  </head>
+  <body data-page="personal-datasheet">
+    <main>
+      <div data-auth-root data-auth-only></div>
+
+      <section class="personal-shell hidden" data-auth-guard>
+        <header class="page-header">
+          <div>
+            <p class="muted">CockpitOS</p>
+            <h1 class="page-title">Personal-Datenblatt</h1>
+            <p class="page-subtitle">
+              Standardmäßig im Lesemodus. Über den Bearbeiten-Button lassen sich Stammdaten,
+              Feuerwehrdaten, freie Einträge und eigene Felder direkt pflegen.
+            </p>
+          </div>
+          <div class="toolbar-actions">
+            <a class="btn btn-secondary" href="./personal.html">Zur Mitarbeiterliste</a>
+            <button class="btn btn-ghost" type="button" data-logout>Abmelden</button>
+          </div>
+        </header>
+
+        <section data-datasheet-root></section>
+      </section>
+
+      <div class="modal-backdrop" data-modal-root></div>
+    </main>
+  </body>
+</html>

@@ -1,127 +1,205 @@
-/* ============================================================
-   personal-auth.js – Cockpit OS Personalmodul
-   WebAuthn (Face ID / Windows Hello) + PIN-Fallback (SHA-256)
-   ============================================================ */
+(function attachPersonalAuth(global) {
+  const SESSION_KEY = "personal.authenticated";
+  const PIN_HASH_KEY = "personal.pinHash";
+  const WEBAUTHN_CREDENTIALS_KEY = "personal.webauthn.credentials";
+  const WEBAUTHN_USER_ID_KEY = "personal.webauthn.userId";
 
-const AUTH = (() => {
-  const SESSION_KEY  = 'pers_session';      // sessionStorage: authentifiziert für diesen Tab
-  const CRED_KEY     = 'pers_webauthn_id';  // localStorage:   Credential-ID (Base64)
-  const PIN_KEY      = 'pers_pin_hash';     // localStorage:   SHA-256-Hash der PIN
-  const SETUP_KEY    = 'pers_setup_done';   // localStorage:   Ersteinrichtung abgeschlossen
-
-  // ── Hilfsfunktionen ───────────────────────────────────────
-  function _b64ToUint8(b64) {
-    const bin = atob(b64);
-    return Uint8Array.from(bin, c => c.charCodeAt(0));
-  }
-  function _uint8ToB64(buf) {
-    return btoa(String.fromCharCode(...new Uint8Array(buf)));
-  }
-  async function _sha256(text) {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-  }
-  function _randomChallenge() {
-    return crypto.getRandomValues(new Uint8Array(32));
-  }
-  function _isSetupDone()   { return !!localStorage.getItem(SETUP_KEY); }
-  function _hasWebAuthn()   { return !!localStorage.getItem(CRED_KEY); }
-  function _hasPin()        { return !!localStorage.getItem(PIN_KEY); }
-  function _isSessionOk()   { return sessionStorage.getItem(SESSION_KEY) === 'ok'; }
-  function _setSession()    { sessionStorage.setItem(SESSION_KEY, 'ok'); }
-  function _clearSession()  { sessionStorage.removeItem(SESSION_KEY); }
-
-  function webAuthnSupported() {
-    return !!(window.PublicKeyCredential && navigator.credentials);
+  function bufferToBase64(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let binary = "";
+    bytes.forEach((byte) => {
+      binary += String.fromCharCode(byte);
+    });
+    return btoa(binary);
   }
 
-  // ── WebAuthn Registrierung ─────────────────────────────────
-  async function registerWebAuthn() {
-    if (!webAuthnSupported()) throw new Error('WebAuthn nicht unterstützt.');
+  function base64ToBuffer(value) {
+    const binary = atob(value);
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+    return bytes.buffer;
+  }
 
+  async function sha256(value) {
+    const data = new TextEncoder().encode(value);
+    const hash = await crypto.subtle.digest("SHA-256", data);
+    return Array.from(new Uint8Array(hash))
+      .map((byte) => byte.toString(16).padStart(2, "0"))
+      .join("");
+  }
+
+  function createRandomBuffer(length) {
+    const bytes = new Uint8Array(length);
+    crypto.getRandomValues(bytes);
+    return bytes;
+  }
+
+  function getStoredCredentials() {
+    try {
+      return JSON.parse(localStorage.getItem(WEBAUTHN_CREDENTIALS_KEY) || "[]");
+    } catch (error) {
+      console.warn("WebAuthn credentials could not be parsed.", error);
+      return [];
+    }
+  }
+
+  function saveStoredCredentials(credentials) {
+    localStorage.setItem(WEBAUTHN_CREDENTIALS_KEY, JSON.stringify(credentials));
+  }
+
+  function getOrCreateUserId() {
+    const stored = localStorage.getItem(WEBAUTHN_USER_ID_KEY);
+    if (stored) {
+      return base64ToBuffer(stored);
+    }
+    const randomUserId = createRandomBuffer(32);
+    localStorage.setItem(WEBAUTHN_USER_ID_KEY, bufferToBase64(randomUserId));
+    return randomUserId.buffer;
+  }
+
+  function isPinSet() {
+    return Boolean(localStorage.getItem(PIN_HASH_KEY));
+  }
+
+  function hasWebAuthnCredential() {
+    return getStoredCredentials().length > 0;
+  }
+
+  function isFirstAccess() {
+    return !isPinSet() && !hasWebAuthnCredential();
+  }
+
+  function isAuthenticated() {
+    return sessionStorage.getItem(SESSION_KEY) === "true";
+  }
+
+  function setAuthenticated(value) {
+    if (value) {
+      sessionStorage.setItem(SESSION_KEY, "true");
+      return;
+    }
+    sessionStorage.removeItem(SESSION_KEY);
+  }
+
+  function validatePin(pin) {
+    return /^\d{6}$/.test(pin);
+  }
+
+  async function setPin(pin) {
+    if (!validatePin(pin)) {
+      throw new Error("Die PIN muss genau 6 Ziffern haben.");
+    }
+    const hash = await sha256(pin);
+    localStorage.setItem(PIN_HASH_KEY, hash);
+    setAuthenticated(true);
+    return true;
+  }
+
+  async function verifyPin(pin) {
+    if (!validatePin(pin)) {
+      throw new Error("Die PIN muss genau 6 Ziffern haben.");
+    }
+    const storedHash = localStorage.getItem(PIN_HASH_KEY);
+    if (!storedHash) {
+      throw new Error("Es ist noch keine PIN hinterlegt.");
+    }
+    const providedHash = await sha256(pin);
+    const isValid = storedHash === providedHash;
+    setAuthenticated(isValid);
+    return isValid;
+  }
+
+  async function registerWebAuthn(displayName = "CockpitOS Personal") {
+    if (!("PublicKeyCredential" in global) || !navigator.credentials?.create) {
+      throw new Error("WebAuthn wird in diesem Browser nicht unterstützt.");
+    }
+
+    const challenge = createRandomBuffer(32);
+    const userId = getOrCreateUserId();
     const credential = await navigator.credentials.create({
       publicKey: {
-        challenge:  _randomChallenge(),
-        rp:         { name: 'Cockpit OS Personal' },
-        user:       { id: new Uint8Array(16), name: 'LdK', displayName: 'Lagedienst-Koordinator' },
-        pubKeyCredParams: [{ alg: -7, type: 'public-key' }, { alg: -257, type: 'public-key' }],
-        authenticatorSelection: {
-          userVerification: 'required',   // erzwingt Biometrie / Geräte-PIN
-          residentKey: 'discouraged'
+        challenge,
+        rp: { name: "CockpitOS Personal" },
+        user: {
+          id: userId,
+          name: "personal@cockpitos.local",
+          displayName
         },
+        pubKeyCredParams: [
+          { alg: -7, type: "public-key" },
+          { alg: -257, type: "public-key" }
+        ],
+        authenticatorSelection: {
+          residentKey: "preferred",
+          userVerification: "preferred"
+        },
+        timeout: 60000,
+        attestation: "none"
+      }
+    });
+
+    if (!credential) {
+      throw new Error("Die WebAuthn-Registrierung wurde abgebrochen.");
+    }
+
+    const existingCredentials = getStoredCredentials();
+    existingCredentials.push({
+      id: credential.id,
+      rawId: bufferToBase64(credential.rawId),
+      type: credential.type
+    });
+    saveStoredCredentials(existingCredentials);
+    setAuthenticated(true);
+    return credential;
+  }
+
+  async function authenticateWithWebAuthn() {
+    if (!("PublicKeyCredential" in global) || !navigator.credentials?.get) {
+      throw new Error("WebAuthn wird in diesem Browser nicht unterstützt.");
+    }
+
+    const storedCredentials = getStoredCredentials();
+    if (!storedCredentials.length) {
+      throw new Error("Es ist noch kein WebAuthn-Zugang registriert.");
+    }
+
+    const assertion = await navigator.credentials.get({
+      publicKey: {
+        challenge: createRandomBuffer(32),
+        allowCredentials: storedCredentials.map((credential) => ({
+          id: base64ToBuffer(credential.rawId),
+          type: "public-key"
+        })),
+        userVerification: "preferred",
         timeout: 60000
       }
     });
 
-    localStorage.setItem(CRED_KEY, _uint8ToB64(credential.rawId));
+    const isKnownCredential = Boolean(
+      assertion?.id && storedCredentials.some((credential) => credential.id === assertion.id)
+    );
+
+    setAuthenticated(isKnownCredential);
+    if (!isKnownCredential) {
+      throw new Error("Der WebAuthn-Nachweis konnte nicht zugeordnet werden.");
+    }
     return true;
   }
 
-  // ── WebAuthn Authentifizierung ─────────────────────────────
-  async function authenticateWebAuthn() {
-    if (!webAuthnSupported()) throw new Error('WebAuthn nicht unterstützt.');
-    const credId = localStorage.getItem(CRED_KEY);
-    if (!credId) throw new Error('Kein Credential registriert.');
-
-    await navigator.credentials.get({
-      publicKey: {
-        challenge:        _randomChallenge(),
-        allowCredentials: [{ type: 'public-key', id: _b64ToUint8(credId) }],
-        userVerification: 'required',
-        timeout:          60000
-      }
-    });
-    // Gerät hat Biometrie/PIN verifiziert → Session setzen
-    _setSession();
-    return true;
+  function logout() {
+    setAuthenticated(false);
   }
 
-  // ── PIN setzen ─────────────────────────────────────────────
-  async function setPin(pin) {
-    if (!/^\d{6}$/.test(pin)) throw new Error('PIN muss genau 6 Ziffern haben.');
-    const hash = await _sha256(pin);
-    localStorage.setItem(PIN_KEY, hash);
-    return true;
-  }
-
-  // ── PIN prüfen ─────────────────────────────────────────────
-  async function checkPin(pin) {
-    const stored = localStorage.getItem(PIN_KEY);
-    if (!stored) throw new Error('Keine PIN gesetzt.');
-    const hash = await _sha256(pin);
-    if (hash !== stored) throw new Error('Falsche PIN.');
-    _setSession();
-    return true;
-  }
-
-  // ── PIN ändern (erfordert alte PIN) ───────────────────────
-  async function changePin(oldPin, newPin) {
-    await checkPin(oldPin);          // wirft bei Fehler
-    _clearSession();                 // kurz zurücksetzen
-    await setPin(newPin);
-    _setSession();
-    return true;
-  }
-
-  // ── Abmelden ──────────────────────────────────────────────
-  function logout() { _clearSession(); }
-
-  // ── Ersteinrichtung abschließen ───────────────────────────
-  function completeSetup() { localStorage.setItem(SETUP_KEY, '1'); }
-
-  // ── Öffentliche API ───────────────────────────────────────
-  return {
-    isSetupDone         : _isSetupDone,
-    hasWebAuthn         : _hasWebAuthn,
-    hasPin              : _hasPin,
-    isAuthenticated     : _isSessionOk,
-    webAuthnSupported,
-    registerWebAuthn,
-    authenticateWebAuthn,
+  global.personalAuth = {
+    SESSION_KEY,
+    isAuthenticated,
+    isFirstAccess,
+    isPinSet,
+    hasWebAuthnCredential,
+    validatePin,
     setPin,
-    checkPin,
-    changePin,
-    logout,
-    completeSetup
+    verifyPin,
+    registerWebAuthn,
+    authenticateWithWebAuthn,
+    logout
   };
-})();
+})(window);

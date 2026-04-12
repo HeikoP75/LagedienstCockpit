@@ -17,8 +17,8 @@
     xBand: ["", "1", "2", "3", "4", "5"],
     xBandZusatz: ["", "UB", "MB", "OB"],
     gespraechKategorie: [
-      "Mitarbeitergespraech",
-      "Jahresgespraech",
+      "Mitarbeitergespräch",
+      "Jahresgespräch",
       "Feedback",
       "Vereinbarung",
       "Entwicklung",
@@ -129,7 +129,7 @@
 
   function buildOptions(options, selectedValue) {
     return options
-      .map((option) => `<option value="${escapeHtml(option)}" ${option === selectedValue ? "selected" : ""}>${escapeHtml(option || "Bitte waehlen")}</option>`)
+      .map((option) => `<option value="${escapeHtml(option)}" ${option === selectedValue ? "selected" : ""}>${escapeHtml(option || "Bitte wählen")}</option>`)
       .join("");
   }
 
@@ -391,7 +391,7 @@
 
   async function exportFilteredEmployeesPdf() {
     if (!state.filteredEmployees.length) {
-      setStatus("Keine gefilterten Einträge fuer den PDF-Export vorhanden.", "error");
+      setStatus("Keine gefilterten Einträge für den PDF-Export vorhanden.", "error");
       return;
     }
     const container = document.createElement("section");
@@ -440,11 +440,11 @@
   async function exportEmployeeSheetModal(employee) {
     openModal(`
       <h2>PDF-Datenblatt</h2>
-      <p class="muted">Waehlen Sie die Bereiche fuer das Datenblatt von ${escapeHtml(getEmployeeName(employee))}.</p>
+      <p class="muted">Wählen Sie die Bereiche für das Datenblatt von ${escapeHtml(getEmployeeName(employee))}.</p>
       <form id="pdf-selection-form" class="grid">
         <label><input type="checkbox" name="section" value="stammdaten" checked> Stammdaten</label>
         <label><input type="checkbox" name="section" value="feuerwehr" checked> Feuerwehrspezifisches</label>
-        <label><input type="checkbox" name="section" value="eintraege" checked> Freie Eintraege</label>
+        <label><input type="checkbox" name="section" value="eintraege" checked> Mitarbeitergespräche</label>
         <label><input type="checkbox" name="section" value="felder" checked> Eigene Felder</label>
         <div class="modal-actions">
           <button type="submit" class="btn btn-primary">PDF erzeugen</button>
@@ -492,7 +492,7 @@
       <p>Exportiert am ${formatDateTime(new Date().toISOString())}</p>
       ${include.has("stammdaten") ? `<section><h2>Stammdaten</h2>${stammdatenRows}</section>` : ""}
       ${include.has("feuerwehr") ? `<section><h2>Feuerwehrspezifisches</h2>${feuerwehrRows}</section>` : ""}
-      ${include.has("eintraege") ? `<section><h2>Freie Eintraege</h2>${entryRows || "<p>Keine Eintraege vorhanden.</p>"}</section>` : ""}
+      ${include.has("eintraege") ? `<section><h2>Mitarbeitergespräche</h2>${entryRows || "<p>Keine Einträge vorhanden.</p>"}</section>` : ""}
       ${include.has("felder") ? `<section><h2>Eigene Felder</h2>${fieldRows || "<p>Keine Felder vorhanden.</p>"}</section>` : ""}
     `;
 
@@ -507,7 +507,7 @@
   async function exportSingleEntryPdf(employee, entryId) {
     const employeeEntry = employee.eintraege.find((entry) => entry.id === entryId);
     if (!employeeEntry) {
-      setStatus("Eintrag fuer PDF-Export nicht gefunden.", "error");
+      setStatus("Eintrag für den PDF-Export nicht gefunden.", "error");
       return;
     }
     const container = document.createElement("section");
@@ -631,16 +631,16 @@
       <article class="entry-card" data-entry-editor-item data-entry-id="${escapeHtml(entry.id)}" data-created-at="${escapeHtml(entry.erstelltAm || "")}">
         <div class="grid two-col">
           <div class="field-group">
-            <label>Kategorie</label>
-            <select name="eintrag-kategorie">${buildOptions(SELECT_OPTIONS.gespraechKategorie, entry.kategorie || "Mitarbeitergespraech")}</select>
+            <label>Gesprächsart</label>
+            <select name="eintrag-kategorie">${buildOptions(SELECT_OPTIONS.gespraechKategorie, entry.kategorie || "Mitarbeitergespräch")}</select>
           </div>
           <div class="field-group">
             <label>Datum</label>
             <input name="eintrag-datum" type="date" value="${escapeHtml(entry.datum || "")}">
           </div>
           <div class="field-group">
-            <label>Titel des Gespraechs</label>
-            <input name="eintrag-titel" value="${escapeHtml(entry.titel || "")}" placeholder="z. B. Jahresgespraech 2026">
+            <label>Titel des Gesprächs</label>
+            <input name="eintrag-titel" value="${escapeHtml(entry.titel || "")}" placeholder="z. B. Jahresgespräch 2026">
           </div>
           <div class="field-group">
             <label>Tags</label>
@@ -649,7 +649,7 @@
         </div>
         <div class="field-group">
           <label>Dokumentation</label>
-          <textarea name="eintrag-inhalt" placeholder="Verlauf, Inhalte, Absprachen und naechste Schritte dokumentieren">${escapeHtml(entry.inhalt || "")}</textarea>
+          <textarea name="eintrag-inhalt" placeholder="Verlauf, Inhalte, Absprachen und nächste Schritte dokumentieren">${escapeHtml(entry.inhalt || "")}</textarea>
         </div>
         <div class="entry-actions">
           <button type="button" class="btn btn-secondary" data-action="remove-entry-editor" data-entry-id="${escapeHtml(entry.id)}">Eintrag entfernen</button>
@@ -704,7 +704,7 @@
     const isArchived = employee.meta?.aktiv === false;
     if (isArchived) {
       return `
-        <h2>Datenblatt reaktivieren</h2>
+      <h2>Datenblatt reaktivieren</h2>
         <p class="muted">${escapeHtml(getEmployeeName(employee))} ist archiviert und kann wieder in die aktive Mitarbeiterliste aufgenommen werden.</p>
         <div class="modal-actions">
           <button class="btn btn-primary" type="button" data-action="confirm-restore">Reaktivieren</button>
@@ -826,8 +826,8 @@
             })}</div>
           </section>
           <section class="panel section-card ${state.editMode ? "hidden" : ""}" data-read-view>
-            <h2>Mitarbeitergespraeche und freie Eintraege</h2>
-            <div class="entry-list">${readOnlyEntries || "<p>Keine dokumentierten Gespraeche vorhanden.</p>"}</div>
+            <h2>Mitarbeitergespräche</h2>
+            <div class="entry-list">${readOnlyEntries || "<p>Keine dokumentierten Gespräche vorhanden.</p>"}</div>
           </section>
           <section class="panel section-card ${state.editMode ? "hidden" : ""}" data-read-view>
             <h2>Eigene Felder</h2>
@@ -842,7 +842,7 @@
                 <div class="field-group"><label>Geburtsdatum</label><input name="geburtsdatum" type="date" value="${escapeHtml(employee.stammdaten.geburtsdatum)}"></div>
                 <div class="field-group"><label>Geburtsort</label><input name="geburtsort" value="${escapeHtml(employee.stammdaten.geburtsort)}"></div>
                 <div class="field-group"><label>Familienstand</label><input name="familienstand" value="${escapeHtml(employee.stammdaten.familienstand)}"></div>
-                <div class="field-group"><label>Kinder (Zahl oder Namen, kommagetrennt)</label><input name="kinder" value="${escapeHtml((employee.stammdaten.kinder || []).join(", "))}"></div>
+                <div class="field-group"><label>Kinder (Anzahl oder Namen, kommagetrennt)</label><input name="kinder" value="${escapeHtml((employee.stammdaten.kinder || []).join(", "))}"></div>
                 <div class="field-group"><label>Notfallkontakt 1</label><input name="notfallkontakt1" value="${escapeHtml(employee.stammdaten.notfallkontakt1)}"></div>
                 <div class="field-group"><label>Notfallkontakt 2</label><input name="notfallkontakt2" value="${escapeHtml(employee.stammdaten.notfallkontakt2)}"></div>
                 <div class="field-group"><label>Funktion</label><input name="funktion" value="${escapeHtml(employee.stammdaten.funktion)}"></div>
@@ -874,7 +874,7 @@
                   </div>
                 </div>
                 <div class="field-group">
-                  <textarea name="gehaltsentwicklung" placeholder="2024 | 3200 | Zielstufe erreicht&#10;2025 | 3400 | Hoehergruppierung vorgesehen">${escapeHtml(formatHistoryLines(employee.entwicklung?.gehaltsentwicklung, (entry) => `${entry.jahr} | ${entry.betrag} | ${entry.planung}`))}</textarea>
+                  <textarea name="gehaltsentwicklung" placeholder="2024 | 3200 | Zielstufe erreicht&#10;2025 | 3400 | Höhergruppierung vorgesehen">${escapeHtml(formatHistoryLines(employee.entwicklung?.gehaltsentwicklung, (entry) => `${entry.jahr} | ${entry.betrag} | ${entry.planung}`))}</textarea>
                 </div>
               </section>
               <section>
@@ -891,10 +891,10 @@
               <section>
                 <div class="page-header">
                   <div>
-                    <h3>Mitarbeitergespraeche</h3>
-                    <p class="muted">Jedes Gespraech wird einzeln mit Datum, Titel, Inhalt und Tags dokumentiert.</p>
+                    <h3>Mitarbeitergespräche</h3>
+                    <p class="muted">Jedes Gespräch wird einzeln mit Datum, Titel, Inhalt und Tags dokumentiert.</p>
                   </div>
-                  <button class="btn btn-secondary" type="button" data-action="add-entry-editor">Eintrag hinzufuegen</button>
+                  <button class="btn btn-secondary" type="button" data-action="add-entry-editor">Gespräch hinzufügen</button>
                 </div>
                 <div class="entry-list" data-entry-editor-list>${employee.eintraege.map(buildEntryEditor).join("")}</div>
               </section>
@@ -904,7 +904,7 @@
                     <h3>Eigene Felder</h3>
                     <p class="muted">Freie Zusatzfelder fuer lokale Anforderungen.</p>
                   </div>
-                  <button class="btn btn-secondary" type="button" data-action="add-custom-field">Feld hinzufuegen</button>
+                  <button class="btn btn-secondary" type="button" data-action="add-custom-field">Feld hinzufügen</button>
                 </div>
                 <div class="entry-list" data-custom-field-list>${employee.eigeneFelder.map(buildFieldEditor).join("")}</div>
               </section>

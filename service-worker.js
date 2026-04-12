@@ -1,6 +1,6 @@
 // service-worker.js – Cockpit OS
 
-const CACHE_NAME = "cockpit-os-v4";
+const CACHE_NAME = "cockpit-os-v5";
 
 const ASSETS_TO_CACHE = [
   "./",

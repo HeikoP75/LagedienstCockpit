@@ -33,9 +33,11 @@
         funktion: "",
         dienstgrad: "",
         schicht: "",
+        schichtart: "",
         eintrittUnternehmen: "",
         eintrittFeuerwehr: "",
         beschaeftigungsart: "",
+        entgelt: "",
         diensttelefon: "",
         privattelefon: "",
         email: ""
@@ -43,13 +45,22 @@
       feuerwehr: {
         atemschutztauglich: "",
         maschinistStatus: "",
-        rtwQualifikation: ""
+        rtwQualifikation: "",
+        xBand: "",
+        xBandZusatz: ""
+      },
+      entwicklung: {
+        gehaltsentwicklung: [],
+        leistungszahlungen: []
       },
       eintraege: [],
       eigeneFelder: [],
       meta: {
         erstelltAm: createdAt,
-        geaendertAm: createdAt
+        geaendertAm: createdAt,
+        aktiv: true,
+        archiviertAm: "",
+        archiviertGrund: ""
       }
     };
   }
@@ -74,6 +85,24 @@
       feuerwehr: {
         ...base.feuerwehr,
         ...(employee.feuerwehr || {})
+      },
+      entwicklung: {
+        ...base.entwicklung,
+        ...(employee.entwicklung || {}),
+        gehaltsentwicklung: Array.isArray(employee.entwicklung?.gehaltsentwicklung)
+          ? employee.entwicklung.gehaltsentwicklung.map((entry) => ({
+              jahr: entry.jahr || "",
+              betrag: entry.betrag || "",
+              planung: entry.planung || ""
+            }))
+          : [],
+        leistungszahlungen: Array.isArray(employee.entwicklung?.leistungszahlungen)
+          ? employee.entwicklung.leistungszahlungen.map((entry) => ({
+              jahr: entry.jahr || "",
+              betrag: entry.betrag || "",
+              grund: entry.grund || ""
+            }))
+          : []
       },
       eintraege: Array.isArray(employee.eintraege)
         ? employee.eintraege
@@ -205,6 +234,38 @@
     return saveDataset(dataset);
   }
 
+  async function archiveEmployee(employeeId, reason = "") {
+    const dataset = await loadDataset();
+    const employee = dataset.mitarbeiter.find((item) => item.id === employeeId);
+    if (!employee) {
+      throw new Error("Mitarbeiter nicht gefunden.");
+    }
+    employee.meta = {
+      ...employee.meta,
+      aktiv: false,
+      archiviertAm: nowIso(),
+      archiviertGrund: reason || "Mitarbeiter hat das Unternehmen verlassen.",
+      geaendertAm: nowIso()
+    };
+    return saveDataset(dataset);
+  }
+
+  async function restoreEmployee(employeeId) {
+    const dataset = await loadDataset();
+    const employee = dataset.mitarbeiter.find((item) => item.id === employeeId);
+    if (!employee) {
+      throw new Error("Mitarbeiter nicht gefunden.");
+    }
+    employee.meta = {
+      ...employee.meta,
+      aktiv: true,
+      archiviertAm: "",
+      archiviertGrund: "",
+      geaendertAm: nowIso()
+    };
+    return saveDataset(dataset);
+  }
+
   async function addEntry(employeeId, entryInput) {
     const dataset = await loadDataset();
     const employee = dataset.mitarbeiter.find((item) => item.id === employeeId);
@@ -263,21 +324,28 @@
 
   function filterEmployees(dataset, term) {
     const searchTerm = (term || "").trim().toLowerCase();
+    const activeEmployees = dataset.mitarbeiter.filter((employee) => employee.meta?.aktiv !== false);
     if (!searchTerm) {
-      return dataset.mitarbeiter;
+      return activeEmployees;
     }
 
-    return dataset.mitarbeiter.filter((employee) => {
+    return activeEmployees.filter((employee) => {
       const textChunks = [
         employee.stammdaten.vorname,
         employee.stammdaten.nachname,
         employee.stammdaten.funktion,
         employee.stammdaten.dienstgrad,
         employee.stammdaten.schicht,
+        employee.stammdaten.schichtart,
+        employee.stammdaten.entgelt,
         employee.stammdaten.email,
         employee.feuerwehr.atemschutztauglich,
         employee.feuerwehr.maschinistStatus,
         employee.feuerwehr.rtwQualifikation,
+        employee.feuerwehr.xBand,
+        employee.feuerwehr.xBandZusatz,
+        ...employee.entwicklung.gehaltsentwicklung.flatMap((entry) => [entry.jahr, entry.betrag, entry.planung]),
+        ...employee.entwicklung.leistungszahlungen.flatMap((entry) => [entry.jahr, entry.betrag, entry.grund]),
         ...employee.eintraege.flatMap((entry) => [entry.kategorie, entry.titel, entry.inhalt, ...(entry.tags || [])]),
         ...employee.eigeneFelder.flatMap((field) => [field.label, field.wert])
       ]
@@ -336,6 +404,8 @@
     saveDataset,
     upsertEmployee,
     deleteEmployee,
+    archiveEmployee,
+    restoreEmployee,
     addEntry,
     deleteEntry,
     updateCustomFields,

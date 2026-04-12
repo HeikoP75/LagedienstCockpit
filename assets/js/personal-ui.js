@@ -8,6 +8,55 @@
     editMode: false
   };
 
+  const SELECT_OPTIONS = {
+    schicht: ["WA 1", "WA 2"],
+    schichtart: ["TD", "4'er Turn", "24 Std."],
+    beschaeftigungsart: ["Vollzeit", "TZ 95%", "TZ 90%", "TZ 75%", "TZ 50%"],
+    rtwQualifikation: ["keine", "RS", "NotSan", "RettSan"],
+    maschinistStatus: ["Teilmaschinist", "Vollmaschinist"],
+    xBand: ["", "1", "2", "3", "4", "5"],
+    xBandZusatz: ["", "UB", "MB", "OB"],
+    gespraechKategorie: [
+      "Mitarbeitergespraech",
+      "Jahresgespraech",
+      "Feedback",
+      "Vereinbarung",
+      "Entwicklung",
+      "Hinweis"
+    ]
+  };
+
+  const FIELD_LABELS = {
+    vorname: "Vorname",
+    nachname: "Nachname",
+    geburtsdatum: "Geburtsdatum",
+    geburtsort: "Geburtsort",
+    familienstand: "Familienstand",
+    kinder: "Kinder",
+    notfallkontakt1: "Notfallkontakt 1",
+    notfallkontakt2: "Notfallkontakt 2",
+    funktion: "Funktion",
+    dienstgrad: "Dienstgrad",
+    schicht: "Schicht",
+    schichtart: "Schichtart",
+    eintrittUnternehmen: "Eintritt ins Unternehmen",
+    eintrittFeuerwehr: "Eintritt in die Feuerwehr",
+    beschaeftigungsart: "Beschäftigungsart",
+    entgelt: "Entgelt",
+    diensttelefon: "Diensttelefon",
+    privattelefon: "Privattelefon",
+    email: "E-Mail",
+    atemschutztauglich: "Atemschutztauglich",
+    maschinistStatus: "Maschinisten-Status",
+    rtwQualifikation: "RTW-Qualifikation",
+    xBand: "X-Band",
+    xBandZusatz: "X-Band Zusatz",
+    archiviertAm: "Archiviert am",
+    archiviertGrund: "Archivierungsgrund",
+    gehaltsentwicklung: "Gehaltsentwicklung",
+    leistungszahlungen: "Leistungszahlungen"
+  };
+
   function qs(selector, root = document) {
     return root.querySelector(selector);
   }
@@ -62,6 +111,52 @@
       hour: "2-digit",
       minute: "2-digit"
     }).format(date);
+  }
+
+  function formatCurrency(value) {
+    if (value === null || value === undefined || value === "") {
+      return "Nicht hinterlegt";
+    }
+    const normalized = Number(String(value).replace(",", "."));
+    if (Number.isNaN(normalized)) {
+      return `${value} EUR`;
+    }
+    return new Intl.NumberFormat("de-DE", {
+      style: "currency",
+      currency: "EUR"
+    }).format(normalized);
+  }
+
+  function buildOptions(options, selectedValue) {
+    return options
+      .map((option) => `<option value="${escapeHtml(option)}" ${option === selectedValue ? "selected" : ""}>${escapeHtml(option || "Bitte waehlen")}</option>`)
+      .join("");
+  }
+
+  function parseLines(value, mapper) {
+    return String(value || "")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map(mapper)
+      .filter(Boolean);
+  }
+
+  function formatHistoryLines(entries, formatter) {
+    if (!entries?.length) {
+      return "Keine Eintraege vorhanden.";
+    }
+    return entries.map(formatter).join("\n");
+  }
+
+  function formatChildren(value) {
+    if (!Array.isArray(value) || !value.length) {
+      return "Nicht hinterlegt";
+    }
+    if (value.length === 1 && /^\d+$/.test(value[0])) {
+      return `${value[0]} Kind(er)`;
+    }
+    return value.join(", ");
   }
 
   function getEmployeeName(employee) {
@@ -455,9 +550,11 @@
         funktion: formData.get("funktion") || "",
         dienstgrad: formData.get("dienstgrad") || "",
         schicht: formData.get("schicht") || "",
+        schichtart: formData.get("schichtart") || "",
         eintrittUnternehmen: formData.get("eintrittUnternehmen") || "",
         eintrittFeuerwehr: formData.get("eintrittFeuerwehr") || "",
         beschaeftigungsart: formData.get("beschaeftigungsart") || "",
+        entgelt: formData.get("entgelt") || "",
         diensttelefon: formData.get("diensttelefon") || "",
         privattelefon: formData.get("privattelefon") || "",
         email: formData.get("email") || ""
@@ -466,7 +563,26 @@
         ...baseEmployee.feuerwehr,
         atemschutztauglich: formData.get("atemschutztauglich") || "",
         maschinistStatus: formData.get("maschinistStatus") || "",
-        rtwQualifikation: formData.get("rtwQualifikation") || ""
+        rtwQualifikation: formData.get("rtwQualifikation") || "",
+        xBand: formData.get("xBand") || "",
+        xBandZusatz: formData.get("xBandZusatz") || ""
+      },
+      entwicklung: {
+        ...baseEmployee.entwicklung,
+        gehaltsentwicklung: parseLines(formData.get("gehaltsentwicklung"), (line) => {
+          const [jahr = "", betrag = "", planung = ""] = line.split("|").map((item) => item.trim());
+          if (!jahr && !betrag && !planung) {
+            return null;
+          }
+          return { jahr, betrag, planung };
+        }),
+        leistungszahlungen: parseLines(formData.get("leistungszahlungen"), (line) => {
+          const [jahr = "", betrag = "", grund = ""] = line.split("|").map((item) => item.trim());
+          if (!jahr && !betrag && !grund) {
+            return null;
+          }
+          return { jahr, betrag, grund };
+        })
       },
       eintraege: qsa("[data-entry-editor-item]", entriesContainer).map((item) => ({
         id: item.dataset.entryId || "",
@@ -493,10 +609,16 @@
   function buildReadOnlyDefinitionRows(data) {
     return Object.entries(data)
       .map(([key, value]) => {
-        const printable = Array.isArray(value) ? value.join(", ") : value;
+        let printable = Array.isArray(value) ? value.join(", ") : value;
+        if (key === "kinder") {
+          printable = formatChildren(value);
+        }
+        if (key === "entgelt") {
+          printable = formatCurrency(value);
+        }
         return `
           <div class="definition-row">
-            <div class="meta-label">${escapeHtml(key)}</div>
+            <div class="meta-label">${escapeHtml(FIELD_LABELS[key] || key)}</div>
             <div>${escapeHtml(printable || "Nicht hinterlegt")}</div>
           </div>
         `;
@@ -510,24 +632,24 @@
         <div class="grid two-col">
           <div class="field-group">
             <label>Kategorie</label>
-            <input name="eintrag-kategorie" value="${escapeHtml(entry.kategorie || "")}">
+            <select name="eintrag-kategorie">${buildOptions(SELECT_OPTIONS.gespraechKategorie, entry.kategorie || "Mitarbeitergespraech")}</select>
           </div>
           <div class="field-group">
             <label>Datum</label>
             <input name="eintrag-datum" type="date" value="${escapeHtml(entry.datum || "")}">
           </div>
           <div class="field-group">
-            <label>Titel</label>
-            <input name="eintrag-titel" value="${escapeHtml(entry.titel || "")}">
+            <label>Titel des Gespraechs</label>
+            <input name="eintrag-titel" value="${escapeHtml(entry.titel || "")}" placeholder="z. B. Jahresgespraech 2026">
           </div>
           <div class="field-group">
             <label>Tags</label>
-            <input name="eintrag-tags" value="${escapeHtml((entry.tags || []).join(", "))}" placeholder="z. B. Ausbildung, Einsatz">
+            <input name="eintrag-tags" value="${escapeHtml((entry.tags || []).join(", "))}" placeholder="z. B. Zielvereinbarung, Entwicklung">
           </div>
         </div>
         <div class="field-group">
-          <label>Inhalt</label>
-          <textarea name="eintrag-inhalt">${escapeHtml(entry.inhalt || "")}</textarea>
+          <label>Dokumentation</label>
+          <textarea name="eintrag-inhalt" placeholder="Verlauf, Inhalte, Absprachen und naechste Schritte dokumentieren">${escapeHtml(entry.inhalt || "")}</textarea>
         </div>
         <div class="entry-actions">
           <button type="button" class="btn btn-secondary" data-action="remove-entry-editor" data-entry-id="${escapeHtml(entry.id)}">Eintrag entfernen</button>
@@ -553,6 +675,55 @@
           <button type="button" class="btn btn-secondary" data-action="remove-custom-field" data-field-key="${escapeHtml(field.schluessel)}">Feld entfernen</button>
         </div>
       </article>
+    `;
+  }
+
+  function buildHistoryRows(title, entries, formatter) {
+    return `
+      <section class="panel section-card">
+        <h2>${title}</h2>
+        <div class="definition-list">
+          ${entries.length
+            ? entries
+                .map(
+                  (entry) => `
+                    <div class="definition-row">
+                      <div class="meta-label">${escapeHtml(entry.jahr || "Ohne Jahr")}</div>
+                      <div>${formatter(entry)}</div>
+                    </div>
+                  `
+                )
+                .join("")
+            : "<p>Keine Eintraege vorhanden.</p>"}
+        </div>
+      </section>
+    `;
+  }
+
+  function buildArchiveModal(employee) {
+    const isArchived = employee.meta?.aktiv === false;
+    if (isArchived) {
+      return `
+        <h2>Datenblatt reaktivieren</h2>
+        <p class="muted">${escapeHtml(getEmployeeName(employee))} ist archiviert und kann wieder in die aktive Mitarbeiterliste aufgenommen werden.</p>
+        <div class="modal-actions">
+          <button class="btn btn-primary" type="button" data-action="confirm-restore">Reaktivieren</button>
+          <button class="btn btn-secondary" type="button" data-action="close-modal">Abbrechen</button>
+        </div>
+      `;
+    }
+
+    return `
+      <h2>Datenblatt archivieren</h2>
+      <p class="muted">Das Datenblatt bleibt erhalten, wird aber aus der aktiven Mitarbeiterliste entfernt.</p>
+      <div class="field-group">
+        <label for="archive-reason">Grund</label>
+        <textarea id="archive-reason" name="archiveReason" placeholder="z. B. Mitarbeiter hat das Unternehmen verlassen"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-danger" type="button" data-action="confirm-archive">Archivieren</button>
+        <button class="btn btn-secondary" type="button" data-action="close-modal">Abbrechen</button>
+      </div>
     `;
   }
 
@@ -585,6 +756,18 @@
       })
       .join("");
 
+    const compensationRows = {
+      entgelt: employee.stammdaten.entgelt,
+      gehaltsentwicklung: formatHistoryLines(
+        employee.entwicklung?.gehaltsentwicklung,
+        (entry) => `${entry.jahr || "o. J."}: ${formatCurrency(entry.betrag)}${entry.planung ? ` - Planung: ${entry.planung}` : ""}`
+      ),
+      leistungszahlungen: formatHistoryLines(
+        employee.entwicklung?.leistungszahlungen,
+        (entry) => `${entry.jahr || "o. J."}: ${formatCurrency(entry.betrag)} - Grund: ${entry.grund || "Nicht hinterlegt"}`
+      )
+    };
+
     root.innerHTML = `
       <div class="details-layout">
         <aside class="panel profile-card">
@@ -596,15 +779,28 @@
           <div class="pill-row">
             <span class="pill">${escapeHtml(employee.stammdaten.dienstgrad || "Dienstgrad offen")}</span>
             <span class="pill">${escapeHtml(employee.stammdaten.schicht || "Schicht offen")}</span>
+            <span class="pill">${escapeHtml(employee.stammdaten.schichtart || "Schichtart offen")}</span>
           </div>
           <div class="stack" style="margin-top: 18px;">
             <a class="btn btn-secondary" href="./personal.html">Zur Liste</a>
             <button type="button" class="btn btn-primary" data-action="toggle-edit-mode">${state.editMode ? "Lesemodus aktivieren" : "Bearbeitungsmodus"}</button>
             <button type="button" class="btn btn-ghost" data-action="export-sheet-pdf">Datenblatt als PDF</button>
+            <button type="button" class="btn ${employee.meta?.aktiv === false ? "btn-secondary" : "btn-danger"}" data-action="toggle-archive">${employee.meta?.aktiv === false ? "Datenblatt reaktivieren" : "Datenblatt archivieren"}</button>
           </div>
         </aside>
         <section class="stack">
           <div data-status class="status-banner info hidden"></div>
+          ${employee.meta?.aktiv === false ? `
+            <section class="panel section-card">
+              <h2>Archivstatus</h2>
+              <div class="definition-list">
+                ${buildReadOnlyDefinitionRows({
+                  archiviertAm: formatDateTime(employee.meta?.archiviertAm),
+                  archiviertGrund: employee.meta?.archiviertGrund || "Nicht hinterlegt"
+                })}
+              </div>
+            </section>
+          ` : ""}
           <section class="panel section-card ${state.editMode ? "hidden" : ""}" data-read-view>
             <h2>Stammdaten</h2>
             <div class="definition-list">${buildReadOnlyDefinitionRows(employee.stammdaten)}</div>
@@ -614,8 +810,24 @@
             <div class="definition-list">${buildReadOnlyDefinitionRows(employee.feuerwehr)}</div>
           </section>
           <section class="panel section-card ${state.editMode ? "hidden" : ""}" data-read-view>
-            <h2>Freie Eintraege</h2>
-            <div class="entry-list">${readOnlyEntries || "<p>Keine Eintraege vorhanden.</p>"}</div>
+            <h2>Beschaeftigung und Verguetung</h2>
+            <div class="definition-list">${buildReadOnlyDefinitionRows({
+              schicht: employee.stammdaten.schicht,
+              schichtart: employee.stammdaten.schichtart,
+              beschaeftigungsart: employee.stammdaten.beschaeftigungsart,
+              entgelt: compensationRows.entgelt
+            })}</div>
+          </section>
+          <section class="panel section-card ${state.editMode ? "hidden" : ""}" data-read-view>
+            <h2>Gehaltsentwicklung und Planung</h2>
+            <div class="definition-list">${buildReadOnlyDefinitionRows({
+              gehaltsentwicklung: compensationRows.gehaltsentwicklung,
+              leistungszahlungen: compensationRows.leistungszahlungen
+            })}</div>
+          </section>
+          <section class="panel section-card ${state.editMode ? "hidden" : ""}" data-read-view>
+            <h2>Mitarbeitergespraeche und freie Eintraege</h2>
+            <div class="entry-list">${readOnlyEntries || "<p>Keine dokumentierten Gespraeche vorhanden.</p>"}</div>
           </section>
           <section class="panel section-card ${state.editMode ? "hidden" : ""}" data-read-view>
             <h2>Eigene Felder</h2>
@@ -630,21 +842,25 @@
                 <div class="field-group"><label>Geburtsdatum</label><input name="geburtsdatum" type="date" value="${escapeHtml(employee.stammdaten.geburtsdatum)}"></div>
                 <div class="field-group"><label>Geburtsort</label><input name="geburtsort" value="${escapeHtml(employee.stammdaten.geburtsort)}"></div>
                 <div class="field-group"><label>Familienstand</label><input name="familienstand" value="${escapeHtml(employee.stammdaten.familienstand)}"></div>
-                <div class="field-group"><label>Kinder (kommagetrennt)</label><input name="kinder" value="${escapeHtml((employee.stammdaten.kinder || []).join(", "))}"></div>
+                <div class="field-group"><label>Kinder (Zahl oder Namen, kommagetrennt)</label><input name="kinder" value="${escapeHtml((employee.stammdaten.kinder || []).join(", "))}"></div>
                 <div class="field-group"><label>Notfallkontakt 1</label><input name="notfallkontakt1" value="${escapeHtml(employee.stammdaten.notfallkontakt1)}"></div>
                 <div class="field-group"><label>Notfallkontakt 2</label><input name="notfallkontakt2" value="${escapeHtml(employee.stammdaten.notfallkontakt2)}"></div>
                 <div class="field-group"><label>Funktion</label><input name="funktion" value="${escapeHtml(employee.stammdaten.funktion)}"></div>
                 <div class="field-group"><label>Dienstgrad</label><input name="dienstgrad" value="${escapeHtml(employee.stammdaten.dienstgrad)}"></div>
-                <div class="field-group"><label>Schicht</label><input name="schicht" value="${escapeHtml(employee.stammdaten.schicht)}"></div>
+                <div class="field-group"><label>Schicht</label><select name="schicht">${buildOptions(SELECT_OPTIONS.schicht, employee.stammdaten.schicht)}</select></div>
+                <div class="field-group"><label>Schichtart</label><select name="schichtart">${buildOptions(SELECT_OPTIONS.schichtart, employee.stammdaten.schichtart)}</select></div>
                 <div class="field-group"><label>Eintritt Unternehmen</label><input name="eintrittUnternehmen" type="date" value="${escapeHtml(employee.stammdaten.eintrittUnternehmen)}"></div>
                 <div class="field-group"><label>Eintritt Feuerwehr</label><input name="eintrittFeuerwehr" type="date" value="${escapeHtml(employee.stammdaten.eintrittFeuerwehr)}"></div>
-                <div class="field-group"><label>Beschaeftigungsart</label><input name="beschaeftigungsart" value="${escapeHtml(employee.stammdaten.beschaeftigungsart)}"></div>
+                <div class="field-group"><label>Beschaeftigungsart</label><select name="beschaeftigungsart">${buildOptions(SELECT_OPTIONS.beschaeftigungsart, employee.stammdaten.beschaeftigungsart)}</select></div>
+                <div class="field-group"><label>Entgelt in EUR</label><input name="entgelt" inputmode="decimal" value="${escapeHtml(employee.stammdaten.entgelt)}"></div>
                 <div class="field-group"><label>Diensttelefon</label><input name="diensttelefon" value="${escapeHtml(employee.stammdaten.diensttelefon)}"></div>
                 <div class="field-group"><label>Privattelefon</label><input name="privattelefon" value="${escapeHtml(employee.stammdaten.privattelefon)}"></div>
                 <div class="field-group"><label>E-Mail</label><input name="email" type="email" value="${escapeHtml(employee.stammdaten.email)}"></div>
                 <div class="field-group"><label>Atemschutztauglich</label><input name="atemschutztauglich" value="${escapeHtml(employee.feuerwehr.atemschutztauglich)}"></div>
-                <div class="field-group"><label>Maschinist-Status</label><input name="maschinistStatus" value="${escapeHtml(employee.feuerwehr.maschinistStatus)}"></div>
-                <div class="field-group"><label>RTW-Qualifikation</label><input name="rtwQualifikation" value="${escapeHtml(employee.feuerwehr.rtwQualifikation)}"></div>
+                <div class="field-group"><label>Maschinist-Status</label><select name="maschinistStatus">${buildOptions(SELECT_OPTIONS.maschinistStatus, employee.feuerwehr.maschinistStatus)}</select></div>
+                <div class="field-group"><label>RTW-Qualifikation</label><select name="rtwQualifikation">${buildOptions(SELECT_OPTIONS.rtwQualifikation, employee.feuerwehr.rtwQualifikation)}</select></div>
+                <div class="field-group"><label>X-Band</label><select name="xBand">${buildOptions(SELECT_OPTIONS.xBand, employee.feuerwehr.xBand)}</select></div>
+                <div class="field-group"><label>X-Band Zusatz</label><select name="xBandZusatz">${buildOptions(SELECT_OPTIONS.xBandZusatz, employee.feuerwehr.xBandZusatz)}</select></div>
               </div>
               <div class="field-group">
                 <label>Foto aktualisieren</label>
@@ -653,8 +869,30 @@
               <section>
                 <div class="page-header">
                   <div>
-                    <h3>Freie Eintraege</h3>
-                    <p class="muted">Kategorisiert und chronologisch sortiert.</p>
+                    <h3>Gehaltsentwicklung und Planung</h3>
+                    <p class="muted">Pro Zeile: Jahr | Betrag | Planung</p>
+                  </div>
+                </div>
+                <div class="field-group">
+                  <textarea name="gehaltsentwicklung" placeholder="2024 | 3200 | Zielstufe erreicht&#10;2025 | 3400 | Hoehergruppierung vorgesehen">${escapeHtml(formatHistoryLines(employee.entwicklung?.gehaltsentwicklung, (entry) => `${entry.jahr} | ${entry.betrag} | ${entry.planung}`))}</textarea>
+                </div>
+              </section>
+              <section>
+                <div class="page-header">
+                  <div>
+                    <h3>Leistungszahlung</h3>
+                    <p class="muted">Pro Zeile: Jahr | Betrag | Grund</p>
+                  </div>
+                </div>
+                <div class="field-group">
+                  <textarea name="leistungszahlungen" placeholder="2024 | 450 | Sonderprojekt erfolgreich umgesetzt">${escapeHtml(formatHistoryLines(employee.entwicklung?.leistungszahlungen, (entry) => `${entry.jahr} | ${entry.betrag} | ${entry.grund}`))}</textarea>
+                </div>
+              </section>
+              <section>
+                <div class="page-header">
+                  <div>
+                    <h3>Mitarbeitergespraeche</h3>
+                    <p class="muted">Jedes Gespraech wird einzeln mit Datum, Titel, Inhalt und Tags dokumentiert.</p>
                   </div>
                   <button class="btn btn-secondary" type="button" data-action="add-entry-editor">Eintrag hinzufuegen</button>
                 </div>
@@ -718,6 +956,29 @@
 
       if (action === "export-sheet-pdf") {
         await exportEmployeeSheetModal(employee);
+        return;
+      }
+
+      if (action === "toggle-archive") {
+        openModal(buildArchiveModal(employee));
+        return;
+      }
+
+      if (action === "confirm-archive") {
+        const reason = qs("#archive-reason")?.value?.trim() || "";
+        await global.personalData.archiveEmployee(employee.id, reason);
+        await refreshDataset();
+        closeModal();
+        window.location.href = "./personal.html";
+        return;
+      }
+
+      if (action === "confirm-restore") {
+        await global.personalData.restoreEmployee(employee.id);
+        await refreshDataset();
+        closeModal();
+        renderDetailPage();
+        setStatus("Datenblatt wurde reaktiviert.", "success");
         return;
       }
 
@@ -795,11 +1056,13 @@
           <div class="field-group"><label>Nachname</label><input name="nachname" value="${escapeHtml(employee?.stammdaten?.nachname || "")}" required></div>
           <div class="field-group"><label>Funktion</label><input name="funktion" value="${escapeHtml(employee?.stammdaten?.funktion || "")}"></div>
           <div class="field-group"><label>Dienstgrad</label><input name="dienstgrad" value="${escapeHtml(employee?.stammdaten?.dienstgrad || "")}"></div>
-          <div class="field-group"><label>Schicht</label><input name="schicht" value="${escapeHtml(employee?.stammdaten?.schicht || "")}"></div>
+          <div class="field-group"><label>Schicht</label><select name="schicht">${buildOptions(SELECT_OPTIONS.schicht, employee?.stammdaten?.schicht || "")}</select></div>
+          <div class="field-group"><label>Schichtart</label><select name="schichtart">${buildOptions(SELECT_OPTIONS.schichtart, employee?.stammdaten?.schichtart || "")}</select></div>
+          <div class="field-group"><label>Beschaeftigungsart</label><select name="beschaeftigungsart">${buildOptions(SELECT_OPTIONS.beschaeftigungsart, employee?.stammdaten?.beschaeftigungsart || "")}</select></div>
           <div class="field-group"><label>E-Mail</label><input name="email" type="email" value="${escapeHtml(employee?.stammdaten?.email || "")}"></div>
           <div class="field-group"><label>Atemschutztauglich</label><input name="atemschutztauglich" value="${escapeHtml(employee?.feuerwehr?.atemschutztauglich || "")}"></div>
-          <div class="field-group"><label>Maschinist-Status</label><input name="maschinistStatus" value="${escapeHtml(employee?.feuerwehr?.maschinistStatus || "")}"></div>
-          <div class="field-group"><label>RTW-Qualifikation</label><input name="rtwQualifikation" value="${escapeHtml(employee?.feuerwehr?.rtwQualifikation || "")}"></div>
+          <div class="field-group"><label>Maschinist-Status</label><select name="maschinistStatus">${buildOptions(SELECT_OPTIONS.maschinistStatus, employee?.feuerwehr?.maschinistStatus || "")}</select></div>
+          <div class="field-group"><label>RTW-Qualifikation</label><select name="rtwQualifikation">${buildOptions(SELECT_OPTIONS.rtwQualifikation, employee?.feuerwehr?.rtwQualifikation || "")}</select></div>
           <div class="field-group"><label>Foto</label><input name="foto" type="file" accept="image/*"></div>
         </div>
         <div class="modal-actions">
